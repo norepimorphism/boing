@@ -66,7 +66,7 @@ impl Window {
     }
 
     pub fn set_fullscreen(&mut self, value: bool) {
-        unsafe { uiWindowSetFullscreen(self.as_ptr(), value as i32) }
+        unsafe { uiWindowSetFullscreen(self.as_ptr(), value.into()) }
     }
 
     /// Determines if the window is borderless.
@@ -75,7 +75,7 @@ impl Window {
     }
 
     pub fn set_borderless(&mut self, value: bool) {
-        unsafe { uiWindowSetBorderless(self.as_ptr(), value as i32) }
+        unsafe { uiWindowSetBorderless(self.as_ptr(), value.into()) }
     }
 
     pub fn set_child(&mut self, child: &Control) {
@@ -88,7 +88,7 @@ impl Window {
     }
 
     pub fn set_margined(&mut self, value: bool) {
-        unsafe { uiWindowSetMargined(self.as_ptr(), value as i32) }
+        unsafe { uiWindowSetMargined(self.as_ptr(), value.into()) }
     }
 
     /// Determines if the window is resizeable.
@@ -97,7 +97,7 @@ impl Window {
     }
 
     pub fn set_resizeable(&mut self, value: bool) {
-        unsafe { uiWindowSetResizeable(self.as_ptr(), value as i32) }
+        unsafe { uiWindowSetResizeable(self.as_ptr(), value.into()) }
     }
 }
 

@@ -12,3 +12,9 @@ impl Ui {
 }
 
 def_subcontrol_with_ptr_ty!(Group, uiGroup);
+
+impl Group {
+    pub fn set_child(&mut self, child: &Control) {
+        unsafe { uiGroupSetChild(self.as_ptr(), child.as_ptr()) }
+    }
+}

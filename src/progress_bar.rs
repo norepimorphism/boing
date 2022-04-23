@@ -12,3 +12,9 @@ impl Ui {
 }
 
 def_subcontrol_with_ptr_ty!(ProgressBar, uiProgressBar);
+
+impl ProgressBar {
+    pub fn set_value(&mut self, value: i32) {
+        unsafe { uiProgressBarSetValue(self.as_ptr(), value) }
+    }
+}

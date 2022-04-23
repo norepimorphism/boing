@@ -5,13 +5,37 @@
 use crate::prelude::*;
 
 impl Ui {
+    /// Creates a new horizontal [`Boxx`].
     pub fn create_horizontal_box(&mut self) -> Result<Boxx, crate::Error> {
         call_libui_new_fn!(Boxx, uiNewHorizontalBox)
     }
 
+    /// Creates a new vertical [`Boxx`].
     pub fn create_vertical_box(&mut self) -> Result<Boxx, crate::Error> {
         call_libui_new_fn!(Boxx, uiNewVerticalBox)
     }
 }
 
 def_subcontrol_with_ptr_ty!(Boxx, uiBox);
+
+impl Boxx {
+    pub fn append_child(&mut self, child: &Control, can_stretch: bool) {
+        unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) }
+    }
+
+    pub fn child_count(&self) -> i32 {
+        unsafe { uiBoxNumChildren(self.as_ptr()) }
+    }
+
+    pub fn delete_child(&mut self, index: u16) {
+        unsafe { uiBoxDelete(self.as_ptr(), index.into()) }
+    }
+
+    pub fn is_padded(&self) -> bool {
+        unsafe { uiBoxPadded(self.as_ptr()) == 1 }
+    }
+
+    pub fn set_padded(&mut self, value: bool) {
+        unsafe { uiBoxSetPadded(self.as_ptr(), value.into()) }
+    }
+}
