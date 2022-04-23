@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::{ffi::CString, ptr};
+use std::ptr;
 
 impl Ui {
     /// Creates a new [`Window`].
@@ -14,11 +14,10 @@ impl Ui {
         height: u16,
         has_menubar: bool,
     ) -> Result<Window, crate::Error> {
-        let title = CString::new(title).map_err(crate::Error::ConvertString)?;
         call_libui_new_fn!(
             Window,
-            Window,
-            title.as_ptr(),
+            uiNewWindow,
+            make_cstring!(title).as_ptr(),
             width.into(),
             height.into(),
             has_menubar.into(),
@@ -99,5 +98,13 @@ impl Window {
 
     pub fn set_resizeable(&mut self, value: bool) {
         unsafe { uiWindowSetResizeable(self.as_ptr(), value as i32) }
+    }
+}
+
+impl Drop for Window {
+    fn drop(&mut self) {
+        use std::ops::DerefMut as _;
+
+        unsafe { uiControlDestroy(self.deref_mut().as_ptr()) }
     }
 }

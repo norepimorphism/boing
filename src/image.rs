@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Image`].
     pub fn create_image(&mut self, width: f64, height: f64) -> Result<Image, crate::Error> {
-        call_libui_new_fn!(Image, Image, width, height)
+        call_libui_new_fn!(Image, uiNewImage, width, height)
     }
 }
 

@@ -3,9 +3,7 @@
 fn main() {
     let mut ui = boing::Ui::new().unwrap();
 
-    let _file_menu = create_file_menu(&mut ui);
-    let _edit_menu = create_edit_menu(&mut ui);
-    let _help_menu = create_help_menu(&mut ui);
+    setup_menus(&mut ui);
 
     let mut window = create_window(&mut ui);
     let tab = create_tab(&mut ui);
@@ -17,16 +15,31 @@ fn main() {
     ui.start();
 }
 
-fn create_file_menu(ui: &mut boing::Ui) -> boing::Menu {
-    ui.create_menu("File").unwrap()
+fn setup_menus(ui: &mut boing::Ui) {
+    setup_file_menu(ui);
+    setup_edit_menu(ui);
+    setup_help_menu(ui);
 }
 
-fn create_edit_menu(ui: &mut boing::Ui) -> boing::Menu {
-    ui.create_menu("Edit").unwrap()
+fn setup_file_menu(ui: &mut boing::Ui) {
+    let mut menu = ui.create_menu("File").unwrap();
+    let _ = menu.append_item("Open").unwrap();
+    let _ = menu.append_item("Open Folder").unwrap();
+    let _ = menu.append_item("Save").unwrap();
+    let _ = menu.append_quit_item().unwrap();
 }
 
-fn create_help_menu(ui: &mut boing::Ui) -> boing::Menu {
-    ui.create_menu("Help").unwrap()
+fn setup_edit_menu(ui: &mut boing::Ui) {
+    let mut menu = ui.create_menu("Edit").unwrap();
+    let _ = menu.append_check_item("Checkable Item").unwrap();
+    let _ = menu.append_item("Disabled Item").unwrap();
+    let _ = menu.append_preferences_item();
+}
+
+fn setup_help_menu(ui: &mut boing::Ui) {
+    let mut menu = ui.create_menu("Help").unwrap();
+    let _ = menu.append_item("Help").unwrap();
+    let _ = menu.append_about_item();
 }
 
 fn create_window(ui: &mut boing::Ui) -> boing::Window {
@@ -46,24 +59,44 @@ fn create_window(ui: &mut boing::Ui) -> boing::Window {
 
 fn create_tab(ui: &mut boing::Ui) -> boing::Tab {
     let mut tab = ui.create_tab().unwrap();
-
-    tab.append_page("Basic Controls", create_basic_controls_page()).unwrap();
-    tab.append_page("Numbers and Lists", create_numbers_page()).unwrap();
-    tab.append_page("Data Choosers", create_data_choosers_page()).unwrap();
+    let _ = tab.append_page(
+        "Basic Controls",
+        &create_basic_controls_page(ui),
+    )
+    .unwrap();
+    let _ = tab.append_page(
+        "Numbers and Lists",
+        &create_numbers_page(ui),
+    )
+    .unwrap();
+    let _ = tab.append_page(
+        "Data Choosers",
+        &create_data_choosers_page(ui),
+    )
+    .unwrap();
 
     tab
 }
 
 // These are guaranteed to crash lol
 
-fn create_basic_controls_page() -> boing::Control {
-    unsafe { boing::Control::from_ptr(std::ptr::null_mut()) }
+fn create_basic_controls_page(ui: &mut boing::Ui) -> boing::Boxx {
+    let vbox = ui.create_vertical_box().unwrap();
+    let _hbox = ui.create_horizontal_box().unwrap();
+
+    vbox
 }
 
-fn create_numbers_page() -> boing::Control {
-    unsafe { boing::Control::from_ptr(std::ptr::null_mut()) }
+fn create_numbers_page(ui: &mut boing::Ui) -> boing::Boxx {
+    let _vbox = ui.create_vertical_box().unwrap();
+    let hbox = ui.create_horizontal_box().unwrap();
+
+    hbox
 }
 
-fn create_data_choosers_page() -> boing::Control {
-    unsafe { boing::Control::from_ptr(std::ptr::null_mut()) }
+fn create_data_choosers_page(ui: &mut boing::Ui) -> boing::Boxx {
+    let _vbox = ui.create_vertical_box().unwrap();
+    let hbox = ui.create_horizontal_box().unwrap();
+
+    hbox
 }

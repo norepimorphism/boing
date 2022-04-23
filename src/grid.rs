@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Grid`].
     pub fn create_grid(&mut self) -> Result<Grid, crate::Error> {
-        call_libui_new_fn!(Grid, Grid,)
+        call_libui_new_fn!(Grid, uiNewGrid)
     }
 }
 

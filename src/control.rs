@@ -64,9 +64,3 @@ impl Control {
         unsafe { uiControlEnabledToUser(self.as_ptr()) == 1 }
     }
 }
-
-impl Drop for Control {
-    fn drop(&mut self) {
-        unsafe { uiControlDestroy(self.as_ptr()) }
-    }
-}

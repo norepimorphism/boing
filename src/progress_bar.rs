@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`ProgressBar`].
     pub fn create_progress_bar(&mut self) -> Result<ProgressBar, crate::Error> {
-        call_libui_new_fn!(ProgressBar, ProgressBar,)
+        call_libui_new_fn!(ProgressBar, uiNewProgressBar)
     }
 }
 

@@ -4,4 +4,14 @@
 
 use crate::prelude::*;
 
+impl Ui {
+    pub fn create_horizontal_box(&mut self) -> Result<Boxx, crate::Error> {
+        call_libui_new_fn!(Boxx, uiNewHorizontalBox)
+    }
+
+    pub fn create_vertical_box(&mut self) -> Result<Boxx, crate::Error> {
+        call_libui_new_fn!(Boxx, uiNewVerticalBox)
+    }
+}
+
 def_subcontrol_with_ptr_ty!(Boxx, uiBox);
