@@ -2,18 +2,49 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-#[macro_use]
+pub mod area;
+pub mod boks;
+pub mod button;
+pub mod checkbox;
+pub mod combobox;
 pub mod control;
+pub mod form;
+pub mod grid;
+pub mod group;
+pub mod image;
+pub mod label;
+pub mod menu;
 pub mod prelude;
+pub mod progress_bar;
+pub mod slider;
+pub mod spinbox;
+pub mod tab;
+pub mod table;
 pub mod window;
 
+pub use area::Area;
+pub use boks::Boks;
+pub use checkbox::Checkbox;
+pub use combobox::Combobox;
 pub use control::Control;
+pub use form::Form;
+pub use grid::Grid;
+pub use group::Group;
+pub use image::Image;
+pub use label::Label;
+pub use progress_bar::ProgressBar;
+pub use slider::Slider;
+pub use spinbox::Spinbox;
+pub use tab::Tab;
+pub use table::Table;
 pub use window::Window;
 
 mod ffi;
+#[macro_use]
+mod macros;
 
 use prelude::*;
-use std::{borrow::Cow, ptr};
+use std::ptr;
 
 #[derive(Debug)]
 pub enum Error {
@@ -28,6 +59,7 @@ pub struct Ui {
 }
 
 impl Ui {
+    /// Creates a new [`Ui`].
     pub fn new() -> Result<Self, Error> {
         use std::sync::Once;
 
@@ -56,29 +88,7 @@ impl Ui {
 
 impl Drop for Ui {
     fn drop(&mut self) {
-        unsafe {
-            uiQuit();
-        }
-    }
-}
-
-impl Ui {
-    pub fn create_window(
-        // TODO: Should this be `mut`?
-        &self,
-        title: Cow<str>,
-        width: u16,
-        height: u16,
-        has_menubar: bool,
-    ) -> Result<Window, Error> {
-        let title = ffi::create_c_string(title).map_err(Error::ConvertString)?;
-        let window = unsafe {
-            uiNewWindow(title.as_ptr(), width.into(), height.into(), has_menubar.into())
-        };
-
-        ffi::result_from_obj(window)
-            .map_err(|_| Error::LibuiNewWindow)
-            .map(|inner| unsafe { Window::from_ptr(inner) })
+        unsafe { uiQuit() }
     }
 }
 

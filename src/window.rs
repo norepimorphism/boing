@@ -2,8 +2,33 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-use crate::{Control, prelude::*};
+use crate::prelude::*;
 use std::{ops::{Deref, DerefMut}, ptr};
+
+impl Ui {
+    pub fn create_window(
+        &mut self,
+        title: Cow<str>,
+        width: u16,
+        height: u16,
+        has_menubar: bool,
+    ) -> Result<Window, crate::Error> {
+        let title = crate::ffi::create_c_string(title)
+            .map_err(crate::Error::ConvertString)?;
+        let window = unsafe {
+            uiNewWindow(
+                title.as_ptr(),
+                width.into(),
+                height.into(),
+                has_menubar.into(),
+            )
+        };
+
+        crate::ffi::result_from_obj(window)
+            .map_err(|_| crate::Error::LibuiNewWindow)
+            .map(|inner| unsafe { Window::from_ptr(inner) })
+    }
+}
 
 pub struct Window(Control);
 

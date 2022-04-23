@@ -2,6 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-pub(crate) use crate::{Control, Ui};
-pub(crate) use libui_ng_sys::*;
-pub(crate) use std::{borrow::Cow, os::raw::c_char};
+use crate::prelude::*;
+
+pub struct Image(*mut uiImage);
+
+impl Image {}
