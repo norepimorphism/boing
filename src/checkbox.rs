@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Checkbox(*mut uiCheckbox);
-
-impl Checkbox {}
+def_subcontrol_with_ptr_ty!(Checkbox, uiCheckbox);

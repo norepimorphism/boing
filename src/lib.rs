@@ -2,8 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#![feature(concat_idents)]
+
+#[macro_use]
+mod macros;
+
 pub mod area;
-pub mod boks;
+pub mod boxx;
 pub mod button;
 pub mod checkbox;
 pub mod combobox;
@@ -23,7 +28,7 @@ pub mod table;
 pub mod window;
 
 pub use area::Area;
-pub use boks::Boks;
+pub use boxx::Boxx;
 pub use checkbox::Checkbox;
 pub use combobox::Combobox;
 pub use control::Control;
@@ -32,6 +37,7 @@ pub use grid::Grid;
 pub use group::Group;
 pub use image::Image;
 pub use label::Label;
+pub use menu::{Menu, Item as MenuItem, ItemKind as MenuItemKind};
 pub use progress_bar::ProgressBar;
 pub use slider::Slider;
 pub use spinbox::Spinbox;
@@ -39,23 +45,17 @@ pub use tab::Tab;
 pub use table::Table;
 pub use window::Window;
 
-mod ffi;
-#[macro_use]
-mod macros;
-
 use prelude::*;
-use std::ptr;
+use std::{ffi::CStr, os::raw::c_char, ptr};
 
 #[derive(Debug)]
 pub enum Error {
     AlreadyInitedLibui,
-    LibuiInit { cause: String },
     ConvertString(std::ffi::NulError),
-    LibuiNewWindow,
-}
-
-pub struct Ui {
-    _inner: (),
+    LibuiFn {
+        name: &'static str,
+        cause: Option<String>,
+    },
 }
 
 impl Ui {
@@ -77,13 +77,32 @@ impl Ui {
         let mut init_options = uiInitOptions { Size: 0 };
         let err_msg = uiInit(ptr::addr_of_mut!(init_options));
 
-        let result = ffi::result_from_err_msg(err_msg);
+        let result = Self::result_from_err_msg(err_msg);
         if result.is_err() {
             uiFreeInitError(err_msg);
         }
 
-        result.map_err(|cause| Error::LibuiInit { cause })
+        result.map_err(|cause| Error::LibuiFn {
+            name: "uiInit",
+            cause: Some(cause),
+        })
     }
+
+    fn result_from_err_msg(err_msg: *const c_char) -> Result<(), String> {
+        if err_msg.is_null() {
+            Ok(())
+        } else {
+            let err_msg = unsafe { CStr::from_ptr(err_msg) }
+                .to_string_lossy()
+                .into_owned();
+
+            Err(err_msg)
+        }
+    }
+}
+
+pub struct Ui {
+    _inner: (),
 }
 
 impl Drop for Ui {

@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Combobox(*mut uiCombobox);
-
-impl Combobox {}
+def_subcontrol_with_ptr_ty!(Combobox, uiCombobox);

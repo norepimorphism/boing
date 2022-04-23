@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Form(*mut uiForm);
-
-impl Form {}
+def_subcontrol_with_ptr_ty!(Form, uiForm);

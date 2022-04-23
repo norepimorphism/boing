@@ -3,44 +3,33 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::{ops::{Deref, DerefMut}, ptr};
+use std::{ffi::CString, ptr};
 
 impl Ui {
+    /// Creates a new [`Window`].
     pub fn create_window(
         &mut self,
-        title: Cow<str>,
+        title: impl Into<Vec<u8>>,
         width: u16,
         height: u16,
         has_menubar: bool,
     ) -> Result<Window, crate::Error> {
-        let title = crate::ffi::create_c_string(title)
-            .map_err(crate::Error::ConvertString)?;
-        let window = unsafe {
-            uiNewWindow(
-                title.as_ptr(),
-                width.into(),
-                height.into(),
-                has_menubar.into(),
-            )
-        };
-
-        crate::ffi::result_from_obj(window)
-            .map_err(|_| crate::Error::LibuiNewWindow)
-            .map(|inner| unsafe { Window::from_ptr(inner) })
+        let title = CString::new(title).map_err(crate::Error::ConvertString)?;
+        call_libui_new_fn!(
+            Window,
+            Window,
+            title.as_ptr(),
+            width.into(),
+            height.into(),
+            has_menubar.into(),
+        )
     }
 }
 
-pub struct Window(Control);
+def_subcontrol_with_ptr_ty!(Window, uiWindow);
 
 impl Window {
-    pub unsafe fn from_ptr(inner: *mut uiWindow) -> Self {
-        Self(Control::from_ptr(inner.cast()))
-    }
-
-    pub fn as_ptr(&self) -> *mut uiWindow {
-        self.0.as_ptr().cast()
-    }
-
+    /// The title.
     pub fn title(&self) -> String {
         todo!()
     }
@@ -72,6 +61,7 @@ impl Window {
         }
     }
 
+    /// Determines if the window is fullscreen.
     pub fn is_fullscreen(&self) -> bool {
         unsafe { uiWindowFullscreen(self.as_ptr()) == 1 }
     }
@@ -80,14 +70,20 @@ impl Window {
         unsafe { uiWindowSetFullscreen(self.as_ptr(), value as i32) }
     }
 
+    /// Determines if the window is borderless.
     pub fn is_borderless(&self) -> bool {
-        unsafe { uiWindowBorderless(self.as_ptr()) == 1}
+        unsafe { uiWindowBorderless(self.as_ptr()) == 1 }
     }
 
     pub fn set_borderless(&mut self, value: bool) {
         unsafe { uiWindowSetBorderless(self.as_ptr(), value as i32) }
     }
 
+    pub fn set_child(&mut self, child: &Control) {
+        unsafe { uiWindowSetChild(self.as_ptr(), child.as_ptr()) }
+    }
+
+    /// Determines if the window is margined.
     pub fn is_margined(&self) -> bool {
         unsafe { uiWindowMargined(self.as_ptr()) == 1 }
     }
@@ -96,25 +92,12 @@ impl Window {
         unsafe { uiWindowSetMargined(self.as_ptr(), value as i32) }
     }
 
+    /// Determines if the window is resizeable.
     pub fn is_resizeable(&self) -> bool {
         unsafe { uiWindowResizeable(self.as_ptr()) == 1 }
     }
 
     pub fn set_resizeable(&mut self, value: bool) {
         unsafe { uiWindowSetResizeable(self.as_ptr(), value as i32) }
-    }
-}
-
-impl Deref for Window {
-    type Target = Control;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for Window {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
     }
 }

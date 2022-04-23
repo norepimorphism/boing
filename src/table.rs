@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Table(*mut uiTable);
-
-impl Table {}
+def_subcontrol_with_ptr_ty!(Table, uiTable);

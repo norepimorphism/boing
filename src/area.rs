@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Area(*mut uiArea);
-
-impl Area {}
+def_subcontrol_with_ptr_ty!(Area, uiArea);

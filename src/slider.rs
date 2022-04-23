@@ -4,6 +4,11 @@
 
 use crate::prelude::*;
 
-pub struct Slider(*mut uiSlider);
+impl Ui {
+    /// Creates a new [`Slider`].
+    pub fn create_slider(&mut self, min: u16, max: u16) -> Result<Slider, crate::Error> {
+        call_libui_new_fn!(Slider, Slider, min.into(), max.into())
+    }
+}
 
-impl Slider {}
+def_subcontrol_with_ptr_ty!(Slider, uiSlider);

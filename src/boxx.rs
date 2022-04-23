@@ -4,6 +4,4 @@
 
 use crate::prelude::*;
 
-pub struct Boks(*mut uiBox);
-
-impl Boks {}
+def_subcontrol_with_ptr_ty!(Boxx, uiBox);

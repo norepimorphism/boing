@@ -4,6 +4,11 @@
 
 use crate::prelude::*;
 
-pub struct ProgressBar(*mut uiProgressBar);
+impl Ui {
+    /// Creates a new [`ProgressBar`].
+    pub fn create_progress_bar(&mut self) -> Result<ProgressBar, crate::Error> {
+        call_libui_new_fn!(ProgressBar, ProgressBar,)
+    }
+}
 
-impl ProgressBar {}
+def_subcontrol_with_ptr_ty!(ProgressBar, uiProgressBar);

@@ -4,6 +4,11 @@
 
 use crate::prelude::*;
 
-pub struct Spinbox(*mut uiSpinbox);
+impl Ui {
+    /// Creates a new [`Spinbox`].
+    pub fn create_spinbox(&mut self, min: u16, max: u16) -> Result<Spinbox, crate::Error> {
+        call_libui_new_fn!(Spinbox, Spinbox, min.into(), max.into())
+    }
+}
 
-impl Spinbox {}
+def_subcontrol_with_ptr_ty!(Spinbox, uiSpinbox);
