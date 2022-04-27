@@ -4,4 +4,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol_with_ptr_ty!(Checkbox, uiCheckbox);
+def_subcontrol!(Checkbox, uiCheckbox);

@@ -4,4 +4,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol_with_ptr_ty!(Form, uiForm);
+def_subcontrol!(Form, uiForm);

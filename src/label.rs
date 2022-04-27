@@ -7,8 +7,9 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Label`].
     pub fn create_label(&mut self, text: impl Into<Vec<u8>>) -> Result<Label, crate::Error> {
-        call_libui_new_fn!(Label, uiNewLabel, make_cstring!(text).as_ptr())
+        let text = make_cstring!(text);
+        call_libui_new_fn!(self, Label, uiNewLabel, text.as_ptr())
     }
 }
 
-def_subcontrol_with_ptr_ty!(Label, uiLabel);
+def_subcontrol!(Label, uiLabel);

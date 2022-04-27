@@ -7,23 +7,26 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Tab`].
     pub fn create_tab(&mut self) -> Result<Tab, crate::Error> {
-        call_libui_new_fn!(Tab, uiNewTab)
+        call_libui_new_fn!(self, Tab, uiNewTab)
     }
 }
 
-def_subcontrol_with_ptr_ty!(Tab, uiTab);
+def_subcontrol!(Tab, uiTab);
 
 impl Tab {
     /// Appends a page.
     pub fn append_page(
         &mut self,
+        ui: &mut Ui,
         name: impl Into<Vec<u8>>,
-        control: &Control,
+        mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
+        ui.remove_control(control.deref_mut().as_ptr());
+        let name = make_cstring!(name);
         unsafe {
             uiTabAppend(
                 self.as_ptr(),
-                make_cstring!(name).as_ptr(),
+                name.as_ptr(),
                 control.as_ptr(),
             )
         };
@@ -34,14 +37,17 @@ impl Tab {
     /// Inserts a page at the given index.
     pub fn insert_page(
         &mut self,
+        ui: &mut Ui,
         name: impl Into<Vec<u8>>,
         index: u16,
-        control: &Control,
+        mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
+        ui.remove_control(control.deref_mut().as_ptr());
+        let name = make_cstring!(name);
         unsafe {
             uiTabInsertAt(
                 self.as_ptr(),
-                make_cstring!(name).as_ptr(),
+                name.as_ptr(),
                 index.into(),
                 control.as_ptr(),
             )

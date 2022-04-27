@@ -8,7 +8,7 @@ use std::os::raw::c_void;
 pub struct Control(*mut uiControl);
 
 impl Control {
-    pub unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
+    pub(in crate::ui) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
         Self(ptr)
     }
 
@@ -41,23 +41,23 @@ impl Control {
     }
 
     pub fn show(&mut self) {
-        unsafe { uiControlShow(self.as_ptr()) }
+        unsafe { uiControlShow(self.as_ptr()) };
     }
 
     pub fn hide(&mut self) {
-        unsafe { uiControlHide(self.as_ptr()) }
+        unsafe { uiControlHide(self.as_ptr()) };
     }
 
     pub fn is_enabled(&self) -> bool {
-        unsafe { uiControlEnabled(self.as_ptr()) == 1}
+        unsafe { uiControlEnabled(self.as_ptr()) == 1 }
     }
 
     pub fn enable(&mut self) {
-        unsafe { uiControlEnable(self.as_ptr()) }
+        unsafe { uiControlEnable(self.as_ptr()) };
     }
 
     pub fn disable(&mut self) {
-        unsafe { uiControlDisable(self.as_ptr()) }
+        unsafe { uiControlDisable(self.as_ptr()) };
     }
 
     pub fn is_enabled_to_user(&self) -> bool {

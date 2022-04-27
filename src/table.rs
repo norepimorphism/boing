@@ -4,4 +4,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol_with_ptr_ty!(Table, uiTable);
+def_subcontrol!(Table, uiTable);

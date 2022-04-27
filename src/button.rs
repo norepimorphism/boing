@@ -6,8 +6,9 @@ use crate::prelude::*;
 
 impl Ui {
     pub fn create_button(&mut self, text: impl Into<Vec<u8>>) -> Result<Button, crate::Error> {
-        call_libui_new_fn!(Button, uiNewButton, make_cstring!(text).as_ptr())
+        let text = make_cstring!(text);
+        call_libui_new_fn!(self, Button, uiNewButton, text.as_ptr())
     }
 }
 
-def_subcontrol_with_ptr_ty!(Button, uiButton);
+def_subcontrol!(Button, uiButton);

@@ -4,4 +4,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol_with_ptr_ty!(Combobox, uiCombobox);
+def_subcontrol!(Combobox, uiCombobox);

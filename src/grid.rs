@@ -7,8 +7,8 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Grid`].
     pub fn create_grid(&mut self) -> Result<Grid, crate::Error> {
-        call_libui_new_fn!(Grid, uiNewGrid)
+        call_libui_new_fn!(self, Grid, uiNewGrid)
     }
 }
 
-def_subcontrol_with_ptr_ty!(Grid, uiGrid);
+def_subcontrol!(Grid, uiGrid);

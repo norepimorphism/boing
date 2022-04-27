@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::ptr;
+use std::{os::raw::c_void, ptr};
 
 impl Ui {
     /// Creates a new [`Window`].
@@ -14,18 +14,43 @@ impl Ui {
         height: u16,
         has_menubar: bool,
     ) -> Result<Window, crate::Error> {
-        call_libui_new_fn!(
+        let title = make_cstring!(title);
+        let window = call_libui_new_fn!(
+            self,
             Window,
             uiNewWindow,
-            make_cstring!(title).as_ptr(),
+            title.as_ptr(),
             width.into(),
             height.into(),
             has_menubar.into(),
-        )
+        )?;
+
+        unsafe {
+            let window = window.as_ptr();
+            uiWindowOnClosing(window, Some(close_window), ptr::null_mut());
+            uiOnShouldQuit(Some(quit_ui), window.cast());
+        }
+
+        Ok(window)
     }
 }
 
-def_subcontrol_with_ptr_ty!(Window, uiWindow);
+unsafe extern "C" fn close_window(_: *mut uiWindow, _: *mut c_void) -> i32 {
+    // When the window recieves an event to close, call `uiQuit`.
+    uiQuit();
+
+    0
+}
+
+unsafe extern "C" fn quit_ui(window: *mut c_void) -> i32 {
+    // When `uiQuit` is called, destroy the main window.
+    uiControlDestroy(window.cast());
+
+    // TODO: I don't know why this returns 1, but that's what *libui*'s Control Gallery does.
+    1
+}
+
+def_subcontrol!(Window, uiWindow);
 
 impl Window {
     /// The title.
@@ -56,7 +81,7 @@ impl Window {
                 self.as_ptr(),
                 width.into(),
                 height.into(),
-            )
+            );
         }
     }
 
@@ -66,7 +91,7 @@ impl Window {
     }
 
     pub fn set_fullscreen(&mut self, value: bool) {
-        unsafe { uiWindowSetFullscreen(self.as_ptr(), value.into()) }
+        unsafe { uiWindowSetFullscreen(self.as_ptr(), value.into()) };
     }
 
     /// Determines if the window is borderless.
@@ -75,11 +100,12 @@ impl Window {
     }
 
     pub fn set_borderless(&mut self, value: bool) {
-        unsafe { uiWindowSetBorderless(self.as_ptr(), value.into()) }
+        unsafe { uiWindowSetBorderless(self.as_ptr(), value.into()) };
     }
 
-    pub fn set_child(&mut self, child: &Control) {
-        unsafe { uiWindowSetChild(self.as_ptr(), child.as_ptr()) }
+    pub fn set_child(&mut self, ui: &mut Ui, mut child: impl DerefMut<Target = Control>) {
+        ui.remove_control(child.deref_mut().as_ptr());
+        unsafe { uiWindowSetChild(self.as_ptr(), child.as_ptr()) };
     }
 
     /// Determines if the window is margined.
@@ -88,7 +114,7 @@ impl Window {
     }
 
     pub fn set_margined(&mut self, value: bool) {
-        unsafe { uiWindowSetMargined(self.as_ptr(), value.into()) }
+        unsafe { uiWindowSetMargined(self.as_ptr(), value.into()) };
     }
 
     /// Determines if the window is resizeable.
@@ -97,14 +123,6 @@ impl Window {
     }
 
     pub fn set_resizeable(&mut self, value: bool) {
-        unsafe { uiWindowSetResizeable(self.as_ptr(), value.into()) }
-    }
-}
-
-impl Drop for Window {
-    fn drop(&mut self) {
-        use std::ops::DerefMut as _;
-
-        unsafe { uiControlDestroy(self.deref_mut().as_ptr()) }
+        unsafe { uiWindowSetResizeable(self.as_ptr(), value.into()) };
     }
 }

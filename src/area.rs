@@ -4,4 +4,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol_with_ptr_ty!(Area, uiArea);
+def_subcontrol!(Area, uiArea);
