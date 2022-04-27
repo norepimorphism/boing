@@ -17,6 +17,7 @@ impl Ui {
         let title = make_cstring!(title);
         let window = call_libui_new_fn!(
             self,
+            true,
             Window,
             uiNewWindow,
             title.as_ptr(),
@@ -104,7 +105,7 @@ impl Window {
     }
 
     pub fn set_child(&mut self, ui: &mut Ui, mut child: impl DerefMut<Target = Control>) {
-        ui.remove_control(child.deref_mut().as_ptr());
+        ui.release_control(child.deref_mut().as_ptr());
         unsafe { uiWindowSetChild(self.as_ptr(), child.as_ptr()) };
     }
 

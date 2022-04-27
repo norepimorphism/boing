@@ -8,7 +8,16 @@ impl Ui {
     /// Creates a new [`Menu`].
     pub fn create_menu(&mut self, name: impl Into<Vec<u8>>) -> Result<Menu, crate::Error> {
         let name = make_cstring!(name);
-        call_libui_new_fn!(self, Menu, uiNewMenu, name.as_ptr())
+        call_libui_new_fn!(
+            self,
+            // `uiMenu`'s `Destroy` method is, by default, NULL, and `uiControlDestroy` doesn't
+            // check for NULL, so we shouldn't allow [`Ui`] to automatically destroy it when
+            // dropped.
+            false,
+            Menu,
+            uiNewMenu,
+            name.as_ptr(),
+        )
     }
 }
 

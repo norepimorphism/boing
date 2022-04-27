@@ -7,7 +7,7 @@ use std::{collections::HashSet, ffi::CStr, os::raw::c_char, ptr};
 
 impl Ui {
     /// Runs *libui*.
-    pub fn run(main: impl Fn(&mut Self)) -> Result<(), crate::Error> {
+    pub fn run(main: impl FnOnce(&mut Self)) -> Result<(), crate::Error> {
         let mut ui = Self::new()?;
         main(&mut ui);
         unsafe { uiMain() }
@@ -77,12 +77,17 @@ impl Drop for Ui {
     fn drop(&mut self) {
         // Destroy all root controls (these are probably only windows).
         for control in self.controls.iter() {
-            // Fun fact: Some controls (e.g., `uiMenu`) set `control->Destroy` to NULL.
-            // Another fun fact: `uiControlDestroy` calls `control->Destroy` *without* a NULL check,
-            // i.e., we need to perform the check ourselves or else *libui* will give us a nice
-            // SEGFAULT.
             if unsafe { (*(*control)).Destroy.is_some() } {
                 unsafe { uiControlDestroy(*control) };
+            } else {
+                eprintln!(
+                    "\
+                    [libui-ng-sys] BUG: The control @ {:#?} requested its memory to be \
+                    automatically freed when *libui-ng* quits, but its destructor is NULL. Please \
+                    consider creating an issue on the *libui-ng-sys* GitHub! Thanks! \
+                    ",
+                    *control,
+                );
             }
         }
 
@@ -91,14 +96,21 @@ impl Drop for Ui {
 }
 
 impl Ui {
-    pub(crate) unsafe fn add_control(&mut self, control: *mut uiControl) -> Control {
+    pub(crate) unsafe fn add_control(
+        &mut self,
+        control: *mut uiControl,
+        should_manage: bool,
+    ) -> Control {
         println!("adding control: {:#?}", control);
-        self.controls.insert(control);
+
+        if should_manage {
+            self.controls.insert(control);
+        }
 
         Control::from_ptr(control)
     }
 
-    pub(crate) fn remove_control(&mut self, control: *mut uiControl) {
+    pub(crate) fn release_control(&mut self, control: *mut uiControl) {
         println!("removing control: {:#?}", control);
         self.controls.remove(&control);
     }

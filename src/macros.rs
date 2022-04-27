@@ -35,12 +35,14 @@ macro_rules! def_subcontrol {
 }
 
 macro_rules! call_libui_new_fn {
-    ($ui:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)?)?) => {
+    ($ui:expr, $ui_should_manage:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)?)?) => {
         unsafe { $fn( $($($arg),*)? ).as_mut() }
             .ok_or($crate::Error::LibuiFn { name: stringify!($fn), cause: None })
             .map(|control| unsafe {
                 let control: *mut _ = control;
-                $out_ty($ui.add_control(control.cast()))
+                let control = $ui.add_control(control.cast(), $ui_should_manage);
+
+                $out_ty(control)
             })
     };
 }

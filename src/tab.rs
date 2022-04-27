@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Tab`].
     pub fn create_tab(&mut self) -> Result<Tab, crate::Error> {
-        call_libui_new_fn!(self, Tab, uiNewTab)
+        call_libui_new_fn!(self, true, Tab, uiNewTab)
     }
 }
 
@@ -21,7 +21,7 @@ impl Tab {
         name: impl Into<Vec<u8>>,
         mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
-        ui.remove_control(control.deref_mut().as_ptr());
+        ui.release_control(control.deref_mut().as_ptr());
         let name = make_cstring!(name);
         unsafe {
             uiTabAppend(
@@ -42,7 +42,7 @@ impl Tab {
         index: u16,
         mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
-        ui.remove_control(control.deref_mut().as_ptr());
+        ui.release_control(control.deref_mut().as_ptr());
         let name = make_cstring!(name);
         unsafe {
             uiTabInsertAt(

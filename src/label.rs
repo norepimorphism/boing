@@ -8,7 +8,7 @@ impl Ui {
     /// Creates a new [`Label`].
     pub fn create_label(&mut self, text: impl Into<Vec<u8>>) -> Result<Label, crate::Error> {
         let text = make_cstring!(text);
-        call_libui_new_fn!(self, Label, uiNewLabel, text.as_ptr())
+        call_libui_new_fn!(self, true, Label, uiNewLabel, text.as_ptr())
     }
 }
 

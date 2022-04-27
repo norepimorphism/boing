@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Slider`].
     pub fn create_slider(&mut self, min: u16, max: u16) -> Result<Slider, crate::Error> {
-        call_libui_new_fn!(self, Slider, uiNewSlider, min.into(), max.into())
+        call_libui_new_fn!(self, true, Slider, uiNewSlider, min.into(), max.into())
     }
 }
 

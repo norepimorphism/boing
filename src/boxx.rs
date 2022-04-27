@@ -7,12 +7,12 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new horizontal [`Boxx`].
     pub fn create_horizontal_box(&mut self) -> Result<Boxx, crate::Error> {
-        call_libui_new_fn!(self, Boxx, uiNewHorizontalBox)
+        call_libui_new_fn!(self, true, Boxx, uiNewHorizontalBox)
     }
 
     /// Creates a new vertical [`Boxx`].
     pub fn create_vertical_box(&mut self) -> Result<Boxx, crate::Error> {
-        call_libui_new_fn!(self, Boxx, uiNewVerticalBox)
+        call_libui_new_fn!(self, true, Boxx, uiNewVerticalBox)
     }
 }
 
@@ -25,7 +25,7 @@ impl Boxx {
         mut child: impl DerefMut<Target = Control>,
         can_stretch: bool,
     ) {
-        ui.remove_control(child.deref_mut().as_ptr());
+        ui.release_control(child.deref_mut().as_ptr());
         unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
     }
 

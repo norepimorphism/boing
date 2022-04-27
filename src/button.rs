@@ -7,7 +7,7 @@ use crate::prelude::*;
 impl Ui {
     pub fn create_button(&mut self, text: impl Into<Vec<u8>>) -> Result<Button, crate::Error> {
         let text = make_cstring!(text);
-        call_libui_new_fn!(self, Button, uiNewButton, text.as_ptr())
+        call_libui_new_fn!(self, true, Button, uiNewButton, text.as_ptr())
     }
 }
 
