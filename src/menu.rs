@@ -2,59 +2,28 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+pub mod item;
+
+pub use item::Item;
+
 use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Menu`].
     pub fn create_menu(&mut self, name: impl Into<Vec<u8>>) -> Result<Menu, crate::Error> {
         let name = make_cstring!(name);
-        call_libui_new_fn!(
-            self,
-            // `uiMenu`'s `Destroy` method is, by default, NULL, and `uiControlDestroy` doesn't
-            // check for NULL, so we shouldn't allow [`Ui`] to automatically destroy it when
-            // dropped.
-            false,
-            Menu,
+        call_fallible_libui_fn!(
             uiNewMenu,
             name.as_ptr(),
         )
+        .map(|menu| Menu(menu))
     }
 }
 
-def_subcontrol!(Menu, uiMenu);
+pub struct Menu(*mut uiMenu);
 
-/*
-macro_rules! impl_append_item_fn_with_name {
-    ($boing_fn:ident, $libui_fn:ident) => {
-        impl Menu {
-            pub fn $boing_fn(&mut self, name: impl Into<Vec<u8>>) -> Result<Item, $crate::Error> {
-                call_libui_new_fn!(
-                    self,
-                    Item,
-                    $libui_fn,
-                    self.as_ptr(),
-                    make_cstring!(name).as_ptr(),
-                )
-            }
-        }
-    };
+impl Menu {
+    pub fn as_ptr(&self) -> *mut uiMenu {
+        self.0
+    }
 }
-
-macro_rules! impl_append_item_fn {
-    ($boing_fn:ident, $libui_fn:ident) => {
-        impl Menu {
-            pub fn $boing_fn(&mut self) -> Result<Item, $crate::Error> {
-                call_libui_new_fn!(self, Item, $libui_fn, self.as_ptr())
-            }
-        }
-    };
-}
-
-impl_append_item_fn_with_name!(append_item, uiMenuAppendItem);
-impl_append_item_fn_with_name!(append_check_item, uiMenuAppendCheckItem);
-impl_append_item_fn!(append_quit_item, uiMenuAppendQuitItem);
-impl_append_item_fn!(append_preferences_item, uiMenuAppendPreferencesItem);
-impl_append_item_fn!(append_about_item, uiMenuAppendAboutItem);
-
-def_subcontrol!(Item, uiMenuItem);
-*/
