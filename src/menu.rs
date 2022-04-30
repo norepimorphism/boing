@@ -10,8 +10,8 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Menu`].
-    pub fn create_menu(&mut self, name: impl Into<Vec<u8>>) -> Result<Menu, crate::Error> {
-        let name = make_cstring!(name);
+    pub fn create_menu(&mut self, name: impl AsRef<str>) -> Result<Menu, crate::Error> {
+        let name = make_cstring!(name.as_ref());
         call_fallible_libui_fn!(
             uiNewMenu,
             name.as_ptr(),

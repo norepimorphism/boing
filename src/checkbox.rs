@@ -7,5 +7,33 @@ use crate::prelude::*;
 def_subcontrol!(Checkbox, uiCheckbox);
 
 impl Checkbox {
+    bind_text_fn!(
+        text,
+        raw_text,
+        text_ptr,
+        uiCheckboxText,
+    );
 
+    bind_set_text_fn!(
+        set_text,
+        text,
+        uiCheckboxSetText,
+    );
+
+    bind_callback_fn!(
+        on_toggled,
+        (),
+        uiCheckbox,
+        uiCheckboxOnToggled,
+    );
+
+    bind_bool_fn!(
+        checked,
+        uiCheckboxChecked,
+    );
+
+    bind_set_bool_fn!(
+        set_checked,
+        uiCheckboxSetChecked,
+    );
 }

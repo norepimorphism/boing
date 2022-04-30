@@ -18,11 +18,11 @@ impl Tab {
     pub fn append_page(
         &mut self,
         ui: &mut Ui,
-        name: impl Into<Vec<u8>>,
+        name: impl AsRef<str>,
         mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
         ui.release_control(control.deref_mut().as_ptr());
-        let name = make_cstring!(name);
+        let name = make_cstring!(name.as_ref());
         unsafe {
             uiTabAppend(
                 self.as_ptr(),
@@ -38,12 +38,12 @@ impl Tab {
     pub fn insert_page(
         &mut self,
         ui: &mut Ui,
-        name: impl Into<Vec<u8>>,
+        name: impl AsRef<str>,
         index: u16,
         mut control: impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
         ui.release_control(control.deref_mut().as_ptr());
-        let name = make_cstring!(name);
+        let name = make_cstring!(name.as_ref());
         unsafe {
             uiTabInsertAt(
                 self.as_ptr(),

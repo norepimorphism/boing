@@ -6,8 +6,8 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Group`].
-    pub fn create_group(&mut self, title: impl Into<Vec<u8>>) -> Result<Group, crate::Error> {
-        let title = make_cstring!(title);
+    pub fn create_group(&mut self, title: impl AsRef<str>) -> Result<Group, crate::Error> {
+        let title = make_cstring!(title.as_ref());
         call_libui_new_fn!(self, true, Group, uiNewGroup, title.as_ptr())
     }
 }

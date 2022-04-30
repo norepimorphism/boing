@@ -6,8 +6,8 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Label`].
-    pub fn create_label(&mut self, text: impl Into<Vec<u8>>) -> Result<Label, crate::Error> {
-        let text = make_cstring!(text);
+    pub fn create_label(&mut self, text: impl AsRef<str>) -> Result<Label, crate::Error> {
+        let text = make_cstring!(text.as_ref());
         call_libui_new_fn!(self, true, Label, uiNewLabel, text.as_ptr())
     }
 }
@@ -15,5 +15,16 @@ impl Ui {
 def_subcontrol!(Label, uiLabel);
 
 impl Label {
+    bind_text_fn!(
+        text,
+        raw_text,
+        text_ptr,
+        uiLabelText,
+    );
 
+    bind_set_text_fn!(
+        set_text,
+        text,
+        uiLabelSetText,
+    );
 }

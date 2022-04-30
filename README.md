@@ -9,12 +9,13 @@ A safe, lightweight wrapper over [libui-ng-sys](https://crates.io/crates/libui-n
 | `Area`        | ❌    | ❌    |
 | `UniBox`      | ❌    | ✔️    |
 | `BiBox`       | ❌    | ❌    |
-| `Checkbox`    | ❌    | ❌    |
+| `Button`      | ❌    | ✔️    |
+| `Checkbox`    | ❌    | ✔️    |
 | `Combobox`    | ❌    | ❌    |
 | `Grid`        | ❌    | ❌    |
 | `Group`       | ❌    | ❌    |
 | `Image`       | ❌    | ❌    |
-| `Label`       | ❌    | ❌    |
+| `Label`       | ❌    | ✔️    |
 | `Menu`        | ❌    | ✔️    |
 | `MenuItem`    | ❌    | ❌    |
 | `ProgressBar` | ❌    | ❌    |

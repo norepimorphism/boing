@@ -48,13 +48,15 @@ impl UniBox {
         unsafe { uiBoxDelete(self.as_ptr(), index.into()) };
     }
 
-    pub fn is_padded(&self) -> bool {
-        unsafe { uiBoxPadded(self.as_ptr()) == 1 }
-    }
+    bind_bool_fn!(
+        is_padded,
+        uiBoxPadded,
+    );
 
-    pub fn set_padded(&mut self, value: bool) {
-        unsafe { uiBoxSetPadded(self.as_ptr(), value.into()) };
-    }
+    bind_set_bool_fn!(
+        set_padded,
+        uiBoxSetPadded,
+    );
 }
 
 impl Ui {

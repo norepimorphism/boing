@@ -65,7 +65,10 @@ macro_rules! bind_callback_fn {
                 arg: A,
             }
 
-            unsafe extern "C" fn call_closure<F, A>(_: *mut $handle, data: *mut c_void) -> $out
+            unsafe extern "C" fn call_closure<F, A>(
+                _: *mut $handle,
+                data: *mut std::os::raw::c_void,
+            ) -> $out
             where
                 F: FnMut(&mut A) -> $out,
             {
@@ -83,6 +86,58 @@ macro_rules! bind_callback_fn {
                     Box::into_raw(Box::new(Data { f, arg })).cast(),
                 );
             }
+        }
+    };
+}
+
+macro_rules! bind_text_fn {
+    ($name:ident, $raw_name:ident, $name_ptr:ident, $libui_fn:expr $(, $($arg:expr),* $(,)?)?) => {
+        pub fn $name(&self) -> String {
+            self.$name_ptr().to_string_lossy().into()
+        }
+
+        pub fn $raw_name(&self) -> Result<&str, crate::Error> {
+            self.$name_ptr()
+                .to_str()
+                .map_err(crate::Error::ConvertCString)
+        }
+
+        fn $name_ptr(&self) -> &std::ffi::CStr {
+            unsafe {
+                std::ffi::CStr::from_ptr($libui_fn(
+                    $(
+                        $($arg),*
+                    )?
+                    self.as_ptr(),
+                ))
+            }
+        }
+    };
+}
+
+macro_rules! bind_set_text_fn {
+    ($name:ident, $arg:ident, $libui_fn:ident $(,)?) => {
+        pub fn $name(&mut self, $arg: impl AsRef<str>) -> Result<(), crate::Error> {
+            let $arg = make_cstring!($arg.as_ref());
+            unsafe { $libui_fn(self.as_ptr(), $arg.as_ptr()) };
+
+            Ok(())
+        }
+    };
+}
+
+macro_rules! bind_bool_fn {
+    ($name:ident, $fn:ident $(,)?) => {
+        pub fn $name(&self) -> bool {
+            unsafe { $fn(self.as_ptr()) == 1 }
+        }
+    };
+}
+
+macro_rules! bind_set_bool_fn {
+    ($name:ident, $fn:ident $(,)?) => {
+        pub fn $name(&mut self, value: bool) {
+            unsafe { $fn(self.as_ptr(), value.into()) };
         }
     };
 }
