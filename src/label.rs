@@ -16,6 +16,7 @@ def_subcontrol!(Label, uiLabel);
 
 impl Label {
     bind_text_fn!(
+        "The text displayed by this label.",
         text,
         raw_text,
         text_ptr,
@@ -23,6 +24,7 @@ impl Label {
     );
 
     bind_set_text_fn!(
+        "Sets the text displayed by this label.",
         set_text,
         text,
         uiLabelSetText,

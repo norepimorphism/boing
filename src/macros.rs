@@ -55,43 +55,48 @@ macro_rules! call_libui_new_fn {
 
 macro_rules! bind_callback_fn {
     (
-        $name:ident,
-        $fn:expr
-        $(, $($arg:expr),* )? ;
-        $out:ty,
-        $handle:ident $(,)?
-        $( : $cb_ty:ty ),*
+        $docs:literal,
+        $fn:ident,
+        $libui_fn:ident
+        $(, $($libui_arg:expr),* )? ;
+        $user_cb:ident -> $user_cb_out:ty
+        $( : $map_user_cb:expr )?,
+        $libui_cb_out:ty,
+        $self_handle:ident $(,)?
+        $( : $cb_arg:ty ),*
     ) => {
+        #[doc = $docs]
         #[allow(clippy::unused_unit)]
-        pub fn $name<F, A>(&mut self, f: F, arg: A)
+        pub fn $fn<F>(&mut self, $user_cb: F)
         where
-            F: FnMut(&mut A) -> $out + 'static,
+            F: FnMut() -> $user_cb_out + 'static,
         {
-            struct Data<F, A> {
-                f: F,
-                arg: A,
-            }
-
-            unsafe extern "C" fn call_closure<F, A>(
-                _: *mut $handle,
-                $(_: $cb_ty,)*
+            unsafe extern "C" fn callback<F>(
+                _: *mut $self_handle,
+                $(_: $cb_arg,)*
                 data: *mut std::os::raw::c_void,
-            ) -> $out
+            ) -> $libui_cb_out
             where
-                F: FnMut(&mut A) -> $out,
+                F: FnMut() -> $user_cb_out,
             {
-                let data: &mut Data<F, A> = &mut *data.cast();
-                (data.f)(&mut data.arg)
+                let $user_cb: &mut Box<F> = &mut *data.cast();
+                let result = $user_cb();
+
+                $(
+                    let result = $map_user_cb(result);
+                )?
+
+                result
             }
 
             unsafe {
-                $fn(
+                $libui_fn(
                     self.as_ptr(),
                     $(
-                        $($arg),*
+                        $($libui_arg),*
                     )?
-                    Some(call_closure::<F, A>),
-                    Box::into_raw(Box::new(Data { f, arg })).cast(),
+                    Some(callback::<F>),
+                    Box::into_raw(Box::new($user_cb)).cast(),
                 );
             }
         }
@@ -99,18 +104,29 @@ macro_rules! bind_callback_fn {
 }
 
 macro_rules! bind_text_fn {
-    ($name:ident, $raw_name:ident, $name_ptr:ident, $libui_fn:expr $(, $($arg:expr),* $(,)?)?) => {
-        pub fn $name(&self) -> String {
-            self.$name_ptr().to_string_lossy().into()
+    (
+        $docs:literal,
+        $fn:ident,
+        $raw_fn:ident,
+        $fn_ptr:ident,
+        $libui_fn:expr
+        $(, $($arg:expr),* $(,)?)?
+    ) => {
+        #[doc = $docs]
+        pub fn $fn(&self) -> String {
+            self.$fn_ptr().to_string_lossy().into()
         }
 
-        pub fn $raw_name(&self) -> Result<&str, crate::Error> {
-            self.$name_ptr()
+        #[doc = "The lossless yet fallible version of [`"]
+        #[doc = stringify!($fn)]
+        #[doc = "]`."]
+        pub fn $raw_fn(&self) -> Result<&str, crate::Error> {
+            self.$fn_ptr()
                 .to_str()
                 .map_err(crate::Error::ConvertCString)
         }
 
-        fn $name_ptr(&self) -> &std::ffi::CStr {
+        fn $fn_ptr(&self) -> &std::ffi::CStr {
             unsafe {
                 std::ffi::CStr::from_ptr($libui_fn(
                     $(
@@ -124,8 +140,9 @@ macro_rules! bind_text_fn {
 }
 
 macro_rules! bind_set_text_fn {
-    ($name:ident, $arg:ident, $libui_fn:ident $(,)?) => {
-        pub fn $name(&mut self, $arg: impl AsRef<str>) -> Result<(), crate::Error> {
+    ($docs:literal, $fn:ident, $arg:ident, $libui_fn:ident $(,)?) => {
+        #[doc = $docs]
+        pub fn $fn(&mut self, $arg: impl AsRef<str>) -> Result<(), crate::Error> {
             let $arg = make_cstring!($arg.as_ref());
             unsafe { $libui_fn(self.as_ptr(), $arg.as_ptr()) };
 
@@ -135,17 +152,19 @@ macro_rules! bind_set_text_fn {
 }
 
 macro_rules! bind_bool_fn {
-    ($name:ident, $fn:ident $(,)?) => {
-        pub fn $name(&self) -> bool {
-            unsafe { $fn(self.as_ptr()) == 1 }
+    ($docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
+        #[doc = $docs]
+        pub fn $fn(&self) -> bool {
+            unsafe { $libui_fn(self.as_ptr()) == 1 }
         }
     };
 }
 
 macro_rules! bind_set_bool_fn {
-    ($name:ident, $fn:ident $(,)?) => {
-        pub fn $name(&mut self, value: bool) {
-            unsafe { $fn(self.as_ptr(), value.into()) };
+    ($docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
+        #[doc = $docs]
+        pub fn $fn(&mut self, value: bool) {
+            unsafe { $libui_fn(self.as_ptr(), value.into()) };
         }
     };
 }

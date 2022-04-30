@@ -7,12 +7,12 @@
 use crate::prelude::*;
 
 impl Ui {
-    /// Creates a new horizontal box.
+    /// Creates a new horizontal [`UniBox`].
     pub fn create_horizontal_box(&mut self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(self, true, UniBox, uiNewHorizontalBox)
     }
 
-    /// Creates a new vertical box.
+    /// Creates a new vertical [`UniBox`].
     pub fn create_vertical_box(&mut self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(self, true, UniBox, uiNewVerticalBox)
     }
@@ -49,11 +49,13 @@ impl UniBox {
     }
 
     bind_bool_fn!(
+        "Determines if this box is padded.",
         is_padded,
         uiBoxPadded,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this box is padded.",
         set_padded,
         uiBoxSetPadded,
     );

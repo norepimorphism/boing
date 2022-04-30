@@ -10,9 +10,9 @@ macro_rules! impl_append_item_fn_with_name {
         impl Menu {
             pub fn $boing_fn(
                 &mut self,
-                name: impl Into<Vec<u8>>,
+                name: impl AsRef<str>,
             ) -> Result<Item, $crate::Error> {
-                let name = make_cstring!(name);
+                let name = make_cstring!(name.as_ref());
                 call_fallible_libui_fn!(
                     $libui_fn,
                     self.as_ptr(),
@@ -53,19 +53,23 @@ impl Item {
     }
 
     bind_callback_fn!(
+        "Sets a callback for when this item is clicked.",
         on_clicked,
         uiMenuItemOnClicked;
+        f -> (),
         (),
         uiMenuItem,
         : *mut uiWindow
     );
 
     bind_bool_fn!(
+        "Determines if this item is checked.",
         is_checked,
         uiMenuItemChecked,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this item is checked.",
         set_checked,
         uiMenuItemSetChecked,
     );

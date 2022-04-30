@@ -15,8 +15,10 @@ def_subcontrol!(Spinbox, uiSpinbox);
 
 impl Spinbox {
     bind_callback_fn!(
+        "Sets a callback for when this spinbox changes.",
         on_changed,
         uiSpinboxOnChanged;
+        f -> (),
         (),
         uiSpinbox,
     );

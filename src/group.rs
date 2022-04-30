@@ -16,6 +16,7 @@ def_subcontrol!(Group, uiGroup);
 
 impl Group {
     bind_text_fn!(
+        "The title of this group.",
         title,
         raw_title,
         title_ptr,
@@ -23,6 +24,7 @@ impl Group {
     );
 
     bind_set_text_fn!(
+        "Sets the title of this group.",
         set_title,
         title,
         uiGroupSetTitle,
@@ -34,11 +36,13 @@ impl Group {
     }
 
     bind_bool_fn!(
+        "Determines if this group has margins.",
         is_margined,
         uiGroupMargined,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this group has margins.",
         set_margined,
         uiGroupSetMargined,
     );

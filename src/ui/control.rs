@@ -97,6 +97,7 @@ impl Control {
     }
 
     bind_bool_fn!(
+        "Determines if this control is visible.",
         is_visible,
         uiControlVisible,
     );
@@ -110,6 +111,7 @@ impl Control {
     }
 
     bind_bool_fn!(
+        "Determines if this control is enabled.",
         is_enabled,
         uiControlEnabled,
     );
@@ -123,6 +125,7 @@ impl Control {
     }
 
     bind_bool_fn!(
+        "Determines if this control is enabled to the user.",
         is_enabled_to_user,
         uiControlEnabledToUser,
     );

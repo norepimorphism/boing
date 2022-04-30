@@ -15,6 +15,7 @@ def_subcontrol!(Button, uiButton);
 
 impl Button {
     bind_text_fn!(
+        "The text displayed within this button.",
         text,
         raw_text,
         text_ptr,
@@ -22,14 +23,17 @@ impl Button {
     );
 
     bind_set_text_fn!(
+        "Sets the text displayed within this button.",
         set_text,
         text,
         uiButtonSetText,
     );
 
     bind_callback_fn!(
+        "Sets a callback for when this button is clicked.",
         on_clicked,
         uiButtonOnClicked;
+        f -> (),
         (),
         uiButton,
     );

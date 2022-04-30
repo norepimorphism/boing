@@ -15,18 +15,22 @@ def_subcontrol!(Slider, uiSlider);
 
 impl Slider {
     bind_bool_fn!(
+        "Determines if this slider has a tooltip.",
         has_tooltip,
         uiSliderHasToolTip,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this slider has a tooltip.",
         set_has_tooltip,
         uiSliderSetHasToolTip,
     );
 
     bind_callback_fn!(
+        "Sets a callback for when this slider changes.",
         on_changed,
         uiSliderOnChanged;
+        f -> (),
         (),
         uiSlider,
     );

@@ -24,23 +24,25 @@ fn setup_menus(ui: &mut boing::Ui) {
 
 fn setup_file_menu(ui: &mut boing::Ui) {
     let mut menu = ui.create_menu("File").unwrap();
-    let _ = menu.append_item("Open").unwrap();
-    let _ = menu.append_item("Open Folder...").unwrap();
-    let _ = menu.append_item("Save").unwrap();
-    let _ = menu.append_quit_item().unwrap();
+    menu.append_item("Open").unwrap();
+    menu.append_item("Open Folder...").unwrap();
+    menu.append_separator();
+    menu.append_item("Save").unwrap();
+    menu.append_item("Save As...").unwrap();
+    menu.append_quit_item().unwrap();
 }
 
 fn setup_edit_menu(ui: &mut boing::Ui) {
     let mut menu = ui.create_menu("Edit").unwrap();
-    let _ = menu.append_check_item("Checkable").unwrap();
-    let _ = menu.append_item("Disabled").unwrap();
-    let _ = menu.append_preferences_item();
+    menu.append_check_item("Checkable").unwrap();
+    menu.append_item("Disabled").unwrap();
+    menu.append_preferences_item().unwrap();
 }
 
 fn setup_help_menu(ui: &mut boing::Ui) {
-    let mut menu = ui.create_menu("Get Started").unwrap();
-    let _ = menu.append_item("Help").unwrap();
-    let _ = menu.append_about_item();
+    let mut menu = ui.create_menu("Help").unwrap();
+    menu.append_item("Documentation").unwrap();
+    menu.append_about_item().unwrap();
 }
 
 fn create_window(ui: &mut boing::Ui) -> boing::Window {

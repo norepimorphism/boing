@@ -28,10 +28,31 @@ impl Ui {
         )?;
 
         if should_quit_on_close {
+            unsafe extern "C" fn on_closing(_: *mut uiWindow, _: *mut c_void) -> i32 {
+                // When the window recieves an event to close, call `uiQuit`.
+                uiQuit();
+
+                0
+            }
+
+            unsafe extern "C" fn on_should_quit(_: *mut c_void) -> i32 {
+                // TODO: I don't know why this returns 1, but that's what *libui*'s Control Gallery
+                // does.
+                1
+            }
+
             unsafe {
                 let window = window.as_ptr();
-                uiWindowOnClosing(window, Some(close_window), ptr::null_mut());
-                uiOnShouldQuit(Some(quit_ui), ptr::null_mut());
+                uiWindowOnClosing(window, Some(on_closing), ptr::null_mut());
+                uiOnShouldQuit(Some(on_should_quit), ptr::null_mut());
+            }
+        } else {
+            unsafe extern "C" fn on_closing(_: *mut uiWindow, _: *mut c_void) -> i32 {
+                0
+            }
+
+            unsafe {
+                uiWindowOnClosing(window.as_ptr(), Some(on_closing), ptr::null_mut());
             }
         }
 
@@ -39,22 +60,11 @@ impl Ui {
     }
 }
 
-unsafe extern "C" fn close_window(_: *mut uiWindow, _: *mut c_void) -> i32 {
-    // When the window recieves an event to close, call `uiQuit`.
-    uiQuit();
-
-    0
-}
-
-unsafe extern "C" fn quit_ui(_: *mut c_void) -> i32 {
-    // TODO: I don't know why this returns 1, but that's what *libui*'s Control Gallery does.
-    1
-}
-
 def_subcontrol!(Window, uiWindow);
 
 impl Window {
     bind_text_fn!(
+        "The title of this window.",
         title,
         raw_title,
         title_ptr,
@@ -62,6 +72,7 @@ impl Window {
     );
 
     bind_set_text_fn!(
+        "Sets the title of this window.",
         set_title,
         title,
         uiWindowSetTitle,
@@ -91,35 +102,44 @@ impl Window {
     }
 
     bind_callback_fn!(
+        "Sets a callback for when the content size of this window changes.",
         on_content_size_changed,
         uiWindowOnContentSizeChanged;
+        f -> (),
         (),
         uiWindow,
     );
 
     bind_callback_fn!(
+        "Sets a callback for when this window is requested to close.",
         on_closing,
         uiWindowOnClosing;
+        should_close -> bool
+        : |it: bool| { i32::from(it) },
         i32,
         uiWindow,
     );
 
     bind_bool_fn!(
+        "Determines if this window is fullscreen.",
         is_fullscreen,
         uiWindowFullscreen,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this window is fullscreen.",
         set_fullscreen,
         uiWindowSetFullscreen,
     );
 
     bind_bool_fn!(
+        "Determines if this window is borderless.",
         is_borderless,
         uiWindowBorderless,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this window is borderless.",
         set_borderless,
         uiWindowSetBorderless,
     );
@@ -130,21 +150,25 @@ impl Window {
     }
 
     bind_bool_fn!(
+        "Determines if this window has margins.",
         is_margined,
         uiWindowMargined,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this window has margins.",
         set_margined,
         uiWindowSetMargined,
     );
 
     bind_bool_fn!(
+        "Determines if this window is resizeable.",
         is_resizeable,
         uiWindowResizeable,
     );
 
     bind_set_bool_fn!(
+        "Sets whether or not this window is resizeable.",
         set_resizeable,
         uiWindowSetResizeable,
     );
