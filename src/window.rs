@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::{os::raw::c_void, ptr};
+use std::{ffi::CStr, os::raw::c_void, ptr};
 
 impl Ui {
     /// Creates a new [`Window`].
@@ -13,6 +13,7 @@ impl Ui {
         width: u16,
         height: u16,
         has_menubar: bool,
+        should_quit_on_close: bool,
     ) -> Result<Window, crate::Error> {
         let title = make_cstring!(title);
         let window = call_libui_new_fn!(
@@ -26,10 +27,12 @@ impl Ui {
             has_menubar.into(),
         )?;
 
-        unsafe {
-            let window = window.as_ptr();
-            uiWindowOnClosing(window, Some(close_window), ptr::null_mut());
-            uiOnShouldQuit(Some(quit_ui), window.cast());
+        if should_quit_on_close {
+            unsafe {
+                let window = window.as_ptr();
+                uiWindowOnClosing(window, Some(close_window), ptr::null_mut());
+                uiOnShouldQuit(Some(quit_ui), ptr::null_mut());
+            }
         }
 
         Ok(window)
@@ -43,10 +46,7 @@ unsafe extern "C" fn close_window(_: *mut uiWindow, _: *mut c_void) -> i32 {
     0
 }
 
-unsafe extern "C" fn quit_ui(window: *mut c_void) -> i32 {
-    // When `uiQuit` is called, destroy the main window.
-    uiControlDestroy(window.cast());
-
+unsafe extern "C" fn quit_ui(_: *mut c_void) -> i32 {
     // TODO: I don't know why this returns 1, but that's what *libui*'s Control Gallery does.
     1
 }
@@ -54,13 +54,26 @@ unsafe extern "C" fn quit_ui(window: *mut c_void) -> i32 {
 def_subcontrol!(Window, uiWindow);
 
 impl Window {
-    /// The title.
-    pub fn title(&self) -> String {
-        todo!()
+    fn title_ptr(&self) -> &CStr {
+        unsafe { CStr::from_ptr(uiWindowTitle(self.as_ptr())) }
     }
 
-    pub fn set_title(&mut self, _title: ()) {
-        todo!()
+    pub fn raw_title(&self) -> Result<&str, crate::Error> {
+        self.title_ptr()
+            .to_str()
+            .map_err(crate::Error::ConvertCString)
+    }
+
+    /// The title.
+    pub fn title(&self) -> String {
+        self.title_ptr().to_string_lossy().into()
+    }
+
+    pub fn set_title(&mut self, title: impl AsRef<str>) -> Result<(), crate::Error> {
+        let title = make_cstring!(title.as_ref());
+        unsafe { uiWindowSetTitle(self.as_ptr(), title.as_ptr()) };
+
+        Ok(())
     }
 
     pub fn content_size(&self) -> (i32, i32) {
@@ -85,6 +98,20 @@ impl Window {
             );
         }
     }
+
+    bind_callback_fn!(
+        on_content_size_changed,
+        (),
+        uiWindow,
+        uiWindowOnContentSizeChanged,
+    );
+
+    bind_callback_fn!(
+        on_closing,
+        i32,
+        uiWindow,
+        uiWindowOnClosing,
+    );
 
     /// Determines if the window is fullscreen.
     pub fn is_fullscreen(&self) -> bool {

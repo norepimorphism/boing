@@ -5,3 +5,7 @@
 use crate::prelude::*;
 
 def_subcontrol!(Checkbox, uiCheckbox);
+
+impl Checkbox {
+
+}

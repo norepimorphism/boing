@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 use crate::prelude::*;
 use super::Menu;
 
@@ -8,10 +12,11 @@ macro_rules! impl_append_item_fn_with_name {
                 &mut self,
                 name: impl Into<Vec<u8>>,
             ) -> Result<Item, $crate::Error> {
+                let name = make_cstring!(name);
                 call_fallible_libui_fn!(
                     $libui_fn,
                     self.as_ptr(),
-                    make_cstring!(name).as_ptr(),
+                    name.as_ptr(),
                 )
                 .map(|ptr| Item::from_ptr(ptr))
             }
@@ -40,36 +45,8 @@ pub struct Item(*mut uiMenuItem);
 
 impl Item {
     pub(super) fn from_ptr(ptr: *mut uiMenuItem) -> Self {
-        let item = Self(ptr);
-
-        // #[cfg(target_os = "windows")]
-        // item.apply_rounded_corners();
-
-        item
+        Self(ptr)
     }
-
-    /*
-    #[cfg(target_os = "windows")]
-    fn apply_rounded_corners(&self) {
-        use std::{mem, ptr};
-        use winapi::{um::dwmapi, shared::minwindef::DWORD};
-
-        // <https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute>
-        const DWMWA_WINDOW_CORNER_PREFERENCE: DWORD = 33;
-        // <https://docs.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwm_window_corner_preference>
-        const DWMWCP_ROUND: DWORD = 2;
-
-        let pref = DWMWCP_ROUND;
-        unsafe {
-            dwmapi::DwmSetWindowAttribute(
-                handle.cast(),
-                DWMWA_WINDOW_CORNER_PREFERENCE,
-                ptr::addr_of!(pref).cast(),
-                mem::size_of_val(&pref) as u32,
-            );
-        }
-    }
-    */
 
     fn as_ptr(&self) -> *mut uiMenuItem {
         self.0

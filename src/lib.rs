@@ -2,13 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+#![allow(non_upper_case_globals)]
 #![feature(concat_idents)]
 
 #[macro_use]
 mod macros;
 
 pub mod area;
-pub mod boxx;
+pub mod box_;
 pub mod button;
 pub mod checkbox;
 pub mod combobox;
@@ -28,7 +29,7 @@ pub mod ui;
 pub mod window;
 
 pub use area::Area;
-pub use boxx::Boxx;
+pub use box_::{BiBox, UniBox};
 pub use checkbox::Checkbox;
 pub use combobox::Combobox;
 pub use form::Form;
@@ -48,7 +49,8 @@ pub use window::Window;
 #[derive(Debug)]
 pub enum Error {
     AlreadyInitedLibui,
-    ConvertString(std::ffi::NulError),
+    ConvertCString(std::str::Utf8Error),
+    ConvertRustString(std::ffi::NulError),
     LibuiFn {
         name: &'static str,
         cause: Option<String>,

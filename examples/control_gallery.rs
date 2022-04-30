@@ -25,20 +25,20 @@ fn setup_menus(ui: &mut boing::Ui) {
 fn setup_file_menu(ui: &mut boing::Ui) {
     let mut menu = ui.create_menu("File").unwrap();
     let _ = menu.append_item("Open").unwrap();
-    let _ = menu.append_item("Open Folder").unwrap();
+    let _ = menu.append_item("Open Folder...").unwrap();
     let _ = menu.append_item("Save").unwrap();
     let _ = menu.append_quit_item().unwrap();
 }
 
 fn setup_edit_menu(ui: &mut boing::Ui) {
     let mut menu = ui.create_menu("Edit").unwrap();
-    let _ = menu.append_check_item("Checkable Item").unwrap();
-    let _ = menu.append_item("Disabled Item").unwrap();
+    let _ = menu.append_check_item("Checkable").unwrap();
+    let _ = menu.append_item("Disabled").unwrap();
     let _ = menu.append_preferences_item();
 }
 
 fn setup_help_menu(ui: &mut boing::Ui) {
-    let mut menu = ui.create_menu("Help").unwrap();
+    let mut menu = ui.create_menu("Get Started").unwrap();
     let _ = menu.append_item("Help").unwrap();
     let _ = menu.append_about_item();
 }
@@ -48,6 +48,7 @@ fn create_window(ui: &mut boing::Ui) -> boing::Window {
         "libui Control Gallery",
         640,
         480,
+        true,
         true,
     )
     .unwrap();
@@ -72,7 +73,7 @@ fn create_tab(ui: &mut boing::Ui) -> boing::Tab {
     tab
 }
 
-fn create_basic_controls_page(ui: &mut boing::Ui) -> boing::Boxx {
+fn create_basic_controls_page(ui: &mut boing::Ui) -> boing::UniBox {
     static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
 
     let mut hbox = ui.create_horizontal_box().unwrap();
@@ -91,7 +92,7 @@ fn create_basic_controls_page(ui: &mut boing::Ui) -> boing::Boxx {
     vbox
 }
 
-fn create_numbers_n_lists_page(ui: &mut boing::Ui) -> boing::Boxx {
+fn create_numbers_n_lists_page(ui: &mut boing::Ui) -> boing::UniBox {
     let mut hbox = ui.create_horizontal_box().unwrap();
 
     let numbers = create_numbers_group(ui);
@@ -112,7 +113,7 @@ fn create_numbers_group(ui: &mut boing::Ui) -> boing::Group {
     group
 }
 
-fn create_numbers_vbox(ui: &mut boing::Ui) -> boing::Boxx {
+fn create_numbers_vbox(ui: &mut boing::Ui) -> boing::UniBox {
     let mut vbox = ui.create_vertical_box().unwrap();
 
     let spinbox = ui.create_spinbox(0, 100).unwrap();
@@ -140,11 +141,11 @@ fn create_lists_group(ui: &mut boing::Ui) -> boing::Group {
     group
 }
 
-fn create_lists_vbox(ui: &mut boing::Ui) -> boing::Boxx {
+fn create_lists_vbox(ui: &mut boing::Ui) -> boing::UniBox {
     ui.create_vertical_box().unwrap()
 }
 
-fn create_data_choosers_page(ui: &mut boing::Ui) -> boing::Boxx {
+fn create_data_choosers_page(ui: &mut boing::Ui) -> boing::UniBox {
     let _vbox = ui.create_vertical_box().unwrap();
     let hbox = ui.create_horizontal_box().unwrap();
 

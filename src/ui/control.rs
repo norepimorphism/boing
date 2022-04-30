@@ -5,10 +5,11 @@
 use crate::prelude::*;
 use std::os::raw::c_void;
 
+#[derive(Eq, Hash, PartialEq)]
 pub struct Control(*mut uiControl);
 
 impl Control {
-    pub(in crate::ui) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
+    pub(super) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
         Self(ptr)
     }
 
@@ -22,8 +23,67 @@ impl Control {
         }
     }
 
-    fn type_id(&self) -> u32 {
-        unsafe { (*self.0).Signature }
+    pub fn type_id(&self) -> TypeId {
+        TypeId::new(unsafe { (*self.0).TypeSignature })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TypeId {
+    Area,
+    UniBox,
+    Button,
+    Checkbox,
+    ColorButton,
+    Combobox,
+    DateTimePicker,
+    EditableCombobox,
+    FormEntry,
+    FontButton,
+    Form,
+    Grid,
+    Group,
+    Label,
+    MultilineFormEntry,
+    ProgressBar,
+    RadioButtons,
+    Separator,
+    Slider,
+    Spinbox,
+    Tab,
+    Table,
+    Window,
+    Unknown(u32),
+}
+
+impl TypeId {
+    fn new(sig: u32) -> Self {
+        match sig {
+            uiAreaSignature => Self::Area,
+            uiBoxSignature => Self::UniBox,
+            uiButtonSignature => Self::Button,
+            uiCheckboxSignature => Self::Checkbox,
+            uiColorButtonSignature => Self::ColorButton,
+            uiComboboxSignature => Self::Combobox,
+            uiDateTimePickerSignature => Self::DateTimePicker,
+            uiEditableComboboxSignature => Self::EditableCombobox,
+            uiEntrySignature => Self::FormEntry,
+            uiFontButtonSignature => Self::FontButton,
+            uiFormSignature => Self::Form,
+            uiGridSignature => Self::Grid,
+            uiGroupSignature => Self::Group,
+            uiLabelSignature => Self::Label,
+            uiMultilineEntrySignature => Self::MultilineFormEntry,
+            uiProgressBarSignature => Self::ProgressBar,
+            uiRadioButtonsSignature => Self::RadioButtons,
+            uiSeparatorSignature => Self::Separator,
+            uiSliderSignature => Self::Slider,
+            uiSpinboxSignature => Self::Spinbox,
+            uiTabSignature => Self::Tab,
+            uiTableSignature => Self::Table,
+            uiWindowSignature => Self::Window,
+            _ => Self::Unknown(sig),
+        }
     }
 }
 

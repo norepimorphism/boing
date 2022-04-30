@@ -70,24 +70,34 @@ impl Ui {
 }
 
 pub struct Ui {
-    controls: HashSet<*mut uiControl>,
+    controls: HashSet<Control>,
 }
 
 impl Drop for Ui {
     fn drop(&mut self) {
         // Destroy all root controls (these are probably only windows).
         for control in self.controls.iter() {
-            if unsafe { (*(*control)).Destroy.is_some() } {
-                unsafe { uiControlDestroy(*control) };
-            } else {
-                eprintln!(
-                    "\
-                    [libui-ng-sys] BUG: The control @ {:#?} requested its memory to be \
-                    automatically freed when *libui-ng* quits, but its destructor is NULL. Please \
-                    consider creating an issue on the *libui-ng-sys* GitHub! Thanks! \
-                    ",
-                    *control,
-                );
+            let control_ptr = control.as_ptr();
+
+            unsafe {
+                if (*control_ptr).Destroy.is_some() {
+                    println!(
+                        "Destroying: {:#?} ({:#?})",
+                        control.as_ptr(),
+                        control.type_id(),
+                    );
+                    uiControlDestroy(control_ptr);
+                } else {
+                    // TODO: Move this to control creation so that errors are caught earlier.
+                    eprintln!(
+                        "\
+                        [libui-ng-sys] BUG: The control @ {:#?} requested its memory to be \
+                        automatically freed when *libui-ng* quits, but its destructor is NULL. \
+                        Please consider creating an issue on the *libui-ng-sys* GitHub! Thanks! \
+                        ",
+                        control_ptr,
+                    );
+                }
             }
         }
 
@@ -101,17 +111,18 @@ impl Ui {
         control: *mut uiControl,
         should_manage: bool,
     ) -> Control {
-        println!("adding control: {:#?}", control);
-
+        let control = Control::from_ptr(control);
         if should_manage {
+            let control: Control = std::mem::transmute_copy(&control);
+            println!("Adding: {:#?} ({:#?})", control.as_ptr(), control.type_id());
             self.controls.insert(control);
         }
 
-        Control::from_ptr(control)
+        control
     }
 
     pub(crate) fn release_control(&mut self, control: *mut uiControl) {
-        println!("removing control: {:#?}", control);
+        let control = unsafe { Control::from_ptr(control) };
         self.controls.remove(&control);
     }
 }

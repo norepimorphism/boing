@@ -3,13 +3,13 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 macro_rules! make_cstring {
-    ($contents:expr) => {
-        std::ffi::CString::new($contents).map_err($crate::Error::ConvertString)?
+    ($contents:expr $(,)?) => {
+        std::ffi::CString::new($contents).map_err($crate::Error::ConvertRustString)?
     };
 }
 
 macro_rules! def_subcontrol {
-    ($ty:ident, $ptr_ty:ident) => {
+    ($ty:ident, $ptr_ty:ident $(,)?) => {
         pub struct $ty($crate::Control);
 
         impl $ty {
@@ -50,5 +50,39 @@ macro_rules! call_libui_new_fn {
 
                 $out_ty(control)
             })
+    };
+}
+
+macro_rules! bind_callback_fn {
+    ($name:ident, $out:ty, $handle:ident, $fn:expr $(, $($arg:expr),* $(,)?)?) => {
+        #[allow(clippy::unused_unit)]
+        pub fn $name<F, A>(&mut self, f: F, arg: A)
+        where
+            F: FnMut(&mut A) -> $out + 'static,
+        {
+            struct Data<F, A> {
+                f: F,
+                arg: A,
+            }
+
+            unsafe extern "C" fn call_closure<F, A>(_: *mut $handle, data: *mut c_void) -> $out
+            where
+                F: FnMut(&mut A) -> $out,
+            {
+                let data: &mut Data<F, A> = &mut *data.cast();
+                (data.f)(&mut data.arg)
+            }
+
+            unsafe {
+                $fn(
+                    self.as_ptr(),
+                    $(
+                        $($arg),*
+                    )?
+                    Some(call_closure::<F, A>),
+                    Box::into_raw(Box::new(Data { f, arg })).cast(),
+                );
+            }
+        }
     };
 }

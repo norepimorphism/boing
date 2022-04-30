@@ -13,3 +13,7 @@ impl Ui {
 }
 
 def_subcontrol!(Label, uiLabel);
+
+impl Label {
+
+}

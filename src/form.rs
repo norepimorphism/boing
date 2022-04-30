@@ -5,3 +5,7 @@
 use crate::prelude::*;
 
 def_subcontrol!(Form, uiForm);
+
+impl Form {
+
+}

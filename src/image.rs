@@ -12,3 +12,7 @@ impl Ui {
 }
 
 def_subcontrol!(Image, uiImage);
+
+impl Image {
+
+}
