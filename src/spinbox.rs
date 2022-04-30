@@ -12,3 +12,12 @@ impl Ui {
 }
 
 def_subcontrol!(Spinbox, uiSpinbox);
+
+impl Spinbox {
+    bind_callback_fn!(
+        on_changed,
+        uiSpinboxOnChanged;
+        (),
+        uiSpinbox,
+    );
+}

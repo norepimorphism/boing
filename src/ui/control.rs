@@ -96,9 +96,10 @@ impl Control {
         unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
     }
 
-    pub fn is_visible(&self) -> bool {
-        unsafe { uiControlVisible(self.as_ptr()) == 1 }
-    }
+    bind_bool_fn!(
+        is_visible,
+        uiControlVisible,
+    );
 
     pub fn show(&mut self) {
         unsafe { uiControlShow(self.as_ptr()) };
@@ -108,9 +109,10 @@ impl Control {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
-    pub fn is_enabled(&self) -> bool {
-        unsafe { uiControlEnabled(self.as_ptr()) == 1 }
-    }
+    bind_bool_fn!(
+        is_enabled,
+        uiControlEnabled,
+    );
 
     pub fn enable(&mut self) {
         unsafe { uiControlEnable(self.as_ptr()) };
@@ -120,7 +122,8 @@ impl Control {
         unsafe { uiControlDisable(self.as_ptr()) };
     }
 
-    pub fn is_enabled_to_user(&self) -> bool {
-        unsafe { uiControlEnabledToUser(self.as_ptr()) == 1 }
-    }
+    bind_bool_fn!(
+        is_enabled_to_user,
+        uiControlEnabledToUser,
+    );
 }

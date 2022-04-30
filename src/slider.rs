@@ -12,3 +12,22 @@ impl Ui {
 }
 
 def_subcontrol!(Slider, uiSlider);
+
+impl Slider {
+    bind_bool_fn!(
+        has_tooltip,
+        uiSliderHasToolTip,
+    );
+
+    bind_set_bool_fn!(
+        set_has_tooltip,
+        uiSliderSetHasToolTip,
+    );
+
+    bind_callback_fn!(
+        on_changed,
+        uiSliderOnChanged;
+        (),
+        uiSlider,
+    );
+}

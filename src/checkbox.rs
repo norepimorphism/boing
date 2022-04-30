@@ -22,9 +22,9 @@ impl Checkbox {
 
     bind_callback_fn!(
         on_toggled,
+        uiCheckboxOnToggled;
         (),
         uiCheckbox,
-        uiCheckboxOnToggled,
     );
 
     bind_bool_fn!(

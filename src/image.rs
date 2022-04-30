@@ -13,6 +13,24 @@ impl Ui {
 
 def_subcontrol!(Image, uiImage);
 
-impl Image {
+#[repr(C)]
+pub struct Pixel {
+    pub r: u8,
+    pub b: u8,
+    pub g: u8,
+    pub a: u8,
+}
 
+impl Image {
+    pub fn append(&mut self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
+        unsafe {
+            uiImageAppend(
+                self.as_ptr(),
+                pixels.as_mut_ptr().cast(),
+                width.into(),
+                height.into(),
+                byte_stride.into(),
+            );
+        }
+    }
 }

@@ -15,8 +15,31 @@ impl Ui {
 def_subcontrol!(Group, uiGroup);
 
 impl Group {
+    bind_text_fn!(
+        title,
+        raw_title,
+        title_ptr,
+        uiGroupTitle,
+    );
+
+    bind_set_text_fn!(
+        set_title,
+        title,
+        uiGroupSetTitle,
+    );
+
     pub fn set_child(&mut self, ui: &mut Ui, mut child: impl DerefMut<Target = Control>) {
         ui.release_control(child.deref_mut().as_ptr());
         unsafe { uiGroupSetChild(self.as_ptr(), child.as_ptr()) };
     }
+
+    bind_bool_fn!(
+        is_margined,
+        uiGroupMargined,
+    );
+
+    bind_set_bool_fn!(
+        set_margined,
+        uiGroupSetMargined,
+    );
 }

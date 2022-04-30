@@ -54,7 +54,14 @@ macro_rules! call_libui_new_fn {
 }
 
 macro_rules! bind_callback_fn {
-    ($name:ident, $out:ty, $handle:ident, $fn:expr $(, $($arg:expr),* $(,)?)?) => {
+    (
+        $name:ident,
+        $fn:expr
+        $(, $($arg:expr),* )? ;
+        $out:ty,
+        $handle:ident $(,)?
+        $( : $cb_ty:ty ),*
+    ) => {
         #[allow(clippy::unused_unit)]
         pub fn $name<F, A>(&mut self, f: F, arg: A)
         where
@@ -67,6 +74,7 @@ macro_rules! bind_callback_fn {
 
             unsafe extern "C" fn call_closure<F, A>(
                 _: *mut $handle,
+                $(_: $cb_ty,)*
                 data: *mut std::os::raw::c_void,
             ) -> $out
             where

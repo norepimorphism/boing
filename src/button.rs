@@ -29,8 +29,8 @@ impl Button {
 
     bind_callback_fn!(
         on_clicked,
+        uiButtonOnClicked;
         (),
         uiButton,
-        uiButtonOnClicked,
     );
 }

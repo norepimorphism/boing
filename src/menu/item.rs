@@ -51,4 +51,22 @@ impl Item {
     fn as_ptr(&self) -> *mut uiMenuItem {
         self.0
     }
+
+    bind_callback_fn!(
+        on_clicked,
+        uiMenuItemOnClicked;
+        (),
+        uiMenuItem,
+        : *mut uiWindow
+    );
+
+    bind_bool_fn!(
+        is_checked,
+        uiMenuItemChecked,
+    );
+
+    bind_set_bool_fn!(
+        set_checked,
+        uiMenuItemSetChecked,
+    );
 }

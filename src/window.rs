@@ -92,16 +92,16 @@ impl Window {
 
     bind_callback_fn!(
         on_content_size_changed,
+        uiWindowOnContentSizeChanged;
         (),
         uiWindow,
-        uiWindowOnContentSizeChanged,
     );
 
     bind_callback_fn!(
         on_closing,
+        uiWindowOnClosing;
         i32,
         uiWindow,
-        uiWindowOnClosing,
     );
 
     bind_bool_fn!(
@@ -149,3 +149,31 @@ impl Window {
         uiWindowSetResizeable,
     );
 }
+
+macro_rules! impl_present_fn {
+    ($name:ident, $fn:ident $(,)?) => {
+        impl Window {
+            pub fn $name(
+                &self,
+                title: impl AsRef<str>,
+                desc: impl AsRef<str>,
+            ) -> Result<(), crate::Error> {
+                let title = make_cstring!(title.as_ref());
+                let desc = make_cstring!(desc.as_ref());
+                unsafe { $fn(self.as_ptr(), title.as_ptr(), desc.as_ptr()) };
+
+                Ok(())
+            }
+        }
+    };
+}
+
+impl_present_fn!(
+    present_alert,
+    uiMsgBox,
+);
+
+impl_present_fn!(
+    present_error,
+    uiMsgBoxError,
+);

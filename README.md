@@ -13,8 +13,8 @@ A safe, lightweight wrapper over [libui-ng-sys](https://crates.io/crates/libui-n
 | `Checkbox`    | ❌    | ✔️    |
 | `Combobox`    | ❌    | ❌    |
 | `Grid`        | ❌    | ❌    |
-| `Group`       | ❌    | ❌    |
-| `Image`       | ❌    | ❌    |
+| `Group`       | ❌    | ✔️    |
+| `Image`       | ❌    | ✔️    |
 | `Label`       | ❌    | ✔️    |
 | `Menu`        | ❌    | ✔️    |
 | `MenuItem`    | ❌    | ❌    |
