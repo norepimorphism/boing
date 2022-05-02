@@ -33,10 +33,11 @@ impl Button {
 
     bind_callback_fn!(
         "Sets a callback for when this button is clicked.",
+        Button,
         on_clicked,
         uiButtonOnClicked;
         f -> (),
         (),
-        uiButton,
+        button: uiButton,
     );
 }

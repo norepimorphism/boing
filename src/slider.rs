@@ -30,10 +30,11 @@ impl Slider {
 
     bind_callback_fn!(
         "Sets a callback for when this slider changes.",
+        Slider,
         on_changed,
         uiSliderOnChanged;
         f -> (),
         (),
-        uiSlider,
+        slider: uiSlider,
     );
 }

@@ -30,8 +30,6 @@ macro_rules! impl_downcast {
     ($($type:ident)*) => {
         impl Control {
             pub fn downcast(self) -> Option<Downcasted> {
-                use $crate::ui::FromControl as _;
-
                 match self.type_id() {
                     $(
                         TypeId::$type => unsafe {

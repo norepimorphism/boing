@@ -54,12 +54,13 @@ impl Item {
 
     bind_callback_fn!(
         "Sets a callback for when this item is clicked.",
+        Item,
         on_clicked,
         uiMenuItemOnClicked;
         f -> (),
         (),
-        uiMenuItem,
-        : *mut uiWindow
+        item: uiMenuItem,
+        : *mut uiWindow,
     );
 
     bind_bool_fn!(

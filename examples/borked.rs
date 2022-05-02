@@ -1,6 +1,6 @@
 fn main() {
     boing::Ui::run(|ui| {
-        let mut menu = ui.create_menu("File").unwrap();
+        let menu = ui.create_menu("File").unwrap();
         menu.append_quit_item().unwrap();
 
         let window = ui.create_window("XXX", 200, 200, true, true).unwrap();

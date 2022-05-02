@@ -13,13 +13,15 @@ macro_rules! def_subcontrol {
         #[derive(Debug, Eq, PartialEq)]
         pub struct $ty($crate::Control);
 
-        impl $crate::ui::FromControl for $ty {
-            unsafe fn from_control(control: $crate::Control) -> Self {
+        impl $ty {
+            pub(crate) unsafe fn from_ptr(ptr: *mut $ptr_ty) -> Self {
+                Self::from_control(Control::from_ptr(ptr.cast()))
+            }
+
+            pub(crate) unsafe fn from_control(control: Control) -> Self {
                 Self(control)
             }
-        }
 
-        impl $ty {
             pub fn as_ptr(&self) -> *mut $ptr_ty {
                 self.0.as_ptr().cast()
             }
@@ -42,20 +44,17 @@ macro_rules! def_subcontrol {
 }
 
 macro_rules! call_fallible_libui_fn {
-    ($fn:ident $(, $($arg:expr),* $(,)?)?) => {
+    ($fn:ident $(, $($arg:expr),* $(,)? )?) => {
         unsafe { $fn( $($($arg),*)? ).as_mut() }
             .ok_or($crate::Error::LibuiFn { name: stringify!($fn), cause: None })
     };
 }
 
 macro_rules! call_libui_new_fn {
-    ($ui:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)?)?) => {
+    ($ui:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)? )?) => {
         call_fallible_libui_fn!($fn, $($($arg),*)?)
-            .map(|control| unsafe {
-                let control: *mut _ = control;
-                let control = $ui.add_control::<$out_ty>(control.cast());
-
-                control
+            .map(|ptr| unsafe {
+                $ui.alloc_object($out_ty::from_ptr(ptr))
             })
     };
 }
@@ -63,38 +62,51 @@ macro_rules! call_libui_new_fn {
 macro_rules! bind_callback_fn {
     (
         $docs:literal,
+        $self_ty:ty,
         $fn:ident,
         $libui_fn:ident
         $(, $($libui_arg:expr),* )? ;
         $user_cb:ident -> $user_cb_out:ty
-        $( : $map_user_cb:expr )?,
+        $(, : $map_user_cb:expr )?,
         $libui_cb_out:ty,
-        $self_handle:ident $(,)?
-        $( : $cb_arg:ty ),*
+        $self_handle_name:ident : $self_handle_ty:ident
+        $(,  : $cb_arg:ty ),* $(,)?
     ) => {
         #[doc = $docs]
         #[allow(clippy::unused_unit)]
-        pub fn $fn<F>(&mut self, $user_cb: F)
+        pub fn $fn<'ui, F>(&self, ui: &'ui Ui, $user_cb: F)
         where
-            F: FnMut() -> $user_cb_out + 'static,
+            F: FnMut(&mut $self_ty) -> $user_cb_out + 'ui,
         {
             unsafe extern "C" fn callback<F>(
-                _: *mut $self_handle,
+                $self_handle_name: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                data: *mut std::os::raw::c_void,
+                cb_data: *mut std::os::raw::c_void,
             ) -> $libui_cb_out
             where
-                F: FnMut() -> $user_cb_out,
+                F: FnMut(&mut $self_ty) -> $user_cb_out,
             {
-                let $user_cb: &mut Box<F> = &mut *data.cast();
-                let result = $user_cb();
+                debug_assert!(!cb_data.is_null());
+                let cb_data: &mut Data<'_, F> = &mut *(cb_data.cast());
 
+                let mut $self_handle_name = std::mem::ManuallyDrop::new(<$self_ty>::from_ptr(cb_data.$self_handle_name));
+                let result = (cb_data.$user_cb)(&mut $self_handle_name);
                 $(
                     let result = $map_user_cb(result);
                 )?
 
                 result
             }
+
+            struct Data<'ui, F> {
+                $user_cb: bumpalo::boxed::Box<'ui, F>,
+                $self_handle_name: *mut $self_handle_ty,
+            }
+
+            let data = Data {
+                $user_cb: ui.alloc_box($user_cb),
+                $self_handle_name: self.as_ptr(),
+            };
 
             unsafe {
                 $libui_fn(
@@ -103,7 +115,7 @@ macro_rules! bind_callback_fn {
                         $($libui_arg),*
                     )?
                     Some(callback::<F>),
-                    Box::into_raw(Box::new($user_cb)).cast(),
+                    std::ptr::addr_of_mut!(*ui.alloc_object(data)).cast(),
                 );
             }
         }

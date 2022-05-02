@@ -2,18 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-pub mod control;
-
-pub use control::Control;
-
 use crate::prelude::*;
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
 impl Ui {
     /// Runs *libui*.
-    pub fn run(mut main: impl FnMut(&mut Self)) -> Result<(), crate::Error> {
-        let mut ui = Self::new()?;
-        main(&mut ui);
+    pub fn run(mut main: impl FnMut(&Self)) -> Result<(), crate::Error> {
+        let ui = Self::new()?;
+        main(&ui);
         unsafe { uiMain() };
 
         Ok(())
@@ -31,7 +27,7 @@ impl Ui {
         });
 
         result.map(|_| Self {
-            controls: bumpalo::Bump::new(),
+            bump: bumpalo::Bump::new(),
         })
     }
 
@@ -74,21 +70,16 @@ impl Ui {
 }
 
 pub struct Ui {
-    controls: bumpalo::Bump,
-}
-
-pub(crate) trait FromControl {
-    unsafe fn from_control(control: Control) -> Self;
+    bump: bumpalo::Bump,
 }
 
 impl Ui {
-    pub(crate) unsafe fn add_control<T: FromControl>(
-        &self,
-        control: *mut uiControl,
-    ) -> &mut T {
-        let control = Control::from_ptr(control);
-        println!("[+] {:#?} ({:#?})", control.as_ptr(), control.type_id());
+    pub(crate) fn alloc_box<T>(&self, object: T) -> bumpalo::boxed::Box<T> {
+        bumpalo::boxed::Box::new_in(object, &self.bump)
+    }
 
-        self.controls.alloc(T::from_control(control))
+    #[allow(clippy::mut_from_ref)]
+    pub(crate) fn alloc_object<T>(&self, object: T) -> &mut T {
+        self.bump.alloc(object)
     }
 }

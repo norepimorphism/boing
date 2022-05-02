@@ -47,7 +47,7 @@ impl Ui {
             }
         } else {
             unsafe extern "C" fn on_closing(_: *mut uiWindow, _: *mut c_void) -> i32 {
-                false.into()
+                true.into()
             }
 
             unsafe {
@@ -102,21 +102,23 @@ impl Window {
 
     bind_callback_fn!(
         "Sets a callback for when the content size of this window changes.",
+        Window,
         on_content_size_changed,
         uiWindowOnContentSizeChanged;
         f -> (),
         (),
-        uiWindow,
+        window: uiWindow,
     );
 
     bind_callback_fn!(
         "Sets a callback for when this window is requested to close.",
+        Window,
         on_closing,
         uiWindowOnClosing;
-        should_close -> bool
+        should_close -> bool,
         : |it: bool| { i32::from(it) },
         i32,
-        uiWindow,
+        window: uiWindow,
     );
 
     bind_bool_fn!(

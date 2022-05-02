@@ -26,11 +26,12 @@ impl Checkbox {
 
     bind_callback_fn!(
         "Sets a callback for when this checkbox is toggled.",
+        Checkbox,
         on_toggled,
         uiCheckboxOnToggled;
         f -> (),
         (),
-        uiCheckbox,
+        checkbox: uiCheckbox,
     );
 
     bind_bool_fn!(

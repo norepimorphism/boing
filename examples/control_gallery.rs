@@ -1,8 +1,10 @@
 //! A clone of the libui example program "libui Control Gallery".
 
-#![windows_subsystem = "windows"]
+// #![windows_subsystem = "windows"]
 
 fn main() {
+    setup_tracing();
+
     boing::Ui::run(|ui| {
         setup_menus(ui);
 
@@ -16,6 +18,10 @@ fn main() {
     .unwrap();
 }
 
+fn setup_tracing() {
+    tracing_subscriber::fmt().init();
+}
+
 fn setup_menus(ui: &boing::Ui) {
     setup_file_menu(ui);
     setup_edit_menu(ui);
@@ -23,7 +29,7 @@ fn setup_menus(ui: &boing::Ui) {
 }
 
 fn setup_file_menu(ui: &boing::Ui) {
-    let mut menu = ui.create_menu("File").unwrap();
+    let menu = ui.create_menu("File").unwrap();
     menu.append_item("Open").unwrap();
     menu.append_item("Open Folder...").unwrap();
     menu.append_separator();
@@ -33,16 +39,34 @@ fn setup_file_menu(ui: &boing::Ui) {
 }
 
 fn setup_edit_menu(ui: &boing::Ui) {
-    let mut menu = ui.create_menu("Edit").unwrap();
+    let menu = ui.create_menu("Edit").unwrap();
     menu.append_check_item("Checkable").unwrap();
     menu.append_item("Disabled").unwrap();
     menu.append_preferences_item().unwrap();
 }
 
 fn setup_help_menu(ui: &boing::Ui) {
-    let mut menu = ui.create_menu("Help").unwrap();
+    let menu = ui.create_menu("Help").unwrap();
     menu.append_item("Documentation").unwrap();
-    menu.append_about_item().unwrap();
+
+    let about_item = menu.append_about_item().unwrap();
+    about_item.on_clicked(
+        ui,
+        |item| {
+            item.set_checked(true);
+
+            let window = ui.create_window(
+                "About libui Control Gallery",
+                320,
+                240,
+                false,
+                false,
+            )
+            .unwrap();
+
+            window.show();
+        },
+    );
 }
 
 fn create_window(ui: &boing::Ui) -> &mut boing::Window {
