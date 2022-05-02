@@ -31,7 +31,7 @@ impl Checkbox {
         uiCheckboxOnToggled;
         f -> (),
         (),
-        checkbox: uiCheckbox,
+        : uiCheckbox,
     );
 
     bind_bool_fn!(

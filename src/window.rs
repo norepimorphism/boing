@@ -107,7 +107,7 @@ impl Window {
         uiWindowOnContentSizeChanged;
         f -> (),
         (),
-        window: uiWindow,
+        : uiWindow,
     );
 
     bind_callback_fn!(
@@ -118,7 +118,7 @@ impl Window {
         should_close -> bool,
         : |it: bool| { i32::from(it) },
         i32,
-        window: uiWindow,
+        : uiWindow,
     );
 
     bind_bool_fn!(

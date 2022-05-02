@@ -14,7 +14,7 @@ macro_rules! def_subcontrol {
         pub struct $ty($crate::Control);
 
         impl $ty {
-            pub(crate) unsafe fn from_ptr(ptr: *mut $ptr_ty) -> Self {
+            unsafe fn from_ptr(ptr: *mut $ptr_ty) -> Self {
                 Self::from_control(Control::from_ptr(ptr.cast()))
             }
 
@@ -69,7 +69,7 @@ macro_rules! bind_callback_fn {
         $user_cb:ident -> $user_cb_out:ty
         $(, : $map_user_cb:expr )?,
         $libui_cb_out:ty,
-        $self_handle_name:ident : $self_handle_ty:ident
+        : $self_handle_ty:ident
         $(,  : $cb_arg:ty ),* $(,)?
     ) => {
         #[doc = $docs]
@@ -79,34 +79,24 @@ macro_rules! bind_callback_fn {
             F: FnMut(&mut $self_ty) -> $user_cb_out + 'ui,
         {
             unsafe extern "C" fn callback<F>(
-                $self_handle_name: *mut libui_ng_sys::$self_handle_ty,
+                handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                cb_data: *mut std::os::raw::c_void,
+                user_cb: *mut std::os::raw::c_void,
             ) -> $libui_cb_out
             where
                 F: FnMut(&mut $self_ty) -> $user_cb_out,
             {
-                debug_assert!(!cb_data.is_null());
-                let cb_data: &mut Data<'_, F> = &mut *(cb_data.cast());
+                debug_assert!(!user_cb.is_null());
+                let user_cb: &mut F = &mut *user_cb.cast();
 
-                let mut $self_handle_name = std::mem::ManuallyDrop::new(<$self_ty>::from_ptr(cb_data.$self_handle_name));
-                let result = (cb_data.$user_cb)(&mut $self_handle_name);
+                let mut handle = std::mem::ManuallyDrop::new(<$self_ty>::from_ptr(handle));
+                let result = user_cb(&mut handle);
                 $(
                     let result = $map_user_cb(result);
                 )?
 
                 result
             }
-
-            struct Data<'ui, F> {
-                $user_cb: bumpalo::boxed::Box<'ui, F>,
-                $self_handle_name: *mut $self_handle_ty,
-            }
-
-            let data = Data {
-                $user_cb: ui.alloc_box($user_cb),
-                $self_handle_name: self.as_ptr(),
-            };
 
             unsafe {
                 $libui_fn(
@@ -115,7 +105,7 @@ macro_rules! bind_callback_fn {
                         $($libui_arg),*
                     )?
                     Some(callback::<F>),
-                    std::ptr::addr_of_mut!(*ui.alloc_object(data)).cast(),
+                    std::ptr::addr_of_mut!(*ui.alloc_object($user_cb)).cast(),
                 );
             }
         }

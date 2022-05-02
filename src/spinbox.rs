@@ -23,6 +23,6 @@ impl Spinbox {
         uiSpinboxOnChanged;
         f -> (),
         (),
-        spinbox: uiSpinbox,
+        : uiSpinbox,
     );
 }

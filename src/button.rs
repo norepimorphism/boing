@@ -38,6 +38,6 @@ impl Button {
         uiButtonOnClicked;
         f -> (),
         (),
-        button: uiButton,
+        : uiButton,
     );
 }

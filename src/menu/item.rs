@@ -59,7 +59,7 @@ impl Item {
         uiMenuItemOnClicked;
         f -> (),
         (),
-        item: uiMenuItem,
+        : uiMenuItem,
         : *mut uiWindow,
     );
 

@@ -74,10 +74,6 @@ pub struct Ui {
 }
 
 impl Ui {
-    pub(crate) fn alloc_box<T>(&self, object: T) -> bumpalo::boxed::Box<T> {
-        bumpalo::boxed::Box::new_in(object, &self.bump)
-    }
-
     #[allow(clippy::mut_from_ref)]
     pub(crate) fn alloc_object<T>(&self, object: T) -> &mut T {
         self.bump.alloc(object)

@@ -35,6 +35,6 @@ impl Slider {
         uiSliderOnChanged;
         f -> (),
         (),
-        slider: uiSlider,
+        : uiSlider,
     );
 }
