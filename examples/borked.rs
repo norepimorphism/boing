@@ -10,11 +10,10 @@ fn main() {
         hbox.set_padded(true);
         vbox.set_padded(true);
 
-        let button = ui.create_button("XXX").unwrap();
-        vbox.append_child(button, true);
+        vbox.append_child(ui.create_button("XXX").unwrap(), true);
         hbox.append_child(vbox, true);
-
         window.set_child(hbox);
+
         window.show();
     })
     .unwrap();

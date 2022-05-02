@@ -9,10 +9,7 @@ fn main() {
         setup_menus(ui);
 
         let window = create_window(ui);
-
-        let tab = create_tab(ui);
-        window.set_child(tab);
-
+        window.set_child(create_tab(ui));
         window.show();
     })
     .unwrap();
@@ -63,7 +60,6 @@ fn setup_help_menu(ui: &boing::Ui) {
                 false,
             )
             .unwrap();
-
             window.show();
         },
     );
@@ -78,7 +74,6 @@ fn create_window(ui: &boing::Ui) -> &mut boing::Window {
         true,
     )
     .unwrap();
-
     window.set_margined(true);
 
     window
@@ -86,15 +81,9 @@ fn create_window(ui: &boing::Ui) -> &mut boing::Window {
 
 fn create_tab(ui: &boing::Ui) -> &mut boing::Tab {
     let tab = ui.create_tab().unwrap();
-
-    let basic_controls = create_basic_controls_page(ui);
-    let _ = tab.append_page("Basic Controls", basic_controls).unwrap();
-
-    let numbers_n_lists = create_numbers_n_lists_page(ui);
-    let _ = tab.append_page("Numbers and Lists", numbers_n_lists).unwrap();
-
-    let data_choosers = create_data_choosers_page(ui);
-    let _ = tab.append_page("Data Choosers", data_choosers).unwrap();
+    tab.append_page("Basic Controls", create_basic_controls_page(ui)).unwrap();
+    tab.append_page("Numbers and Lists", create_numbers_n_lists_page(ui)).unwrap();
+    tab.append_page("Data Choosers", create_data_choosers_page(ui)).unwrap();
 
     tab
 }
@@ -104,52 +93,36 @@ fn create_basic_controls_page(ui: &boing::Ui) -> &mut boing::UniBox {
 
     let hbox = ui.create_horizontal_box().unwrap();
     hbox.set_padded(true);
-
-    let button = ui.create_button("Button").unwrap();
-    hbox.append_child(button, true);
+    hbox.append_child(ui.create_button("Button").unwrap(), true);
 
     let vbox = ui.create_vertical_box().unwrap();
     vbox.set_padded(true);
     vbox.append_child(hbox, false);
-
-    let label = ui.create_label(LABEL_TEXT).unwrap();
-    vbox.append_child(label, false);
+    vbox.append_child(ui.create_label(LABEL_TEXT).unwrap(), false);
 
     vbox
 }
 
 fn create_numbers_n_lists_page(ui: &boing::Ui) -> &mut boing::UniBox {
     let hbox = ui.create_horizontal_box().unwrap();
-
-    let numbers = create_numbers_group(ui);
-    hbox.append_child(numbers, true);
-
-    let lists = create_lists_group(ui);
-    hbox.append_child(lists, true);
+    hbox.append_child(create_numbers_group(ui), true);
+    hbox.append_child(create_lists_group(ui), true);
 
     hbox
 }
 
 fn create_numbers_group(ui: &boing::Ui) -> &mut boing::Group {
     let group = ui.create_group("Numbers").unwrap();
-
-    let vbox = create_numbers_vbox(ui);
-    group.set_child(vbox);
+    group.set_child(create_numbers_vbox(ui));
 
     group
 }
 
 fn create_numbers_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
     let vbox = ui.create_vertical_box().unwrap();
-
-    let spinbox = ui.create_spinbox(0, 100).unwrap();
-    vbox.append_child(spinbox, false);
-
-    let slider = ui.create_slider(0, 100).unwrap();
-    vbox.append_child(slider, false);
-
-    let progress_bar = ui.create_progress_bar().unwrap();
-    vbox.append_child(progress_bar, false);
+    vbox.append_child(ui.create_spinbox(0, 100).unwrap(), false);
+    vbox.append_child(ui.create_slider(0, 100).unwrap(), false);
+    vbox.append_child(ui.create_progress_bar().unwrap(), false);
 
     let loading_bar = ui.create_progress_bar().unwrap();
     loading_bar.set_value(-1);
@@ -160,9 +133,7 @@ fn create_numbers_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
 
 fn create_lists_group(ui: &boing::Ui) -> &mut boing::Group {
     let group = ui.create_group("Lists").unwrap();
-
-    let vbox = create_lists_vbox(ui);
-    group.set_child(vbox);
+    group.set_child(create_lists_vbox(ui));
 
     group
 }
