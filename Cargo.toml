@@ -5,8 +5,19 @@
 [package]
 name = "boing"
 version = "0.1.0"
+authors = ["norepimorphism <norepi@protonmail.com>"]
 edition = "2021"
+description = "A safe, lightweight wrapper over libui-ng-sys"
+repository = "https://github.com/norepimorphism/boing"
 license = "MPL-2.0"
+categories = ["api-bindings", "gui"]
+
+[package.metadata.docs.rs]
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-pc-windows-msvc",
+    "aarch64-apple-darwin",
+]
 
 [dependencies]
 bumpalo = { version = "3.9", features = ["boxed"] }
