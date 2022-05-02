@@ -9,4 +9,5 @@ edition = "2021"
 license = "MPL-2.0"
 
 [dependencies]
+bumpalo = "3.9"
 libui-ng-sys = "0.4"

@@ -2,13 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! [`Group`].
+
 use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Group`].
-    pub fn create_group(&mut self, title: impl AsRef<str>) -> Result<Group, crate::Error> {
+    pub fn create_group(&self, title: impl AsRef<str>) -> Result<&mut Group, crate::Error> {
         let title = make_cstring!(title.as_ref());
-        call_libui_new_fn!(self, true, Group, uiNewGroup, title.as_ptr())
+        call_libui_new_fn!(self, Group, uiNewGroup, title.as_ptr())
     }
 }
 
@@ -30,10 +32,12 @@ impl Group {
         uiGroupSetTitle,
     );
 
-    pub fn set_child(&mut self, ui: &mut Ui, mut child: impl DerefMut<Target = Control>) {
-        ui.release_control(child.deref_mut().as_ptr());
-        unsafe { uiGroupSetChild(self.as_ptr(), child.as_ptr()) };
-    }
+    bind_add_child_fn!(
+        "Sets the child control of this group.",
+        set_child,
+        child,
+        uiGroupSetChild,
+    );
 
     bind_bool_fn!(
         "Determines if this group has margins.",

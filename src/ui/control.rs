@@ -5,55 +5,91 @@
 use crate::prelude::*;
 use std::os::raw::c_void;
 
-#[derive(Eq, Hash, PartialEq)]
+#[derive(Debug, Eq, Hash, PartialEq)]
 pub struct Control(*mut uiControl);
 
 impl Control {
     pub(super) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
         Self(ptr)
     }
+}
 
-    pub fn as_ptr(&self) -> *mut uiControl {
-        self.0
-    }
-
-    pub fn downcast(&self) -> Option<Downcasted> {
-        match self.type_id() {
-            _ => todo!(),
-        }
-    }
-
-    pub fn type_id(&self) -> TypeId {
-        TypeId::new(unsafe { (*self.0).TypeSignature })
+impl Drop for Control {
+    fn drop(&mut self) {
+        unsafe { uiControlDestroy(self.as_ptr()) };
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum TypeId {
-    Area,
-    UniBox,
-    Button,
-    Checkbox,
-    ColorButton,
-    Combobox,
-    DateTimePicker,
-    EditableCombobox,
-    FormEntry,
-    FontButton,
-    Form,
-    Grid,
-    Group,
-    Label,
-    MultilineFormEntry,
-    ProgressBar,
-    RadioButtons,
-    Separator,
-    Slider,
-    Spinbox,
-    Tab,
-    Table,
-    Window,
-    Unknown(u32),
+impl Control {
+    pub fn as_ptr(&self) -> *mut uiControl {
+        self.0
+    }
+}
+
+macro_rules! impl_downcast {
+    ($($type:ident)*) => {
+        impl Control {
+            pub fn downcast(self) -> Option<Downcasted> {
+                use $crate::ui::FromControl as _;
+
+                match self.type_id() {
+                    $(
+                        TypeId::$type => unsafe {
+                            Some(Downcasted::$type($crate::$type::from_control(self)))
+                        }
+                    )*
+                    TypeId::Unknown(_) => None,
+                }
+            }
+        }
+
+        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+        pub enum TypeId {
+            $(
+                $type,
+            )*
+            Unknown(u32),
+        }
+
+        #[derive(Debug, Eq, PartialEq)]
+        pub enum Downcasted {
+            $(
+                $type($crate::$type),
+            )*
+        }
+    };
+}
+
+impl_downcast! {
+    Area
+    UniBox
+    Button
+    Checkbox
+    // ColorButton
+    Combobox
+    // DateTimePicker
+    // EditableCombobox
+    // FormEntry
+    // FontButton
+    Form
+    Grid
+    Group
+    Label
+    // MultilineFormEntry
+    ProgressBar
+    // RadioButtons
+    // Separator
+    Slider
+    Spinbox
+    Tab
+    Table
+    Window
+}
+
+impl Control {
+    pub fn type_id(&self) -> TypeId {
+        TypeId::new(unsafe { (*self.0).TypeSignature })
+    }
 }
 
 impl TypeId {
@@ -63,20 +99,20 @@ impl TypeId {
             uiBoxSignature => Self::UniBox,
             uiButtonSignature => Self::Button,
             uiCheckboxSignature => Self::Checkbox,
-            uiColorButtonSignature => Self::ColorButton,
+            // uiColorButtonSignature => Self::ColorButton,
             uiComboboxSignature => Self::Combobox,
-            uiDateTimePickerSignature => Self::DateTimePicker,
-            uiEditableComboboxSignature => Self::EditableCombobox,
-            uiEntrySignature => Self::FormEntry,
-            uiFontButtonSignature => Self::FontButton,
+            // uiDateTimePickerSignature => Self::DateTimePicker,
+            // uiEditableComboboxSignature => Self::EditableCombobox,
+            // uiEntrySignature => Self::FormEntry,
+            // uiFontButtonSignature => Self::FontButton,
             uiFormSignature => Self::Form,
             uiGridSignature => Self::Grid,
             uiGroupSignature => Self::Group,
             uiLabelSignature => Self::Label,
-            uiMultilineEntrySignature => Self::MultilineFormEntry,
+            // uiMultilineEntrySignature => Self::MultilineFormEntry,
             uiProgressBarSignature => Self::ProgressBar,
-            uiRadioButtonsSignature => Self::RadioButtons,
-            uiSeparatorSignature => Self::Separator,
+            // uiRadioButtonsSignature => Self::RadioButtons,
+            // uiSeparatorSignature => Self::Separator,
             uiSliderSignature => Self::Slider,
             uiSpinboxSignature => Self::Spinbox,
             uiTabSignature => Self::Tab,
@@ -85,10 +121,6 @@ impl TypeId {
             _ => Self::Unknown(sig),
         }
     }
-}
-
-pub enum Downcasted {
-    Window(crate::Window),
 }
 
 impl Control {

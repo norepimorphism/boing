@@ -2,12 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! [`Button`].
+
 use crate::prelude::*;
 
 impl Ui {
-    pub fn create_button(&mut self, text: impl AsRef<str>) -> Result<Button, crate::Error> {
+    pub fn create_button(&self, text: impl AsRef<str>) -> Result<&mut Button, crate::Error> {
         let text = make_cstring!(text.as_ref());
-        call_libui_new_fn!(self, true, Button, uiNewButton, text.as_ptr())
+        call_libui_new_fn!(self, Button, uiNewButton, text.as_ptr())
     }
 }
 

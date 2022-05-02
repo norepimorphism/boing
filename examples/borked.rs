@@ -3,15 +3,18 @@ fn main() {
         let mut menu = ui.create_menu("File").unwrap();
         menu.append_quit_item().unwrap();
 
-        let mut window = ui.create_window("XXX", 200, 200, true, true).unwrap();
+        let window = ui.create_window("XXX", 200, 200, true, true).unwrap();
 
-        let mut bibox = ui.create_biaxial_box(true).unwrap();
-        bibox.set_padded(true);
+        let hbox = ui.create_horizontal_box().unwrap();
+        let vbox = ui.create_vertical_box().unwrap();
+        hbox.set_padded(true);
+        vbox.set_padded(true);
 
         let button = ui.create_button("XXX").unwrap();
-        bibox.append_child(ui, button);
+        vbox.append_child(button, true);
+        hbox.append_child(vbox, true);
 
-        window.set_child(ui, bibox);
+        window.set_child(hbox);
         window.show();
     })
     .unwrap();

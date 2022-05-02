@@ -2,23 +2,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! [`Window`].
+
 use crate::prelude::*;
 use std::{os::raw::c_void, ptr};
 
 impl Ui {
     /// Creates a new [`Window`].
     pub fn create_window(
-        &mut self,
+        &self,
         title: impl AsRef<str>,
         width: u16,
         height: u16,
         has_menubar: bool,
         should_quit_on_close: bool,
-    ) -> Result<Window, crate::Error> {
+    ) -> Result<&mut Window, crate::Error> {
         let title = make_cstring!(title.as_ref());
         let window = call_libui_new_fn!(
             self,
-            true,
             Window,
             uiNewWindow,
             title.as_ptr(),
@@ -32,13 +33,11 @@ impl Ui {
                 // When the window recieves an event to close, call `uiQuit`.
                 uiQuit();
 
-                0
+                false.into()
             }
 
             unsafe extern "C" fn on_should_quit(_: *mut c_void) -> i32 {
-                // TODO: I don't know why this returns 1, but that's what *libui*'s Control Gallery
-                // does.
-                1
+                true.into()
             }
 
             unsafe {
@@ -48,7 +47,7 @@ impl Ui {
             }
         } else {
             unsafe extern "C" fn on_closing(_: *mut uiWindow, _: *mut c_void) -> i32 {
-                0
+                false.into()
             }
 
             unsafe {
@@ -144,10 +143,12 @@ impl Window {
         uiWindowSetBorderless,
     );
 
-    pub fn set_child(&mut self, ui: &mut Ui, mut child: impl DerefMut<Target = Control>) {
-        ui.release_control(child.deref_mut().as_ptr());
-        unsafe { uiWindowSetChild(self.as_ptr(), child.as_ptr()) };
-    }
+    bind_add_child_fn!(
+        "Sets the child control of this window.",
+        set_child,
+        child,
+        uiWindowSetChild,
+    );
 
     bind_bool_fn!(
         "Determines if this window has margins.",

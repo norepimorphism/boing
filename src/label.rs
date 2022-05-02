@@ -2,13 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! [`Label`].
+
 use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Label`].
-    pub fn create_label(&mut self, text: impl AsRef<str>) -> Result<Label, crate::Error> {
+    pub fn create_label(&self, text: impl AsRef<str>) -> Result<&mut Label, crate::Error> {
         let text = make_cstring!(text.as_ref());
-        call_libui_new_fn!(self, true, Label, uiNewLabel, text.as_ptr())
+        call_libui_new_fn!(self, Label, uiNewLabel, text.as_ptr())
     }
 }
 

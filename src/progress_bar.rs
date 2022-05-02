@@ -2,12 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! [`ProgressBar`].
+
 use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`ProgressBar`].
-    pub fn create_progress_bar(&mut self) -> Result<ProgressBar, crate::Error> {
-        call_libui_new_fn!(self, true, ProgressBar, uiNewProgressBar)
+    pub fn create_progress_bar(&self) -> Result<&mut ProgressBar, crate::Error> {
+        call_libui_new_fn!(self, ProgressBar, uiNewProgressBar)
     }
 }
 

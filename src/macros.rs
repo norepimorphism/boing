@@ -10,7 +10,14 @@ macro_rules! make_cstring {
 
 macro_rules! def_subcontrol {
     ($ty:ident, $ptr_ty:ident $(,)?) => {
+        #[derive(Debug, Eq, PartialEq)]
         pub struct $ty($crate::Control);
+
+        impl $crate::ui::FromControl for $ty {
+            unsafe fn from_control(control: $crate::Control) -> Self {
+                Self(control)
+            }
+        }
 
         impl $ty {
             pub fn as_ptr(&self) -> *mut $ptr_ty {
@@ -42,13 +49,13 @@ macro_rules! call_fallible_libui_fn {
 }
 
 macro_rules! call_libui_new_fn {
-    ($ui:expr, $ui_should_manage:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)?)?) => {
+    ($ui:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)?)?) => {
         call_fallible_libui_fn!($fn, $($($arg),*)?)
             .map(|control| unsafe {
                 let control: *mut _ = control;
-                let control = $ui.add_control(control.cast(), $ui_should_manage);
+                let control = $ui.add_control::<$out_ty>(control.cast());
 
-                $out_ty(control)
+                control
             })
     };
 }
@@ -120,10 +127,10 @@ macro_rules! bind_text_fn {
         #[doc = "The lossless yet fallible version of [`"]
         #[doc = stringify!($fn)]
         #[doc = "]`."]
-        pub fn $raw_fn(&self) -> Result<&str, crate::Error> {
+        pub fn $raw_fn(&self) -> Result<&str, $crate::Error> {
             self.$fn_ptr()
                 .to_str()
-                .map_err(crate::Error::ConvertCString)
+                .map_err($crate::Error::ConvertCString)
         }
 
         fn $fn_ptr(&self) -> &std::ffi::CStr {
@@ -139,10 +146,20 @@ macro_rules! bind_text_fn {
     };
 }
 
+macro_rules! bind_add_child_fn {
+    ($docs:literal, $fn:ident, $child:ident, $libui_fn:ident $(,)?) => {
+        #[doc = $docs]
+        pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control>) {
+            let $child = std::mem::ManuallyDrop::new($child);
+            unsafe { $libui_fn(self.as_ptr(), $child.as_ptr()) };
+        }
+    };
+}
+
 macro_rules! bind_set_text_fn {
     ($docs:literal, $fn:ident, $arg:ident, $libui_fn:ident $(,)?) => {
         #[doc = $docs]
-        pub fn $fn(&mut self, $arg: impl AsRef<str>) -> Result<(), crate::Error> {
+        pub fn $fn(&mut self, $arg: impl AsRef<str>) -> Result<(), $crate::Error> {
             let $arg = make_cstring!($arg.as_ref());
             unsafe { $libui_fn(self.as_ptr(), $arg.as_ptr()) };
 

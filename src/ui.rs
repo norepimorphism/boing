@@ -1,16 +1,20 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 pub mod control;
 
 pub use control::Control;
 
 use crate::prelude::*;
-use std::{collections::HashSet, ffi::CStr, os::raw::c_char, ptr};
+use std::{ffi::CStr, os::raw::c_char, ptr};
 
 impl Ui {
     /// Runs *libui*.
-    pub fn run(main: impl FnOnce(&mut Self)) -> Result<(), crate::Error> {
+    pub fn run(mut main: impl FnMut(&mut Self)) -> Result<(), crate::Error> {
         let mut ui = Self::new()?;
         main(&mut ui);
-        unsafe { uiMain() }
+        unsafe { uiMain() };
 
         Ok(())
     }
@@ -27,7 +31,7 @@ impl Ui {
         });
 
         result.map(|_| Self {
-            controls: HashSet::new(),
+            controls: bumpalo::Bump::new(),
         })
     }
 
@@ -70,59 +74,21 @@ impl Ui {
 }
 
 pub struct Ui {
-    controls: HashSet<Control>,
+    controls: bumpalo::Bump,
 }
 
-impl Drop for Ui {
-    fn drop(&mut self) {
-        // Destroy all root controls (these are probably only windows).
-        for control in self.controls.iter() {
-            let control_ptr = control.as_ptr();
-
-            unsafe {
-                if (*control_ptr).Destroy.is_some() {
-                    println!(
-                        "Destroying: {:#?} ({:#?})",
-                        control.as_ptr(),
-                        control.type_id(),
-                    );
-                    uiControlDestroy(control_ptr);
-                } else {
-                    // TODO: Move this to control creation so that errors are caught earlier.
-                    eprintln!(
-                        "\
-                        [libui-ng-sys] BUG: The control @ {:#?} requested its memory to be \
-                        automatically freed when *libui-ng* quits, but its destructor is NULL. \
-                        Please consider creating an issue on the *libui-ng-sys* GitHub! Thanks! \
-                        ",
-                        control_ptr,
-                    );
-                }
-            }
-        }
-
-        unsafe { uiQuit() };
-    }
+pub(crate) trait FromControl {
+    unsafe fn from_control(control: Control) -> Self;
 }
 
 impl Ui {
-    pub(crate) unsafe fn add_control(
-        &mut self,
+    pub(crate) unsafe fn add_control<T: FromControl>(
+        &self,
         control: *mut uiControl,
-        should_manage: bool,
-    ) -> Control {
+    ) -> &mut T {
         let control = Control::from_ptr(control);
-        if should_manage {
-            let control: Control = std::mem::transmute_copy(&control);
-            println!("Adding: {:#?} ({:#?})", control.as_ptr(), control.type_id());
-            self.controls.insert(control);
-        }
+        println!("[+] {:#?} ({:#?})", control.as_ptr(), control.type_id());
 
-        control
-    }
-
-    pub(crate) fn release_control(&mut self, control: *mut uiControl) {
-        let control = unsafe { Control::from_ptr(control) };
-        self.controls.remove(&control);
+        self.controls.alloc(T::from_control(control))
     }
 }

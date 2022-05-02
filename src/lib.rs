@@ -2,6 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+//! A safe, lightweight wrapper over *[libui-ng-sys]*.
+//!
+//! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
+
 #![allow(non_upper_case_globals)]
 #![feature(concat_idents)]
 
@@ -9,7 +13,6 @@
 mod macros;
 
 pub mod area;
-pub mod box_;
 pub mod button;
 pub mod checkbox;
 pub mod combobox;
@@ -26,10 +29,11 @@ pub mod spinbox;
 pub mod tab;
 pub mod table;
 pub mod ui;
+pub mod unibox;
 pub mod window;
 
 pub use area::Area;
-pub use box_::{BiBox, UniBox};
+pub use button::Button;
 pub use checkbox::Checkbox;
 pub use combobox::Combobox;
 pub use form::Form;
@@ -44,6 +48,7 @@ pub use spinbox::Spinbox;
 pub use tab::Tab;
 pub use table::Table;
 pub use ui::{Control, Ui};
+pub use unibox::UniBox;
 pub use window::Window;
 
 #[derive(Debug)]

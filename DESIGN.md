@@ -34,13 +34,9 @@ To guarantee this, to be constructed, all *boing* controls require exclusive acc
 
 * *TODO*
 
-To guarantee this, *boing*'s `Ui` type tracks controls as they are constructed and automatically destroys them once dropped, which occurs at the end of `Ui::run`.
-
 ```rust
 
 ```
-
-Furthermore, the `FnOnce` function passed to `Ui::run` disallows mutation of external state, which prevents users from storing controls outside `Ui::run` and using them after `Ui::drop` destroys their internal handles.
 
 ```rust
 
