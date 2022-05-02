@@ -6,7 +6,7 @@ use crate::prelude::*;
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
 impl Ui {
-    /// Runs *libui*.
+    /// Runs *libui-ng*.
     pub fn run(mut main: impl FnMut(&Self)) -> Result<(), crate::Error> {
         let ui = Self::new()?;
         main(&ui);
@@ -42,9 +42,9 @@ impl Ui {
         }
 
         if let Err(ref cause) = result {
-            // For some reason, on Windows, *libui* will return an error message starting with the
-            // below string, which clearly indicates that no error has occurred. We catch this
-            // special case and ignore it.
+            // For some reason, on Windows, *libui-ng* will sometimes return an error message
+            // starting with the below string, which clearly indicates that no error has occurred.
+            // We catch this special case and ignore it.
             if cause.starts_with("error initializing libui: initializing Common Controls; code 0") {
                 return Ok(());
             }
@@ -69,6 +69,7 @@ impl Ui {
     }
 }
 
+/// A graphical user interface provided by *libui-ng*.
 pub struct Ui {
     bump: bumpalo::Bump,
 }

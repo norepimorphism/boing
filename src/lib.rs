@@ -4,7 +4,28 @@
 
 //! A safe, lightweight wrapper over *[libui-ng-sys]*.
 //!
+//! ## Notice
+//!
+//! This crate is by no means production-ready. See the [README] for progress notes.
+//!
+//! ## Examples
+//!
+//! ```no_run
+//! Ui::run(|ui| {
+//!     let menu = ui.create_menu("File")?;
+//!     menu.append_quit_item()?;
+//!
+//!     let window = ui.create_window("Hello World!", 200, 200, true, true)?;
+//!     window.set_child(ui.create_button("Press Me!")?);
+//!     window.show();
+//! })?;
+//! ```
+//!
+//! For more examples, including a control gallery, see the *[examples]* subdirectory.
+//!
 //! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
+//! [README]: https://github.com/norepimorphism/boing/tree/main/README.md
+//! [examples]: https://github.com/norepimorphism/boing/tree/main/examples
 
 #![allow(non_upper_case_globals)]
 #![feature(concat_idents)]
