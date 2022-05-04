@@ -27,26 +27,26 @@ fn setup_menus(ui: &boing::Ui) {
 
 fn setup_file_menu(ui: &boing::Ui) {
     let menu = ui.create_menu("File").unwrap();
-    menu.append_item("Open").unwrap();
-    menu.append_item("Open Folder...").unwrap();
+    menu.append_item(ui, "Open").unwrap();
+    menu.append_item(ui, "Open Folder...").unwrap();
     menu.append_separator();
-    menu.append_item("Save").unwrap();
-    menu.append_item("Save As...").unwrap();
-    menu.append_quit_item().unwrap();
+    menu.append_item(ui, "Save").unwrap();
+    menu.append_item(ui, "Save As...").unwrap();
+    menu.append_quit_item(ui).unwrap();
 }
 
 fn setup_edit_menu(ui: &boing::Ui) {
     let menu = ui.create_menu("Edit").unwrap();
-    menu.append_check_item("Checkable").unwrap();
-    menu.append_item("Disabled").unwrap();
-    menu.append_preferences_item().unwrap();
+    menu.append_check_item(ui, "Checkable").unwrap();
+    menu.append_item(ui, "Disabled").unwrap();
+    menu.append_preferences_item(ui).unwrap();
 }
 
 fn setup_help_menu(ui: &boing::Ui) {
     let menu = ui.create_menu("Help").unwrap();
-    menu.append_item("Documentation").unwrap();
+    menu.append_item(ui, "Documentation").unwrap();
 
-    let about_item = menu.append_about_item().unwrap();
+    let about_item = menu.append_about_item(ui).unwrap();
     about_item.on_clicked(
         ui,
         |item| {
