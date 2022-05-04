@@ -9,7 +9,7 @@ macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
             pub fn $boing_fn<'a>(
-                &mut self,
+                &self,
                 ui: &'a Ui,
                 name: impl AsRef<str>,
             ) -> Result<&'a mut Item, $crate::Error> {
@@ -28,7 +28,7 @@ macro_rules! impl_append_item_fn_with_name {
 macro_rules! impl_append_item_fn {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
-            pub fn $boing_fn<'a>(&mut self, ui: &'a Ui) -> Result<&'a mut Item, $crate::Error> {
+            pub fn $boing_fn<'a>(&self, ui: &'a Ui) -> Result<&'a mut Item, $crate::Error> {
                 call_fallible_libui_fn!($libui_fn, self.as_ptr())
                     .map(|ptr| ui.alloc_object(Item::from_ptr(ptr)))
             }

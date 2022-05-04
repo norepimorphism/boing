@@ -132,11 +132,11 @@ impl Control {
         uiControlVisible,
     );
 
-    pub fn show(&mut self) {
+    pub fn show(&self) {
         unsafe { uiControlShow(self.as_ptr()) };
     }
 
-    pub fn hide(&mut self) {
+    pub fn hide(&self) {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
@@ -146,11 +146,11 @@ impl Control {
         uiControlEnabled,
     );
 
-    pub fn enable(&mut self) {
+    pub fn enable(&self) {
         unsafe { uiControlEnable(self.as_ptr()) };
     }
 
-    pub fn disable(&mut self) {
+    pub fn disable(&self) {
         unsafe { uiControlDisable(self.as_ptr()) };
     }
 

@@ -22,7 +22,7 @@ def_subcontrol!(UniBox, uiBox);
 
 impl UniBox {
     pub fn append_child(
-        &mut self,
+        &self,
         child: &mut impl DerefMut<Target = Control>,
         can_stretch: bool,
     ) {
@@ -34,7 +34,7 @@ impl UniBox {
         unsafe { uiBoxNumChildren(self.as_ptr()) }
     }
 
-    pub fn delete_child(&mut self, index: u16) {
+    pub fn delete_child(&self, index: u16) {
         unsafe { uiBoxDelete(self.as_ptr(), index.into()) };
     }
 

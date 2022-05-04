@@ -24,7 +24,7 @@ pub struct Pixel {
 }
 
 impl Image {
-    pub fn append(&mut self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
+    pub fn append(&self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
         unsafe {
             uiImageAppend(
                 self.as_ptr(),

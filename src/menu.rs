@@ -31,7 +31,7 @@ impl Menu {
         self.0
     }
 
-    pub fn append_separator(&mut self) {
+    pub fn append_separator(&self) {
         unsafe { uiMenuAppendSeparator(self.as_ptr()) };
     }
 }

@@ -19,7 +19,7 @@ def_subcontrol!(Tab, uiTab);
 impl Tab {
     /// Appends a page.
     pub fn append_page(
-        &mut self,
+        &self,
         name: impl AsRef<str>,
         control: &mut impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
@@ -38,7 +38,7 @@ impl Tab {
 
     /// Inserts a page at the given index.
     pub fn insert_page(
-        &mut self,
+        &self,
         name: impl AsRef<str>,
         index: u16,
         control: &mut impl DerefMut<Target = Control>,
@@ -58,7 +58,7 @@ impl Tab {
     }
 
     /// Deletes the page represented by the given index.
-    pub fn delete_page(&mut self, index: u16) {
+    pub fn delete_page(&self, index: u16) {
         unsafe { uiTabDelete(self.as_ptr(), index.into()) }
     }
 
@@ -73,7 +73,7 @@ impl Tab {
     }
 
     /// Sets whether or not the page represented by the given index should be margined.
-    pub fn set_page_margined(&mut self, index: u16, value: bool) {
+    pub fn set_page_margined(&self, index: u16, value: bool) {
         unsafe { uiTabSetMargined(self.as_ptr(), index.into(), value.into()) }
     }
 }

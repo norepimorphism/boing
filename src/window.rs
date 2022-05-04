@@ -90,7 +90,7 @@ impl Window {
        (width, height)
     }
 
-    pub fn set_content_size(&mut self, width: u16, height: u16) {
+    pub fn set_content_size(&self, width: u16, height: u16) {
         unsafe {
             uiWindowSetContentSize(
                 self.as_ptr(),
