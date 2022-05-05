@@ -19,7 +19,7 @@ macro_rules! impl_append_item_fn_with_name {
                     self.as_ptr(),
                     name.as_ptr(),
                 )
-                .map(|ptr| ui.alloc_object(Item::from_ptr(ptr)))
+                .map(|ptr| ui.alloc(Item::from_ptr(ptr)))
             }
         }
     };
@@ -30,7 +30,7 @@ macro_rules! impl_append_item_fn {
         impl Menu {
             pub fn $boing_fn<'a>(&self, ui: &'a Ui) -> Result<&'a mut Item, $crate::Error> {
                 call_fallible_libui_fn!($libui_fn, self.as_ptr())
-                    .map(|ptr| ui.alloc_object(Item::from_ptr(ptr)))
+                    .map(|ptr| ui.alloc(Item::from_ptr(ptr)))
             }
         }
     };

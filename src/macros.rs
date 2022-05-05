@@ -54,7 +54,7 @@ macro_rules! call_libui_new_fn {
     ($ui:expr, $out_ty:ident, $fn:ident $(, $($arg:expr),* $(,)? )?) => {
         call_fallible_libui_fn!($fn, $($($arg),*)?)
             .map(|ptr| unsafe {
-                $ui.alloc_object($out_ty::from_ptr(ptr))
+                $ui.alloc($out_ty::from_ptr(ptr))
             })
     };
 }
@@ -73,24 +73,23 @@ macro_rules! bind_callback_fn {
         $(,  : $cb_arg:ty ),* $(,)?
     ) => {
         #[doc = $docs]
-        #[allow(clippy::unused_unit)]
-        pub fn $fn<'ui, F>(&self, ui: &'ui Ui, $user_cb: F)
+        pub fn $fn<F>(&self, ui: &Ui, $user_cb: F)
         where
-            F: FnMut(&mut $self_ty) -> $user_cb_out + 'ui,
+            F: 'static + FnMut(&Ui, &mut $self_ty) -> $user_cb_out,
         {
-            unsafe extern "C" fn callback<F>(
+            unsafe extern "C" fn trampoline<F>(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                user_cb: *mut std::os::raw::c_void,
+                data: *mut std::os::raw::c_void,
             ) -> $libui_cb_out
             where
-                F: FnMut(&mut $self_ty) -> $user_cb_out,
+                F: FnMut(&Ui, &mut $self_ty) -> $user_cb_out,
             {
-                debug_assert!(!user_cb.is_null());
-                let user_cb: &mut F = &mut *user_cb.cast();
+                debug_assert!(!data.is_null());
+                let data: &mut Data<F> = &mut *data.cast();
 
                 let mut handle = std::mem::ManuallyDrop::new(<$self_ty>::from_ptr(handle));
-                let result = user_cb(&mut handle);
+                let result = (data.user_cb)(data.ui, &mut handle);
                 $(
                     let result = $map_user_cb(result);
                 )?
@@ -98,14 +97,24 @@ macro_rules! bind_callback_fn {
                 result
             }
 
+            struct Data<'ui, F> {
+                ui: &'ui Ui,
+                user_cb: &'ui mut F,
+            }
+
+            let data = Data {
+                ui,
+                user_cb: ui.alloc($user_cb),
+            };
+
             unsafe {
                 $libui_fn(
                     self.as_ptr(),
                     $(
                         $($libui_arg),*
                     )?
-                    Some(callback::<F>),
-                    std::ptr::addr_of_mut!(*ui.alloc_object($user_cb)).cast(),
+                    Some(trampoline::<F>),
+                    std::ptr::addr_of_mut!(*ui.alloc(data)).cast(),
                 );
             }
         }

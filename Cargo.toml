@@ -20,7 +20,7 @@ targets = [
 ]
 
 [dependencies]
-bumpalo = { version = "3.9", features = ["boxed"] }
+bumpalo = { version = "3.9" }
 libui-ng-sys = "0.4"
 tracing = "0.1"
 

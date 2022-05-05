@@ -74,9 +74,9 @@ pub struct Ui {
     bump: bumpalo::Bump,
 }
 
-impl Ui {
+impl<'a> Ui {
     #[allow(clippy::mut_from_ref)]
-    pub(crate) fn alloc_object<T>(&self, object: T) -> &mut T {
+    pub(crate) fn alloc<T>(&'a self, object: T) -> &'a mut T {
         self.bump.alloc(object)
     }
 }

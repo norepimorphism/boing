@@ -49,7 +49,7 @@ fn setup_help_menu(ui: &boing::Ui) {
     let about_item = menu.append_about_item(ui).unwrap();
     about_item.on_clicked(
         ui,
-        |item| {
+        |ui, item| {
             item.set_checked(true);
 
             let window = ui.create_window(

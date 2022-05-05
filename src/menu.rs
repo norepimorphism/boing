@@ -19,7 +19,7 @@ impl Ui {
             name.as_ptr(),
         )
         .map(|menu| {
-            self.alloc_object(Menu(menu))
+            self.alloc(Menu(menu))
         })
     }
 }
