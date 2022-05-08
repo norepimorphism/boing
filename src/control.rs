@@ -35,7 +35,7 @@ macro_rules! impl_downcast {
             pub fn downcast(self) -> Option<Downcasted<'ui>> {
                 match self.type_id() {
                     $(
-                        TypeId::$type => unsafe {
+                        TypeId::$type => {
                             Some(Downcasted::$type($crate::$type::from_control(self)))
                         }
                     )*

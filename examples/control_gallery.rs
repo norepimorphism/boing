@@ -50,18 +50,17 @@ fn setup_help_menu<'a, 'ui>(ui: &'a boing::Ui<'ui>) {
         .append_about_item(ui)
         .unwrap()
         .on_clicked(
-            |item| {
-                item.set_checked(true);
-
-                // let window = ui.create_window(
-                //     "About libui Control Gallery",
-                //     320,
-                //     240,
-                //     false,
-                //     false,
-                // )
-                // .unwrap();
-                // window.show();
+            ui,
+            |ui, _| {
+                let window = ui.create_window(
+                    "About libui Control Gallery",
+                    320,
+                    240,
+                    false,
+                    false,
+                )
+                .unwrap();
+                window.show();
         },
     );
 }

@@ -40,7 +40,10 @@ macro_rules! def_subcontrol {
             inner: $crate::Control<'ui>,
             $(
                 $(
-                    $cb: Option<Box<dyn 'ui + for<'a> FnMut(&'a mut $ty<'ui>) $(-> $out)?>>
+                    $cb: Option<(
+                        *const Ui<'ui>,
+                        Box<dyn 'ui + for<'a> FnMut(&'a Ui<'ui>, &'a mut $ty<'ui>) $(-> $out)?>,
+                    )>
                 ),*
             )?
         }
@@ -108,21 +111,26 @@ macro_rules! bind_callback_fn {
         // Wow, callbacks are complicated!
 
         #[doc = $docs]
-        pub fn $fn<'a, F>(&'a mut self, $user_cb: F)
+        pub fn $fn<'a, F>(&'a mut self, ui: &Ui<'ui>, $user_cb: F)
         where
-            F: $ui_lt + for<'b> FnMut(&'b mut $self_ty<$ui_lt>) -> $user_cb_out,
+            F: $ui_lt + for<'b> FnMut(&'b Ui<'ui>, &'b mut $self_ty<$ui_lt>) -> $user_cb_out,
         {
             /// A trampoline function to the user-set callback.
             unsafe extern "C" fn trampoline(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                user_cb: *mut std::os::raw::c_void,
+                data: *mut std::os::raw::c_void,
             ) -> $libui_cb_out {
                 // Ensure nothing wonky has happened in the meantime.
                 debug_assert!(!handle.is_null());
-                debug_assert!(!user_cb.is_null());
+                debug_assert!(!data.is_null());
 
-                let user_cb: &mut Option<Box<dyn for<'a> FnMut(&'a mut $self_ty) -> $user_cb_out>> = &mut *user_cb.cast();
+                type Data<'ui> = (
+                    *const Ui<'ui>,
+                    Box<dyn for<'a> FnMut(&'a Ui<'ui>, &'a mut $self_ty<'ui>) -> $user_cb_out>,
+                );
+
+                let data: &mut Option<Data> = &mut *data.cast();
 
                 // SAFETY:
                 //
@@ -131,12 +139,14 @@ macro_rules! bind_callback_fn {
                 // so this should be safe.
                 //
                 // [`Option` docs]: https://doc.rust-lang.org/std/option/index.html#representation
-                debug_assert!(user_cb.is_some());
-                let user_cb: &mut Box<dyn for<'a> FnMut(&'a mut $self_ty) -> $user_cb_out> = std::mem::transmute(user_cb);
+                debug_assert!(data.is_some());
+                let data: &mut Data = std::mem::transmute(data);
 
+                let (ui, user_cb): &mut (*const Ui, Box<_>) = data;
+                let ui: &Ui = &**ui;
                 let mut handle = std::mem::ManuallyDrop::<$self_ty>::new(<$self_ty>::new(handle));
 
-                let result = (user_cb)(&mut handle);
+                let result = (user_cb)(ui, &mut handle);
                 $(
                     let result = $map_user_cb(result);
                 )?
@@ -145,7 +155,7 @@ macro_rules! bind_callback_fn {
             }
 
             // Store the callback data.
-            self.$fn = Some(Box::new($user_cb));
+            self.$fn = Some((std::ptr::addr_of!(*ui), Box::new($user_cb)));
 
             unsafe {
                 $libui_fn(

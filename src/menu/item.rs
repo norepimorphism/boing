@@ -49,7 +49,7 @@ impl Item<'_> {
 
 pub struct Item<'ui> {
     ptr: *mut uiMenuItem,
-    on_clicked: Option<Box<dyn 'ui + for<'a> FnMut(&'a mut Item<'ui>)>>,
+    on_clicked: Option<(*const Ui<'ui>, Box<dyn 'ui + for<'a> FnMut(&'a Ui<'ui>, &'a mut Item<'ui>)>)>,
 }
 
 impl<'ui> Item<'ui> {
