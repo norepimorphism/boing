@@ -3,32 +3,34 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::os::raw::c_void;
+use std::{marker::PhantomData, os::raw::c_void};
 
-#[derive(Debug, Eq, Hash, PartialEq)]
-pub struct Control(*mut uiControl);
-
-impl Control {
-    pub(super) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
-        Self(ptr)
+impl<'ui> Control<'ui> {
+    pub(crate) fn new(ptr: *mut uiControl) -> Self {
+        Self { ptr, _ui: PhantomData }
     }
 }
 
-impl Drop for Control {
+pub struct Control<'ui> {
+    ptr: *mut uiControl,
+    _ui: PhantomData<&'ui Ui<'ui>>,
+}
+
+impl Drop for Control<'_> {
     fn drop(&mut self) {
         unsafe { uiControlDestroy(self.as_ptr()) };
     }
 }
 
-impl Control {
+impl Control<'_> {
     pub fn as_ptr(&self) -> *mut uiControl {
-        self.0
+        self.ptr
     }
 }
 
 macro_rules! impl_downcast {
     ($($type:ident)*) => {
-        impl Control {
+        impl Control<'_> {
             // pub fn downcast(self) -> Option<Downcasted> {
             //     match self.type_id() {
             //         $(
@@ -84,9 +86,9 @@ impl_downcast! {
     Window
 }
 
-impl Control {
+impl Control<'_> {
     pub fn type_id(&self) -> TypeId {
-        TypeId::new(unsafe { (*self.0).TypeSignature })
+        TypeId::new(unsafe { (*self.ptr).TypeSignature })
     }
 }
 
@@ -121,7 +123,7 @@ impl TypeId {
     }
 }
 
-impl Control {
+impl Control<'_> {
     pub fn native_handle(&self) -> *mut c_void {
         unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
     }

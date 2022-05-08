@@ -5,7 +5,7 @@
 use crate::prelude::*;
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
-impl ui!() {
+impl Ui<'_> {
     /// Runs *libui-ng*.
     pub fn run(mut main: impl FnMut(&Self)) -> Result<(), crate::Error> {
         let ui = Self::new()?;
@@ -81,13 +81,13 @@ macro_rules! def_ui {
         ),* $(,)?
     ) => {
         /// A graphical user interface provided by *libui-ng*.
-        pub struct Ui {
+        pub struct Ui<'ui> {
             $(
-                $field: typed_arena::Arena<$crate::$ty>
+                $field: typed_arena::Arena<$crate::$ty<'ui>>
             ),*
         }
 
-        impl Ui {
+        impl<'ui> Ui<'ui> {
             // This is intentionally *not* `Default::default`, as we don't want to export this
             // publicly.
             fn default() -> Self {
@@ -100,7 +100,7 @@ macro_rules! def_ui {
 
             $(
                 #[allow(clippy::mut_from_ref)]
-                pub(crate) fn $fn(&self, value: $crate::$ty) -> &mut $crate::$ty {
+                pub(crate) fn $fn(&self, value: $crate::$ty<'ui>) -> &mut $crate::$ty<'ui> {
                     self.$field.alloc(value)
                 }
             )*

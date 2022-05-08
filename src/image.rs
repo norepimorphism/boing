@@ -6,11 +6,12 @@
 
 use crate::prelude::*;
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Image`].
-    pub fn create_image(&self, width: f64, height: f64) -> Result<&mut Image, crate::Error> {
+    pub fn create_image<'a>(&'a self, width: f64, height: f64) -> Result<&'a mut Image<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_image,
             fn: uiNewImage(width, height) -> Image,
         )
@@ -30,7 +31,7 @@ pub struct Pixel {
     pub a: u8,
 }
 
-impl Image {
+impl Image<'_> {
     pub fn append(&self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
         unsafe {
             uiImageAppend(

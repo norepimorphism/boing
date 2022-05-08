@@ -6,13 +6,14 @@
 
 use crate::prelude::*;
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Group`].
-    pub fn create_group(&self, title: impl AsRef<str>) -> Result<&mut Group, crate::Error> {
+    pub fn create_group<'a>(&'a self, title: impl AsRef<str>) -> Result<&'a mut Group<'ui>, crate::Error> {
         let title = make_cstring!(title.as_ref());
 
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_group,
             fn: uiNewGroup(title.as_ptr()) -> Group,
         )
@@ -24,13 +25,17 @@ def_subcontrol!(
     handle: uiGroup,
 );
 
-impl Group {
+impl<'ui> Group<'ui> {
     bind_text_fn!(
         docs: "The title of this group.",
-        title,
-        raw_title,
-        title_ptr,
-        uiGroupTitle,
+        self: {
+            fn: title,
+            raw_fn: raw_title,
+            as_ptr_fn: title_ptr,
+        },
+        libui: {
+            fn: uiGroupTitle(),
+        },
     );
 
     bind_set_text_fn!(
@@ -42,9 +47,13 @@ impl Group {
 
     bind_add_child_fn!(
         docs: "Sets the child control of this group.",
-        set_child,
-        child,
-        uiGroupSetChild,
+        self: {
+            fn: set_child<'ui>,
+            child: child,
+        },
+        libui: {
+            fn: uiGroupSetChild,
+        },
     );
 
     bind_bool_fn!(

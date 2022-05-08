@@ -7,12 +7,12 @@ use super::Menu;
 
 macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
-        impl Menu {
-            pub fn $boing_fn(
+        impl<'ui> Menu<'ui> {
+            pub fn $boing_fn<'a>(
                 &self,
-                ui: &Ui,
+                ui: &'a Ui<'ui>,
                 name: impl AsRef<str>,
-            ) -> Result<&mut Item, $crate::Error> {
+            ) -> Result<&'a mut Item<'ui>, $crate::Error> {
                 let name = make_cstring!(name.as_ref());
                 call_fallible_libui_fn!($libui_fn(self.as_ptr(), name.as_ptr()))
                     .map(|ptr| ui.alloc_menu_item(Item::from_ptr(ptr)))
@@ -23,8 +23,8 @@ macro_rules! impl_append_item_fn_with_name {
 
 macro_rules! impl_append_item_fn {
     ($boing_fn:ident, $libui_fn:ident) => {
-        impl Menu {
-            pub fn $boing_fn(&self, ui: &Ui) -> Result<&mut Item, $crate::Error> {
+        impl<'ui> Menu<'ui> {
+            pub fn $boing_fn<'a>(&self, ui: &'a Ui<'ui>) -> Result<&'a mut Item<'ui>, $crate::Error> {
                 call_fallible_libui_fn!($libui_fn(self.as_ptr()))
                     .map(|ptr| ui.alloc_menu_item(Item::from_ptr(ptr)))
             }
@@ -38,16 +38,16 @@ impl_append_item_fn!(append_quit_item, uiMenuAppendQuitItem);
 impl_append_item_fn!(append_preferences_item, uiMenuAppendPreferencesItem);
 impl_append_item_fn!(append_about_item, uiMenuAppendAboutItem);
 
-pub struct Item {
+pub struct Item<'ui> {
     ptr: *mut uiMenuItem,
-    on_clicked: Box<dyn FnMut()>,
+    on_clicked: Option<*mut (dyn 'ui + FnMut())>,
 }
 
-impl Item {
+impl<'ui> Item<'ui> {
     pub(super) fn from_ptr(ptr: *mut uiMenuItem) -> Self {
         Self {
             ptr,
-            on_clicked: Box::new(|| {}),
+            on_clicked: None,
         }
     }
 
@@ -58,7 +58,7 @@ impl Item {
     bind_callback_fn!(
         docs: "Sets a callback for when this item is clicked.",
         self: {
-            ty: Item,
+            ty: Item<'ui>,
             handle: uiMenuItem,
             fn: on_clicked(),
             cb: {

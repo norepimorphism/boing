@@ -6,11 +6,12 @@
 
 use crate::prelude::*;
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Slider`].
-    pub fn create_slider(&self, min: u16, max: u16) -> Result<&mut Slider, crate::Error> {
+    pub fn create_slider<'a>(&'a self, min: u16, max: u16) -> Result<&'a mut Slider<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_slider,
             fn: uiNewSlider(min.into(), max.into()) -> Slider,
         )
@@ -25,7 +26,7 @@ def_subcontrol!(
     ],
 );
 
-impl Slider {
+impl<'ui> Slider<'ui> {
     bind_bool_fn!(
         docs: "Determines if this slider has a tooltip.",
         has_tooltip,
@@ -41,7 +42,7 @@ impl Slider {
     bind_callback_fn!(
         docs: "Sets a callback for when this slider changes.",
         self: {
-            ty: Slider,
+            ty: Slider<'ui>,
             handle: uiSlider,
             fn: on_changed(),
             cb: {

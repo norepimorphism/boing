@@ -11,6 +11,6 @@ def_subcontrol!(
     handle: uiCombobox,
 );
 
-impl Combobox {
+impl Combobox<'_> {
 
 }

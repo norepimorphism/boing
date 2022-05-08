@@ -19,13 +19,13 @@ fn setup_tracing() {
     tracing_subscriber::fmt().init();
 }
 
-fn setup_menus(ui: &boing::Ui) {
+fn setup_menus<'ui>(ui: &boing::Ui<'ui>) {
     setup_file_menu(ui);
     setup_edit_menu(ui);
     setup_help_menu(ui);
 }
 
-fn setup_file_menu(ui: &boing::Ui) {
+fn setup_file_menu<'ui>(ui: &boing::Ui<'ui>) {
     let menu = ui.create_menu("File").unwrap();
     menu.append_item(ui, "Open").unwrap();
     menu.append_item(ui, "Open Folder...").unwrap();
@@ -35,14 +35,14 @@ fn setup_file_menu(ui: &boing::Ui) {
     menu.append_quit_item(ui).unwrap();
 }
 
-fn setup_edit_menu(ui: &boing::Ui) {
+fn setup_edit_menu<'ui>(ui: &boing::Ui<'ui>) {
     let menu = ui.create_menu("Edit").unwrap();
     menu.append_check_item(ui, "Checkable").unwrap();
     menu.append_item(ui, "Disabled").unwrap();
     menu.append_preferences_item(ui).unwrap();
 }
 
-fn setup_help_menu(ui: &boing::Ui) {
+fn setup_help_menu<'ui>(ui: &boing::Ui<'ui>) {
     let menu = ui.create_menu("Help").unwrap();
     menu.append_item(ui, "Documentation").unwrap();
 
@@ -50,26 +50,25 @@ fn setup_help_menu(ui: &boing::Ui) {
 
     let about_item = menu.append_about_item(ui).unwrap();
     about_item.on_clicked(
-        ui,
-        || {
+        move || {
             println!("Sum: {}", data.iter().sum::<u32>());
 
-            about_item.set_checked(true);
+            // about_item.set_checked(true);
 
-            let window = ui.create_window(
-                "About libui Control Gallery",
-                320,
-                240,
-                false,
-                false,
-            )
-            .unwrap();
-            window.show();
+            // let window = ui.create_window(
+            //     "About libui Control Gallery",
+            //     320,
+            //     240,
+            //     false,
+            //     false,
+            // )
+            // .unwrap();
+            // window.show();
         },
     );
 }
 
-fn create_window(ui: &boing::Ui) -> &mut boing::Window {
+fn create_window<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Window<'ui> {
     let window = ui.create_window(
         "libui Control Gallery",
         640,
@@ -83,7 +82,7 @@ fn create_window(ui: &boing::Ui) -> &mut boing::Window {
     window
 }
 
-fn create_tab(ui: &boing::Ui) -> &mut boing::Tab {
+fn create_tab<'a , 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Tab<'ui> {
     let tab = ui.create_tab().unwrap();
     tab.append_page("Basic Controls", create_basic_controls_page(ui)).unwrap();
     tab.append_page("Numbers and Lists", create_numbers_n_lists_page(ui)).unwrap();
@@ -92,7 +91,7 @@ fn create_tab(ui: &boing::Ui) -> &mut boing::Tab {
     tab
 }
 
-fn create_basic_controls_page(ui: &boing::Ui) -> &mut boing::UniBox {
+fn create_basic_controls_page<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox<'ui> {
     static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
 
     let hbox = ui.create_horizontal_box().unwrap();
@@ -107,7 +106,7 @@ fn create_basic_controls_page(ui: &boing::Ui) -> &mut boing::UniBox {
     vbox
 }
 
-fn create_numbers_n_lists_page(ui: &boing::Ui) -> &mut boing::UniBox {
+fn create_numbers_n_lists_page<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox<'ui> {
     let hbox = ui.create_horizontal_box().unwrap();
     hbox.append_child(create_numbers_group(ui), true);
     hbox.append_child(create_lists_group(ui), true);
@@ -115,21 +114,21 @@ fn create_numbers_n_lists_page(ui: &boing::Ui) -> &mut boing::UniBox {
     hbox
 }
 
-fn create_numbers_group(ui: &boing::Ui) -> &mut boing::Group {
+fn create_numbers_group<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Group<'ui> {
     let group = ui.create_group("Numbers").unwrap();
     group.set_child(create_numbers_vbox(ui));
 
     group
 }
 
-fn create_numbers_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
+fn create_numbers_vbox<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox<'ui> {
     let vbox = ui.create_vertical_box().unwrap();
     vbox.append_child(ui.create_spinbox(0, 100).unwrap(), false);
 
     let slider = ui.create_slider(0, 100).unwrap();
 
     let data = vec![1, 2, 3, 4];
-    slider.on_changed(ui, || println!("Slider sum: {}", data.iter().sum::<u32>()));
+    slider.on_changed(move || println!("Slider sum: {}", data.iter().sum::<u32>()));
 
     vbox.append_child(slider, false);
     vbox.append_child(ui.create_progress_bar().unwrap(), false);
@@ -141,18 +140,18 @@ fn create_numbers_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
     vbox
 }
 
-fn create_lists_group(ui: &boing::Ui) -> &mut boing::Group {
+fn create_lists_group<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Group<'ui> {
     let group = ui.create_group("Lists").unwrap();
     group.set_child(create_lists_vbox(ui));
 
     group
 }
 
-fn create_lists_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
+fn create_lists_vbox<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox<'ui> {
     ui.create_vertical_box().unwrap()
 }
 
-fn create_data_choosers_page(ui: &boing::Ui) -> &mut boing::UniBox {
+fn create_data_choosers_page<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox<'ui> {
     let _vbox = ui.create_vertical_box().unwrap();
     let hbox = ui.create_horizontal_box().unwrap();
 

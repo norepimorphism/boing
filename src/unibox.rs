@@ -6,20 +6,22 @@
 
 use crate::prelude::*;
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new horizontal [`UniBox`].
-    pub fn create_horizontal_box(&self) -> Result<&mut UniBox, crate::Error> {
+    pub fn create_horizontal_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_unibox,
             fn: uiNewHorizontalBox() -> UniBox,
         )
     }
 
     /// Creates a new vertical [`UniBox`].
-    pub fn create_vertical_box(&self) -> Result<&mut UniBox, crate::Error> {
+    pub fn create_vertical_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_unibox,
             fn: uiNewVerticalBox() -> UniBox,
         )
@@ -31,10 +33,10 @@ def_subcontrol!(
     handle: uiBox,
 );
 
-impl UniBox {
+impl<'ui> UniBox<'ui> {
     pub fn append_child(
         &self,
-        child: &mut impl DerefMut<Target = Control>,
+        child: &mut impl DerefMut<Target = Control<'ui>>,
         can_stretch: bool,
     ) {
         let child = std::mem::ManuallyDrop::new(child);

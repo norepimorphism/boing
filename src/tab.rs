@@ -7,11 +7,12 @@
 use crate::prelude::*;
 use std::mem::ManuallyDrop;
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Tab`].
-    pub fn create_tab(&self) -> Result<&mut Tab, crate::Error> {
+    pub fn create_tab<'a>(&'a self) -> Result<&'a mut Tab<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_tab,
             fn: uiNewTab() -> Tab,
         )
@@ -23,12 +24,12 @@ def_subcontrol!(
     handle: uiTab,
 );
 
-impl Tab {
+impl<'ui> Tab<'ui> {
     /// Appends a page.
     pub fn append_page(
         &self,
         name: impl AsRef<str>,
-        control: &mut impl DerefMut<Target = Control>,
+        control: &mut impl DerefMut<Target = Control<'ui>>,
     ) -> Result<(), crate::Error> {
         let control = ManuallyDrop::new(control);
         let name = make_cstring!(name.as_ref());
@@ -48,7 +49,7 @@ impl Tab {
         &self,
         name: impl AsRef<str>,
         index: u16,
-        control: &mut impl DerefMut<Target = Control>,
+        control: &mut impl DerefMut<Target = Control<'ui>>,
     ) -> Result<(), crate::Error> {
         let control = ManuallyDrop::new(control);
         let name = make_cstring!(name.as_ref());

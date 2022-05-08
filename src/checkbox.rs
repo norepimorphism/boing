@@ -14,13 +14,17 @@ def_subcontrol!(
     ],
 );
 
-impl Checkbox {
+impl<'ui> Checkbox<'ui> {
     bind_text_fn!(
         docs: "The text displayed next to this checkbox.",
-        text,
-        raw_text,
-        text_ptr,
-        uiCheckboxText,
+        self: {
+            fn: text,
+            raw_fn: raw_text,
+            as_ptr_fn: text_ptr,
+        },
+        libui: {
+            fn: uiCheckboxText(),
+        },
     );
 
     bind_set_text_fn!(
@@ -33,7 +37,7 @@ impl Checkbox {
     bind_callback_fn!(
         docs: "Sets a callback for when this checkbox is toggled.",
         self: {
-            ty: Checkbox,
+            ty: Checkbox<'ui>,
             handle: uiCheckbox,
             fn: on_toggled(),
             cb: {

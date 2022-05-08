@@ -7,7 +7,7 @@
 use crate::prelude::*;
 use std::{os::raw::c_void, ptr};
 
-impl ui!() {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Window`].
     pub fn create_window(
         &self,
@@ -16,10 +16,11 @@ impl ui!() {
         height: u16,
         has_menubar: bool,
         should_quit_on_close: bool,
-    ) -> Result<&mut Window, crate::Error> {
+    ) -> Result<&mut Window<'ui>, crate::Error> {
         let title = make_cstring!(title.as_ref());
         let window = call_libui_new_fn!(
             ui: self,
+            ui_lt: 'ui,
             alloc: alloc_window,
             fn: uiNewWindow(
                 title.as_ptr(),
@@ -69,13 +70,17 @@ def_subcontrol!(
     ],
 );
 
-impl Window {
+impl<'ui> Window<'ui> {
     bind_text_fn!(
         docs: "The title of this window.",
-        title,
-        raw_title,
-        title_ptr,
-        uiWindowTitle,
+        self: {
+            fn: title,
+            raw_fn: raw_title,
+            as_ptr_fn: title_ptr,
+        },
+        libui: {
+            fn: uiWindowTitle(),
+        },
     );
 
     bind_set_text_fn!(
@@ -108,13 +113,12 @@ impl Window {
         }
     }
 
-    /*
     bind_callback_fn!(
         docs: "Sets a callback for when the content size of this window changes.",
         self: {
-            ty: Window<'on_content_size_changed, 'on_closing>,
+            ty: Window<'ui>,
             handle: uiWindow,
-            fn: on_content_size_changed<'on_content_size_changed>(),
+            fn: on_content_size_changed(),
             cb: {
                 sig: f -> (),
             },
@@ -130,9 +134,9 @@ impl Window {
     bind_callback_fn!(
         docs: "Sets a callback for when this window is requested to close.",
         self: {
-            ty: Window<'on_content_size_changed, 'on_closing>,
+            ty: Window<'ui>,
             handle: uiWindow,
-            fn: on_closing<'on_closing>(),
+            fn: on_closing(),
             cb: {
                 sig: should_close -> bool,
                 map: |it: bool| { i32::from(it) },
@@ -145,7 +149,6 @@ impl Window {
             },
         },
     );
-    */
 
     bind_bool_fn!(
         docs: "Determines if this window is fullscreen.",
@@ -173,9 +176,13 @@ impl Window {
 
     bind_add_child_fn!(
         docs: "Sets the child control of this window.",
-        set_child,
-        child,
-        uiWindowSetChild,
+        self: {
+            fn: set_child<'ui>,
+            child: child,
+        },
+        libui: {
+            fn: uiWindowSetChild,
+        }
     );
 
     bind_bool_fn!(
@@ -205,7 +212,7 @@ impl Window {
 
 macro_rules! impl_present_fn {
     ($name:ident, $fn:ident $(,)?) => {
-        impl Window {
+        impl Window<'_> {
             pub fn $name(
                 &self,
                 title: impl AsRef<str>,
