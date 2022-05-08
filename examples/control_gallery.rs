@@ -46,11 +46,15 @@ fn setup_help_menu(ui: &boing::Ui) {
     let menu = ui.create_menu("Help").unwrap();
     menu.append_item(ui, "Documentation").unwrap();
 
+    let data = vec![1, 2, 3, 4];
+
     let about_item = menu.append_about_item(ui).unwrap();
     about_item.on_clicked(
         ui,
-        |ui, item| {
-            item.set_checked(true);
+        || {
+            println!("Sum: {}", data.iter().sum::<u32>());
+
+            about_item.set_checked(true);
 
             let window = ui.create_window(
                 "About libui Control Gallery",
@@ -121,7 +125,13 @@ fn create_numbers_group(ui: &boing::Ui) -> &mut boing::Group {
 fn create_numbers_vbox(ui: &boing::Ui) -> &mut boing::UniBox {
     let vbox = ui.create_vertical_box().unwrap();
     vbox.append_child(ui.create_spinbox(0, 100).unwrap(), false);
-    vbox.append_child(ui.create_slider(0, 100).unwrap(), false);
+
+    let slider = ui.create_slider(0, 100).unwrap();
+
+    let data = vec![1, 2, 3, 4];
+    slider.on_changed(ui, || println!("Slider sum: {}", data.iter().sum::<u32>()));
+
+    vbox.append_child(slider, false);
     vbox.append_child(ui.create_progress_bar().unwrap(), false);
 
     let loading_bar = ui.create_progress_bar().unwrap();

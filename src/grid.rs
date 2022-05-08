@@ -6,14 +6,21 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Grid`].
     pub fn create_grid(&self) -> Result<&mut Grid, crate::Error> {
-        call_libui_new_fn!(self, Grid, uiNewGrid)
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_grid,
+            fn: uiNewGrid() -> Grid,
+        )
     }
 }
 
-def_subcontrol!(Grid, uiGrid);
+def_subcontrol!(
+    ty: Grid,
+    handle: uiGrid,
+);
 
 impl Grid {
 

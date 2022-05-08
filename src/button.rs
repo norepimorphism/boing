@@ -6,18 +6,29 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     pub fn create_button(&self, text: impl AsRef<str>) -> Result<&mut Button, crate::Error> {
         let text = make_cstring!(text.as_ref());
-        call_libui_new_fn!(self, Button, uiNewButton, text.as_ptr())
+
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_button,
+            fn: uiNewButton(text.as_ptr()) -> Button,
+        )
     }
 }
 
-def_subcontrol!(Button, uiButton);
+def_subcontrol!(
+    ty: Button,
+    handle: uiButton,
+    cb_fns: [
+        on_clicked(),
+    ],
+);
 
 impl Button {
     bind_text_fn!(
-        "The text displayed within this button.",
+        docs: "The text displayed within this button.",
         text,
         raw_text,
         text_ptr,
@@ -25,19 +36,27 @@ impl Button {
     );
 
     bind_set_text_fn!(
-        "Sets the text displayed within this button.",
+        docs: "Sets the text displayed within this button.",
         set_text,
         text,
         uiButtonSetText,
     );
 
     bind_callback_fn!(
-        "Sets a callback for when this button is clicked.",
-        Button,
-        on_clicked,
-        uiButtonOnClicked;
-        f -> (),
-        (),
-        : uiButton,
+        docs: "Sets a callback for when this button is clicked.",
+        self: {
+            ty: Button,
+            handle: uiButton,
+            fn: on_clicked(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiButtonOnClicked(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 }

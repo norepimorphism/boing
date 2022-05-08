@@ -74,6 +74,8 @@ pub use ui::Ui;
 pub use unibox::UniBox;
 pub use window::Window;
 
+use std::fmt;
+
 #[derive(Debug)]
 pub enum Error {
     AlreadyInitedLibui,
@@ -83,4 +85,28 @@ pub enum Error {
         name: &'static str,
         cause: Option<String>,
     },
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::AlreadyInitedLibui => {
+                write!(f, "*libui-ng* is already initialized")
+            }
+            Self::ConvertCString(e) => {
+                write!(f, "failed to convert C string to Rust string: {}", e)
+            }
+            Self::ConvertRustString(e) => {
+                write!(f, "failed to convert Rust string to C string: {}", e)
+            }
+            Self::LibuiFn { name, cause } => {
+                write!(f, "*libui-ng* function `{}` failed", name)?;
+                if let Some(cause) = cause {
+                    write!(f, ": {}", cause)?;
+                }
+
+                Ok(())
+            }
+        }
+    }
 }

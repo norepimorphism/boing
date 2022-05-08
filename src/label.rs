@@ -6,19 +6,27 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Label`].
     pub fn create_label(&self, text: impl AsRef<str>) -> Result<&mut Label, crate::Error> {
         let text = make_cstring!(text.as_ref());
-        call_libui_new_fn!(self, Label, uiNewLabel, text.as_ptr())
+
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_label,
+            fn: uiNewLabel(text.as_ptr()) -> Label,
+        )
     }
 }
 
-def_subcontrol!(Label, uiLabel);
+def_subcontrol!(
+    ty: Label,
+    handle: uiLabel,
+);
 
 impl Label {
     bind_text_fn!(
-        "The text displayed by this label.",
+        docs: "The text displayed by this label.",
         text,
         raw_text,
         text_ptr,
@@ -26,7 +34,7 @@ impl Label {
     );
 
     bind_set_text_fn!(
-        "Sets the text displayed by this label.",
+        docs: "Sets the text displayed by this label.",
         set_text,
         text,
         uiLabelSetText,

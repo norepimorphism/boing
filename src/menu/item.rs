@@ -8,18 +8,14 @@ use super::Menu;
 macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
-            pub fn $boing_fn<'a>(
+            pub fn $boing_fn(
                 &self,
-                ui: &'a Ui,
+                ui: &Ui,
                 name: impl AsRef<str>,
-            ) -> Result<&'a mut Item, $crate::Error> {
+            ) -> Result<&mut Item, $crate::Error> {
                 let name = make_cstring!(name.as_ref());
-                call_fallible_libui_fn!(
-                    $libui_fn,
-                    self.as_ptr(),
-                    name.as_ptr(),
-                )
-                .map(|ptr| ui.alloc(Item::from_ptr(ptr)))
+                call_fallible_libui_fn!($libui_fn(self.as_ptr(), name.as_ptr()))
+                    .map(|ptr| ui.alloc_menu_item(Item::from_ptr(ptr)))
             }
         }
     };
@@ -28,9 +24,9 @@ macro_rules! impl_append_item_fn_with_name {
 macro_rules! impl_append_item_fn {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
-            pub fn $boing_fn<'a>(&self, ui: &'a Ui) -> Result<&'a mut Item, $crate::Error> {
-                call_fallible_libui_fn!($libui_fn, self.as_ptr())
-                    .map(|ptr| ui.alloc(Item::from_ptr(ptr)))
+            pub fn $boing_fn(&self, ui: &Ui) -> Result<&mut Item, $crate::Error> {
+                call_fallible_libui_fn!($libui_fn(self.as_ptr()))
+                    .map(|ptr| ui.alloc_menu_item(Item::from_ptr(ptr)))
             }
         }
     };
@@ -42,36 +38,49 @@ impl_append_item_fn!(append_quit_item, uiMenuAppendQuitItem);
 impl_append_item_fn!(append_preferences_item, uiMenuAppendPreferencesItem);
 impl_append_item_fn!(append_about_item, uiMenuAppendAboutItem);
 
-pub struct Item(*mut uiMenuItem);
+pub struct Item {
+    ptr: *mut uiMenuItem,
+    on_clicked: Box<dyn FnMut()>,
+}
 
 impl Item {
     pub(super) fn from_ptr(ptr: *mut uiMenuItem) -> Self {
-        Self(ptr)
+        Self {
+            ptr,
+            on_clicked: Box::new(|| {}),
+        }
     }
 
     fn as_ptr(&self) -> *mut uiMenuItem {
-        self.0
+        self.ptr
     }
 
     bind_callback_fn!(
-        "Sets a callback for when this item is clicked.",
-        Item,
-        on_clicked,
-        uiMenuItemOnClicked;
-        f -> (),
-        (),
-        : uiMenuItem,
-        : *mut uiWindow,
+        docs: "Sets a callback for when this item is clicked.",
+        self: {
+            ty: Item,
+            handle: uiMenuItem,
+            fn: on_clicked(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiMenuItemOnClicked(),
+            cb: {
+                sig: (*mut uiWindow) -> (),
+            },
+        },
     );
 
     bind_bool_fn!(
-        "Determines if this item is checked.",
+        docs: "Determines if this item is checked.",
         is_checked,
         uiMenuItemChecked,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this item is checked.",
+        docs: "Sets whether or not this item is checked.",
         set_checked,
         uiMenuItemSetChecked,
     );

@@ -29,16 +29,16 @@ impl Control {
 macro_rules! impl_downcast {
     ($($type:ident)*) => {
         impl Control {
-            pub fn downcast(self) -> Option<Downcasted> {
-                match self.type_id() {
-                    $(
-                        TypeId::$type => unsafe {
-                            Some(Downcasted::$type($crate::$type::from_control(self)))
-                        }
-                    )*
-                    TypeId::Unknown(_) => None,
-                }
-            }
+            // pub fn downcast(self) -> Option<Downcasted> {
+            //     match self.type_id() {
+            //         $(
+            //             TypeId::$type => unsafe {
+            //                 Some(Downcasted::$type($crate::$type::from_control(self)))
+            //             }
+            //         )*
+            //         TypeId::Unknown(_) => None,
+            //     }
+            // }
         }
 
         #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -49,12 +49,12 @@ macro_rules! impl_downcast {
             Unknown(u32),
         }
 
-        #[derive(Debug, Eq, PartialEq)]
-        pub enum Downcasted {
-            $(
-                $type($crate::$type),
-            )*
-        }
+        // #[derive(Debug, Eq, PartialEq)]
+        // pub enum Downcasted {
+        //     $(
+        //         $type($crate::$type),
+        //     )*
+        // }
     };
 }
 
@@ -127,7 +127,7 @@ impl Control {
     }
 
     bind_bool_fn!(
-        "Determines if this control is visible.",
+        docs: "Determines if this control is visible.",
         is_visible,
         uiControlVisible,
     );
@@ -141,7 +141,7 @@ impl Control {
     }
 
     bind_bool_fn!(
-        "Determines if this control is enabled.",
+        docs: "Determines if this control is enabled.",
         is_enabled,
         uiControlEnabled,
     );
@@ -155,7 +155,7 @@ impl Control {
     }
 
     bind_bool_fn!(
-        "Determines if this control is enabled to the user.",
+        docs: "Determines if this control is enabled to the user.",
         is_enabled_to_user,
         uiControlEnabledToUser,
     );

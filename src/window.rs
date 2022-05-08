@@ -7,7 +7,7 @@
 use crate::prelude::*;
 use std::{os::raw::c_void, ptr};
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Window`].
     pub fn create_window(
         &self,
@@ -19,13 +19,14 @@ impl Ui {
     ) -> Result<&mut Window, crate::Error> {
         let title = make_cstring!(title.as_ref());
         let window = call_libui_new_fn!(
-            self,
-            Window,
-            uiNewWindow,
-            title.as_ptr(),
-            width.into(),
-            height.into(),
-            has_menubar.into(),
+            ui: self,
+            alloc: alloc_window,
+            fn: uiNewWindow(
+                title.as_ptr(),
+                width.into(),
+                height.into(),
+                has_menubar.into(),
+            ) -> Window,
         )?;
 
         if should_quit_on_close {
@@ -59,11 +60,18 @@ impl Ui {
     }
 }
 
-def_subcontrol!(Window, uiWindow);
+def_subcontrol!(
+    ty: Window,
+    handle: uiWindow,
+    cb_fns: [
+        on_content_size_changed(),
+        on_closing() -> bool,
+    ],
+);
 
 impl Window {
     bind_text_fn!(
-        "The title of this window.",
+        docs: "The title of this window.",
         title,
         raw_title,
         title_ptr,
@@ -71,7 +79,7 @@ impl Window {
     );
 
     bind_set_text_fn!(
-        "Sets the title of this window.",
+        docs: "Sets the title of this window.",
         set_title,
         title,
         uiWindowSetTitle,
@@ -100,78 +108,96 @@ impl Window {
         }
     }
 
+    /*
     bind_callback_fn!(
-        "Sets a callback for when the content size of this window changes.",
-        Window,
-        on_content_size_changed,
-        uiWindowOnContentSizeChanged;
-        f -> (),
-        (),
-        : uiWindow,
+        docs: "Sets a callback for when the content size of this window changes.",
+        self: {
+            ty: Window<'on_content_size_changed, 'on_closing>,
+            handle: uiWindow,
+            fn: on_content_size_changed<'on_content_size_changed>(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiWindowOnContentSizeChanged(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 
     bind_callback_fn!(
-        "Sets a callback for when this window is requested to close.",
-        Window,
-        on_closing,
-        uiWindowOnClosing;
-        should_close -> bool,
-        : |it: bool| { i32::from(it) },
-        i32,
-        : uiWindow,
+        docs: "Sets a callback for when this window is requested to close.",
+        self: {
+            ty: Window<'on_content_size_changed, 'on_closing>,
+            handle: uiWindow,
+            fn: on_closing<'on_closing>(),
+            cb: {
+                sig: should_close -> bool,
+                map: |it: bool| { i32::from(it) },
+            },
+        },
+        libui: {
+            fn: uiWindowOnClosing(),
+            cb: {
+                sig: () -> i32,
+            },
+        },
     );
+    */
 
     bind_bool_fn!(
-        "Determines if this window is fullscreen.",
+        docs: "Determines if this window is fullscreen.",
         is_fullscreen,
         uiWindowFullscreen,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this window is fullscreen.",
+        docs: "Sets whether or not this window is fullscreen.",
         set_fullscreen,
         uiWindowSetFullscreen,
     );
 
     bind_bool_fn!(
-        "Determines if this window is borderless.",
+        docs: "Determines if this window is borderless.",
         is_borderless,
         uiWindowBorderless,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this window is borderless.",
+        docs: "Sets whether or not this window is borderless.",
         set_borderless,
         uiWindowSetBorderless,
     );
 
     bind_add_child_fn!(
-        "Sets the child control of this window.",
+        docs: "Sets the child control of this window.",
         set_child,
         child,
         uiWindowSetChild,
     );
 
     bind_bool_fn!(
-        "Determines if this window has margins.",
+        docs: "Determines if this window has margins.",
         is_margined,
         uiWindowMargined,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this window has margins.",
+        docs: "Sets whether or not this window has margins.",
         set_margined,
         uiWindowSetMargined,
     );
 
     bind_bool_fn!(
-        "Determines if this window is resizeable.",
+        docs: "Determines if this window is resizeable.",
         is_resizeable,
         uiWindowResizeable,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this window is resizeable.",
+        docs: "Sets whether or not this window is resizeable.",
         set_resizeable,
         uiWindowSetResizeable,
     );

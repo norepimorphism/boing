@@ -10,17 +10,14 @@ pub use item::Item;
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Menu`].
     pub fn create_menu(&self, name: impl AsRef<str>) -> Result<&mut Menu, crate::Error> {
         let name = make_cstring!(name.as_ref());
-        call_fallible_libui_fn!(
-            uiNewMenu,
-            name.as_ptr(),
-        )
-        .map(|menu| {
-            self.alloc(Menu(menu))
-        })
+        call_fallible_libui_fn!(uiNewMenu(name.as_ptr()))
+            .map(|menu| {
+                self.alloc_menu(Menu(menu))
+            })
     }
 }
 

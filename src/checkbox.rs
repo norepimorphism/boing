@@ -6,11 +6,17 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(Checkbox, uiCheckbox);
+def_subcontrol!(
+    ty: Checkbox,
+    handle: uiCheckbox,
+    cb_fns: [
+        on_toggled(),
+    ],
+);
 
 impl Checkbox {
     bind_text_fn!(
-        "The text displayed next to this checkbox.",
+        docs: "The text displayed next to this checkbox.",
         text,
         raw_text,
         text_ptr,
@@ -18,30 +24,38 @@ impl Checkbox {
     );
 
     bind_set_text_fn!(
-        "Sets the text displayed next to this checkbox.",
+        docs: "Sets the text displayed next to this checkbox.",
         set_text,
         text,
         uiCheckboxSetText,
     );
 
     bind_callback_fn!(
-        "Sets a callback for when this checkbox is toggled.",
-        Checkbox,
-        on_toggled,
-        uiCheckboxOnToggled;
-        f -> (),
-        (),
-        : uiCheckbox,
+        docs: "Sets a callback for when this checkbox is toggled.",
+        self: {
+            ty: Checkbox,
+            handle: uiCheckbox,
+            fn: on_toggled(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiCheckboxOnToggled(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 
     bind_bool_fn!(
-        "Determines if this checkbox is checked.",
+        docs: "Determines if this checkbox is checked.",
         checked,
         uiCheckboxChecked,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this checkbox is checked.",
+        docs: "Sets whether or not this checkbox is checked.",
         set_checked,
         uiCheckboxSetChecked,
     );

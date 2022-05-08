@@ -6,4 +6,7 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(Area, uiArea);
+def_subcontrol!(
+    ty: Area,
+    handle: uiArea,
+);

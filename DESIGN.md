@@ -6,14 +6,17 @@ To guarantee safety to the end user, both type-level and runtime decisions were 
 
 ## Initialization
 
-`uiInit` must only be called once.
+`uiInit` must be called exactly once.
 
 * On Windows, calling `uiInit` multiple times duplicates calls to `RegisterClassEx`, which returns `ERROR_CLASS_ALREADY_EXISTS` if called a second time. The *libui-ng* utility window will also be created multiple times.
 
 To guarantee this, *boing*'s `Ui::run` sets a global boolean when called for the first time, and aborts if the boolean is already set.
 
 ```rust
+Ui::run(|_| {});
 
+// ERROR: *libui-ng* is already initialized.
+Ui::run(|_| {});
 ```
 
 ## Control Construction
@@ -22,7 +25,7 @@ To guarantee this, *boing*'s `Ui::run` sets a global boolean when called for the
 
 * *TODO*
 
-To guarantee this, to be constructed, all *boing* controls require exclusive access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
+To guarantee this, to be constructed, all *boing* controls require access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
 
 ```rust
 
@@ -30,7 +33,7 @@ To guarantee this, to be constructed, all *boing* controls require exclusive acc
 
 ## Control Destruction
 
-`uiControlDestroy` must only be called on a given `uiControl` once, after which the control may no longer be accessed.
+`uiControlDestroy` must be called on a given `uiControl` exactly once, after which the control must no longer be accessed.
 
 * *TODO*
 

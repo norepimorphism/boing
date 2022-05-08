@@ -7,14 +7,21 @@
 use crate::prelude::*;
 use std::mem::ManuallyDrop;
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Tab`].
     pub fn create_tab(&self) -> Result<&mut Tab, crate::Error> {
-        call_libui_new_fn!(self, Tab, uiNewTab)
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_tab,
+            fn: uiNewTab() -> Tab,
+        )
     }
 }
 
-def_subcontrol!(Tab, uiTab);
+def_subcontrol!(
+    ty: Tab,
+    handle: uiTab,
+);
 
 impl Tab {
     /// Appends a page.

@@ -6,19 +6,30 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     /// Creates a new horizontal [`UniBox`].
     pub fn create_horizontal_box(&self) -> Result<&mut UniBox, crate::Error> {
-        call_libui_new_fn!(self, UniBox, uiNewHorizontalBox)
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_unibox,
+            fn: uiNewHorizontalBox() -> UniBox,
+        )
     }
 
     /// Creates a new vertical [`UniBox`].
     pub fn create_vertical_box(&self) -> Result<&mut UniBox, crate::Error> {
-        call_libui_new_fn!(self, UniBox, uiNewVerticalBox)
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_unibox,
+            fn: uiNewVerticalBox() -> UniBox,
+        )
     }
 }
 
-def_subcontrol!(UniBox, uiBox);
+def_subcontrol!(
+    ty: UniBox,
+    handle: uiBox,
+);
 
 impl UniBox {
     pub fn append_child(
@@ -39,13 +50,13 @@ impl UniBox {
     }
 
     bind_bool_fn!(
-        "Determines if this box is padded.",
+        docs: "Determines if this box is padded.",
         is_padded,
         uiBoxPadded,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this box is padded.",
+        docs: "Sets whether or not this box is padded.",
         set_padded,
         uiBoxSetPadded,
     );

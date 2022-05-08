@@ -6,23 +6,41 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl ui!() {
     /// Creates a new [`Spinbox`].
     pub fn create_spinbox(&self, min: u16, max: u16) -> Result<&mut Spinbox, crate::Error> {
-        call_libui_new_fn!(self, Spinbox, uiNewSpinbox, min.into(), max.into())
+        call_libui_new_fn!(
+            ui: self,
+            alloc: alloc_spinbox,
+            fn: uiNewSpinbox(min.into(), max.into()) -> Spinbox,
+        )
     }
 }
 
-def_subcontrol!(Spinbox, uiSpinbox);
+def_subcontrol!(
+    ty: Spinbox,
+    handle: uiSpinbox,
+    cb_fns: [
+        on_changed(),
+    ],
+);
 
 impl Spinbox {
     bind_callback_fn!(
-        "Sets a callback for when this spinbox changes.",
-        Spinbox,
-        on_changed,
-        uiSpinboxOnChanged;
-        f -> (),
-        (),
-        : uiSpinbox,
+        docs: "Sets a callback for when this spinbox changes.",
+        self: {
+            ty: Spinbox,
+            handle: uiSpinbox,
+            fn: on_changed(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiSpinboxOnChanged(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 }

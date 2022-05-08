@@ -6,7 +6,10 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(Form, uiForm);
+def_subcontrol!(
+    ty: Form,
+    handle: uiForm,
+);
 
 impl Form {
 
