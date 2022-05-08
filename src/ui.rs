@@ -100,7 +100,7 @@ macro_rules! def_ui {
 
             $(
                 #[allow(clippy::mut_from_ref)]
-                pub(crate) fn $fn(&self, value: $crate::$ty<'ui>) -> &mut $crate::$ty<'ui> {
+                pub(crate) fn $fn<'a>(&'a self, value: $crate::$ty<'ui>) -> &'a mut $crate::$ty<'ui> {
                     self.$field.alloc(value)
                 }
             )*

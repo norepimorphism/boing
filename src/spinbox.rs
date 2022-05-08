@@ -26,11 +26,11 @@ def_subcontrol!(
     ],
 );
 
-impl<'this> Spinbox<'this> {
+impl<'ui> Spinbox<'ui> {
     bind_callback_fn!(
         docs: "Sets a callback for when this spinbox changes.",
         self: {
-            ty: Spinbox<'this>,
+            ty: Spinbox<'ui>,
             handle: uiSpinbox,
             fn: on_changed(),
             cb: {

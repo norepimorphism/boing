@@ -11,6 +11,7 @@ impl<'ui> Control<'ui> {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Control<'ui> {
     ptr: *mut uiControl,
     _ui: PhantomData<&'ui Ui<'ui>>,
@@ -30,17 +31,17 @@ impl Control<'_> {
 
 macro_rules! impl_downcast {
     ($($type:ident)*) => {
-        impl Control<'_> {
-            // pub fn downcast(self) -> Option<Downcasted> {
-            //     match self.type_id() {
-            //         $(
-            //             TypeId::$type => unsafe {
-            //                 Some(Downcasted::$type($crate::$type::from_control(self)))
-            //             }
-            //         )*
-            //         TypeId::Unknown(_) => None,
-            //     }
-            // }
+        impl<'ui> Control<'ui> {
+            pub fn downcast(self) -> Option<Downcasted<'ui>> {
+                match self.type_id() {
+                    $(
+                        TypeId::$type => unsafe {
+                            Some(Downcasted::$type($crate::$type::from_control(self)))
+                        }
+                    )*
+                    TypeId::Unknown(_) => None,
+                }
+            }
         }
 
         #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -51,12 +52,11 @@ macro_rules! impl_downcast {
             Unknown(u32),
         }
 
-        // #[derive(Debug, Eq, PartialEq)]
-        // pub enum Downcasted {
-        //     $(
-        //         $type($crate::$type),
-        //     )*
-        // }
+        pub enum Downcasted<'ui> {
+            $(
+                $type($crate::$type<'ui>),
+            )*
+        }
     };
 }
 

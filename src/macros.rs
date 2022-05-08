@@ -20,7 +20,11 @@ macro_rules! def_subcontrol {
         )? $(,)?
     ) => {
         impl<'ui> $ty<'ui> {
-            pub(crate) fn new(control: Control<'ui>) -> Self {
+            pub(crate) fn new(ptr: *mut $ptr_ty) -> Self {
+                Self::from_control(Control::<'ui>::new(ptr.cast()))
+            }
+
+            pub(crate) fn from_control(control: Control<'ui>) -> Self {
                 Self {
                     inner: control,
                     $(
@@ -36,7 +40,7 @@ macro_rules! def_subcontrol {
             inner: $crate::Control<'ui>,
             $(
                 $(
-                    $cb: Option<*mut (dyn 'ui + FnMut() $(-> $out)?)>
+                    $cb: Option<Box<dyn 'ui + for<'a> FnMut(&'a mut $ty<'ui>) $(-> $out)?>>
                 ),*
             )?
         }
@@ -78,11 +82,7 @@ macro_rules! call_libui_new_fn {
         fn: $fn:ident( $($arg:expr),* $(,)? ) -> $out_ty:ident,
     ) => {
         call_fallible_libui_fn!( $fn($($arg),*) )
-            .map(|ptr| {
-                $ui.$alloc($out_ty::new(Control::<$ui_lt>::new(
-                    std::ptr::addr_of_mut!(*ptr).cast(),
-                )))
-            })
+            .map(|ptr| $ui.$alloc($out_ty::<$ui_lt>::new(ptr)))
     };
 }
 
@@ -108,25 +108,35 @@ macro_rules! bind_callback_fn {
         // Wow, callbacks are complicated!
 
         #[doc = $docs]
-        pub fn $fn<F>(&mut self, $user_cb: F)
+        pub fn $fn<'a, F>(&'a mut self, $user_cb: F)
         where
-            F: $ui_lt + FnMut() -> $user_cb_out,
+            F: $ui_lt + for<'b> FnMut(&'b mut $self_ty<$ui_lt>) -> $user_cb_out,
         {
             /// A trampoline function to the user-set callback.
-            unsafe extern "C" fn trampoline<F>(
+            unsafe extern "C" fn trampoline(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
                 user_cb: *mut std::os::raw::c_void,
-            ) -> $libui_cb_out
-            where
-                F: FnMut() -> $user_cb_out,
-            {
+            ) -> $libui_cb_out {
                 // Ensure nothing wonky has happened in the meantime.
                 debug_assert!(!handle.is_null());
                 debug_assert!(!user_cb.is_null());
 
-                let user_cb: &mut Box<dyn FnMut() -> $user_cb_out> = &mut *user_cb.cast();
-                let result = (user_cb)();
+                let user_cb: &mut Option<Box<dyn for<'a> FnMut(&'a mut $self_ty) -> $user_cb_out>> = &mut *user_cb.cast();
+
+                // SAFETY:
+                //
+                // The [`Option` docs] state that transmutation is valid from `Some(T)` to `T`. In
+                // this case, the `Option` is definitely `Some` (unless something wonky happened!),
+                // so this should be safe.
+                //
+                // [`Option` docs]: https://doc.rust-lang.org/std/option/index.html#representation
+                debug_assert!(user_cb.is_some());
+                let user_cb: &mut Box<dyn for<'a> FnMut(&'a mut $self_ty) -> $user_cb_out> = std::mem::transmute(user_cb);
+
+                let mut handle = std::mem::ManuallyDrop::<$self_ty>::new(<$self_ty>::new(handle));
+
+                let result = (user_cb)(&mut handle);
                 $(
                     let result = $map_user_cb(result);
                 )?
@@ -134,7 +144,8 @@ macro_rules! bind_callback_fn {
                 result
             }
 
-            self.$fn = Some(Box::into_raw(Box::new($user_cb)));
+            // Store the callback data.
+            self.$fn = Some(Box::new($user_cb));
 
             unsafe {
                 $libui_fn(
@@ -142,7 +153,7 @@ macro_rules! bind_callback_fn {
                     $(
                         $($libui_arg),*
                     )?
-                    Some(trampoline::<F>),
+                    Some(trampoline),
                     std::ptr::addr_of_mut!(self.$fn).cast(),
                 );
             }

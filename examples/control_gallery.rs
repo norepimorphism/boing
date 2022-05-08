@@ -42,28 +42,26 @@ fn setup_edit_menu<'ui>(ui: &boing::Ui<'ui>) {
     menu.append_preferences_item(ui).unwrap();
 }
 
-fn setup_help_menu<'ui>(ui: &boing::Ui<'ui>) {
+fn setup_help_menu<'a, 'ui>(ui: &'a boing::Ui<'ui>) {
     let menu = ui.create_menu("Help").unwrap();
     menu.append_item(ui, "Documentation").unwrap();
 
-    let data = vec![1, 2, 3, 4];
+    menu
+        .append_about_item(ui)
+        .unwrap()
+        .on_clicked(
+            |item| {
+                item.set_checked(true);
 
-    let about_item = menu.append_about_item(ui).unwrap();
-    about_item.on_clicked(
-        move || {
-            println!("Sum: {}", data.iter().sum::<u32>());
-
-            // about_item.set_checked(true);
-
-            // let window = ui.create_window(
-            //     "About libui Control Gallery",
-            //     320,
-            //     240,
-            //     false,
-            //     false,
-            // )
-            // .unwrap();
-            // window.show();
+                // let window = ui.create_window(
+                //     "About libui Control Gallery",
+                //     320,
+                //     240,
+                //     false,
+                //     false,
+                // )
+                // .unwrap();
+                // window.show();
         },
     );
 }
@@ -125,12 +123,7 @@ fn create_numbers_vbox<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::UniBox
     let vbox = ui.create_vertical_box().unwrap();
     vbox.append_child(ui.create_spinbox(0, 100).unwrap(), false);
 
-    let slider = ui.create_slider(0, 100).unwrap();
-
-    let data = vec![1, 2, 3, 4];
-    slider.on_changed(move || println!("Slider sum: {}", data.iter().sum::<u32>()));
-
-    vbox.append_child(slider, false);
+    vbox.append_child(ui.create_slider(0, 100).unwrap(), false);
     vbox.append_child(ui.create_progress_bar().unwrap(), false);
 
     let loading_bar = ui.create_progress_bar().unwrap();
