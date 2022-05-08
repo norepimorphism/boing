@@ -46,44 +46,31 @@ fn setup_help_menu<'a, 'ui>(ui: &'a boing::Ui<'ui>) {
     let menu = ui.create_menu("Help").unwrap();
     menu.append_item(ui, "Documentation").unwrap();
 
-    menu
-        .append_about_item(ui)
-        .unwrap()
-        .on_clicked(
-            ui,
-            |ui, _| {
-                let window = ui.create_window(
-                    "About libui Control Gallery",
-                    320,
-                    240,
-                    false,
-                    false,
-                )
-                .unwrap();
-                window.show();
-        },
-    );
+    menu.append_about_item(ui).unwrap().on_clicked(ui, |ui, _| {
+        let window = ui
+            .create_window("About libui Control Gallery", 320, 240, false, false)
+            .unwrap();
+        window.show();
+    });
 }
 
 fn create_window<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Window<'ui> {
-    let window = ui.create_window(
-        "libui Control Gallery",
-        640,
-        480,
-        true,
-        true,
-    )
-    .unwrap();
+    let window = ui
+        .create_window("libui Control Gallery", 640, 480, true, true)
+        .unwrap();
     window.set_margined(true);
 
     window
 }
 
-fn create_tab<'a , 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Tab<'ui> {
+fn create_tab<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Tab<'ui> {
     let tab = ui.create_tab().unwrap();
-    tab.append_page("Basic Controls", create_basic_controls_page(ui)).unwrap();
-    tab.append_page("Numbers and Lists", create_numbers_n_lists_page(ui)).unwrap();
-    tab.append_page("Data Choosers", create_data_choosers_page(ui)).unwrap();
+    tab.append_page("Basic Controls", create_basic_controls_page(ui))
+        .unwrap();
+    tab.append_page("Numbers and Lists", create_numbers_n_lists_page(ui))
+        .unwrap();
+    tab.append_page("Data Choosers", create_data_choosers_page(ui))
+        .unwrap();
 
     tab
 }

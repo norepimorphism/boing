@@ -8,7 +8,11 @@ use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Image`].
-    pub fn create_image<'a>(&'a self, width: f64, height: f64) -> Result<&'a mut Image<'ui>, crate::Error> {
+    pub fn create_image<'a>(
+        &'a self,
+        width: f64,
+        height: f64,
+    ) -> Result<&'a mut Image<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             ui_lt: 'ui,
@@ -18,10 +22,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: Image,
-    handle: uiImage,
-);
+def_subcontrol!(ty: Image, handle: uiImage,);
 
 #[repr(C)]
 pub struct Pixel {

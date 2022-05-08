@@ -8,7 +8,11 @@ use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Slider`].
-    pub fn create_slider<'a>(&'a self, min: u16, max: u16) -> Result<&'a mut Slider<'ui>, crate::Error> {
+    pub fn create_slider<'a>(
+        &'a self,
+        min: u16,
+        max: u16,
+    ) -> Result<&'a mut Slider<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             ui_lt: 'ui,

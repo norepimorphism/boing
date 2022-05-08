@@ -28,12 +28,21 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: UniBox,
-    handle: uiBox,
-);
+def_subcontrol!(ty: UniBox, handle: uiBox,);
 
 impl<'ui> UniBox<'ui> {
+    bind_bool_fn!(
+        docs: "Determines if this box is padded.",
+        is_padded,
+        uiBoxPadded,
+    );
+
+    bind_set_bool_fn!(
+        docs: "Sets whether or not this box is padded.",
+        set_padded,
+        uiBoxSetPadded,
+    );
+
     pub fn append_child(
         &self,
         child: &mut impl DerefMut<Target = Control<'ui>>,
@@ -50,16 +59,4 @@ impl<'ui> UniBox<'ui> {
     pub fn delete_child(&self, index: u16) {
         unsafe { uiBoxDelete(self.as_ptr(), index.into()) };
     }
-
-    bind_bool_fn!(
-        docs: "Determines if this box is padded.",
-        is_padded,
-        uiBoxPadded,
-    );
-
-    bind_set_bool_fn!(
-        docs: "Sets whether or not this box is padded.",
-        set_padded,
-        uiBoxSetPadded,
-    );
 }

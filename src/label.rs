@@ -8,7 +8,10 @@ use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Label`].
-    pub fn create_label<'a>(&'a self, text: impl AsRef<str>) -> Result<&'a mut Label<'ui>, crate::Error> {
+    pub fn create_label<'a>(
+        &'a self,
+        text: impl AsRef<str>,
+    ) -> Result<&'a mut Label<'ui>, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(
@@ -20,10 +23,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: Label,
-    handle: uiLabel,
-);
+def_subcontrol!(ty: Label, handle: uiLabel,);
 
 impl Label<'_> {
     bind_text_fn!(

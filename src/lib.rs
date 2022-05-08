@@ -64,7 +64,7 @@ pub use grid::Grid;
 pub use group::Group;
 pub use image::Image;
 pub use label::Label;
-pub use menu::{Menu, Item as MenuItem};
+pub use menu::{Item as MenuItem, Menu};
 pub use progress_bar::ProgressBar;
 pub use slider::Slider;
 pub use spinbox::Spinbox;

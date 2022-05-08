@@ -7,7 +7,10 @@
 use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
-    pub fn create_button<'a>(&'a self, text: impl AsRef<str>) -> Result<&'a mut Button<'ui>, crate::Error> {
+    pub fn create_button<'a>(
+        &'a self,
+        text: impl AsRef<str>,
+    ) -> Result<&'a mut Button<'ui>, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(

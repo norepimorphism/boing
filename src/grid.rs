@@ -18,11 +18,6 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: Grid,
-    handle: uiGrid,
-);
+def_subcontrol!(ty: Grid, handle: uiGrid,);
 
-impl Grid<'_> {
-
-}
+impl Grid<'_> {}

@@ -18,10 +18,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: ProgressBar,
-    handle: uiProgressBar,
-);
+def_subcontrol!(ty: ProgressBar, handle: uiProgressBar,);
 
 impl ProgressBar<'_> {
     pub fn set_value(&self, value: i32) {

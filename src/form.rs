@@ -6,11 +6,6 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(
-    ty: Form,
-    handle: uiForm,
-);
+def_subcontrol!(ty: Form, handle: uiForm,);
 
-impl Form<'_> {
-
-}
+impl Form<'_> {}

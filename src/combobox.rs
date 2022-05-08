@@ -6,11 +6,6 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(
-    ty: Combobox,
-    handle: uiCombobox,
-);
+def_subcontrol!(ty: Combobox, handle: uiCombobox,);
 
-impl Combobox<'_> {
-
-}
+impl Combobox<'_> {}

@@ -90,29 +90,6 @@ impl<'ui> Window<'ui> {
         uiWindowSetTitle,
     );
 
-    pub fn content_size(&self) -> (i32, i32) {
-        let (mut width, mut height) = (0, 0);
-        unsafe {
-            uiWindowContentSize(
-                self.as_ptr(),
-                ptr::addr_of_mut!(width),
-                ptr::addr_of_mut!(height),
-            );
-       }
-
-       (width, height)
-    }
-
-    pub fn set_content_size(&self, width: u16, height: u16) {
-        unsafe {
-            uiWindowSetContentSize(
-                self.as_ptr(),
-                width.into(),
-                height.into(),
-            );
-        }
-    }
-
     bind_callback_fn!(
         docs: "Sets a callback for when the content size of this window changes.",
         self: {
@@ -208,6 +185,25 @@ impl<'ui> Window<'ui> {
         set_resizeable,
         uiWindowSetResizeable,
     );
+
+    pub fn content_size(&self) -> (i32, i32) {
+        let (mut width, mut height) = (0, 0);
+        unsafe {
+            uiWindowContentSize(
+                self.as_ptr(),
+                ptr::addr_of_mut!(width),
+                ptr::addr_of_mut!(height),
+            );
+        }
+
+        (width, height)
+    }
+
+    pub fn set_content_size(&self, width: u16, height: u16) {
+        unsafe {
+            uiWindowSetContentSize(self.as_ptr(), width.into(), height.into());
+        }
+    }
 }
 
 macro_rules! impl_present_fn {
@@ -228,12 +224,6 @@ macro_rules! impl_present_fn {
     };
 }
 
-impl_present_fn!(
-    present_alert,
-    uiMsgBox,
-);
+impl_present_fn!(present_alert, uiMsgBox,);
 
-impl_present_fn!(
-    present_error,
-    uiMsgBoxError,
-);
+impl_present_fn!(present_error, uiMsgBoxError,);

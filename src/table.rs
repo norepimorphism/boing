@@ -6,7 +6,4 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(
-    ty: Table,
-    handle: uiTable,
-);
+def_subcontrol!(ty: Table, handle: uiTable,);

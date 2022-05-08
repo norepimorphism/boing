@@ -8,7 +8,11 @@ use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Spinbox`].
-    pub fn create_spinbox<'a>(&'a self, min: u16, max: u16) -> Result<&'a mut Spinbox<'ui>, crate::Error> {
+    pub fn create_spinbox<'a>(
+        &'a self,
+        min: u16,
+        max: u16,
+    ) -> Result<&'a mut Spinbox<'ui>, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             ui_lt: 'ui,

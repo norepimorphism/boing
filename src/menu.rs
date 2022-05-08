@@ -13,12 +13,17 @@ use std::marker::PhantomData;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Menu`].
-    pub fn create_menu<'a>(&'a self, name: impl AsRef<str>) -> Result<&'a mut Menu<'ui>, crate::Error> {
+    pub fn create_menu<'a>(
+        &'a self,
+        name: impl AsRef<str>,
+    ) -> Result<&'a mut Menu<'ui>, crate::Error> {
         let name = make_cstring!(name.as_ref());
-        call_fallible_libui_fn!(uiNewMenu(name.as_ptr()))
-            .map(|menu| {
-                self.alloc_menu(Menu::<'ui> { ptr: menu, _ui: PhantomData })
+        call_fallible_libui_fn!(uiNewMenu(name.as_ptr())).map(|menu| {
+            self.alloc_menu(Menu::<'ui> {
+                ptr: menu,
+                _ui: PhantomData,
             })
+        })
     }
 }
 

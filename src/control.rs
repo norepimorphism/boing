@@ -7,7 +7,10 @@ use std::{marker::PhantomData, os::raw::c_void};
 
 impl<'ui> Control<'ui> {
     pub(crate) fn new(ptr: *mut uiControl) -> Self {
-        Self { ptr, _ui: PhantomData }
+        Self {
+            ptr,
+            _ui: PhantomData,
+        }
     }
 }
 
@@ -124,15 +127,27 @@ impl TypeId {
 }
 
 impl Control<'_> {
-    pub fn native_handle(&self) -> *mut c_void {
-        unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
-    }
-
     bind_bool_fn!(
         docs: "Determines if this control is visible.",
         is_visible,
         uiControlVisible,
     );
+
+    bind_bool_fn!(
+        docs: "Determines if this control is enabled.",
+        is_enabled,
+        uiControlEnabled,
+    );
+
+    bind_bool_fn!(
+        docs: "Determines if this control is enabled to the user.",
+        is_enabled_to_user,
+        uiControlEnabledToUser,
+    );
+
+    pub fn native_handle(&self) -> *mut c_void {
+        unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
+    }
 
     pub fn show(&self) {
         unsafe { uiControlShow(self.as_ptr()) };
@@ -142,12 +157,6 @@ impl Control<'_> {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
-    bind_bool_fn!(
-        docs: "Determines if this control is enabled.",
-        is_enabled,
-        uiControlEnabled,
-    );
-
     pub fn enable(&self) {
         unsafe { uiControlEnable(self.as_ptr()) };
     }
@@ -155,10 +164,4 @@ impl Control<'_> {
     pub fn disable(&self) {
         unsafe { uiControlDisable(self.as_ptr()) };
     }
-
-    bind_bool_fn!(
-        docs: "Determines if this control is enabled to the user.",
-        is_enabled_to_user,
-        uiControlEnabledToUser,
-    );
 }

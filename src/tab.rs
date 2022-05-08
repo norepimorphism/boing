@@ -19,10 +19,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: Tab,
-    handle: uiTab,
-);
+def_subcontrol!(ty: Tab, handle: uiTab,);
 
 impl<'ui> Tab<'ui> {
     /// Appends a page.
@@ -33,13 +30,7 @@ impl<'ui> Tab<'ui> {
     ) -> Result<(), crate::Error> {
         let control = ManuallyDrop::new(control);
         let name = make_cstring!(name.as_ref());
-        unsafe {
-            uiTabAppend(
-                self.as_ptr(),
-                name.as_ptr(),
-                control.as_ptr(),
-            )
-        };
+        unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
 
         Ok(())
     }
@@ -53,14 +44,7 @@ impl<'ui> Tab<'ui> {
     ) -> Result<(), crate::Error> {
         let control = ManuallyDrop::new(control);
         let name = make_cstring!(name.as_ref());
-        unsafe {
-            uiTabInsertAt(
-                self.as_ptr(),
-                name.as_ptr(),
-                index.into(),
-                control.as_ptr(),
-            )
-        }
+        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), index.into(), control.as_ptr()) }
 
         Ok(())
     }

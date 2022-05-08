@@ -8,7 +8,10 @@ use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Group`].
-    pub fn create_group<'a>(&'a self, title: impl AsRef<str>) -> Result<&'a mut Group<'ui>, crate::Error> {
+    pub fn create_group<'a>(
+        &'a self,
+        title: impl AsRef<str>,
+    ) -> Result<&'a mut Group<'ui>, crate::Error> {
         let title = make_cstring!(title.as_ref());
 
         call_libui_new_fn!(
@@ -20,10 +23,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(
-    ty: Group,
-    handle: uiGroup,
-);
+def_subcontrol!(ty: Group, handle: uiGroup,);
 
 impl<'ui> Group<'ui> {
     bind_text_fn!(

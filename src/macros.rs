@@ -230,12 +230,7 @@ macro_rules! bind_text_fn {
 }
 
 macro_rules! bind_set_text_fn {
-    (
-        docs: $docs:literal,
-        $fn:ident,
-        $arg:ident,
-        $libui_fn:ident $(,)?
-    ) => {
+    (docs: $docs:literal, $fn:ident, $arg:ident, $libui_fn:ident $(,)?) => {
         #[doc = $docs]
         pub fn $fn(&self, $arg: impl AsRef<str>) -> Result<(), $crate::Error> {
             // Normally, this is a bad idea: `$arg` is a `CString` that will be dropped at the end
@@ -253,11 +248,7 @@ macro_rules! bind_set_text_fn {
 
 /// Defines a binding to a *libui-ng-sys* function that returns `bool`.
 macro_rules! bind_bool_fn {
-    (
-        docs: $docs:literal,
-        $fn:ident,
-        $libui_fn:ident $(,)?
-    ) => {
+    (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
         #[doc = $docs]
         pub fn $fn(&self) -> bool {
             let result = unsafe { $libui_fn(self.as_ptr()) };
@@ -274,11 +265,7 @@ macro_rules! bind_bool_fn {
 
 /// Defines a binding to a *libui-ng-sys* function that accepts a `bool`.
 macro_rules! bind_set_bool_fn {
-    (
-        docs: $docs:literal,
-        $fn:ident,
-        $libui_fn:ident $(,)?
-    ) => {
+    (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
         #[doc = $docs]
         pub fn $fn(&self, value: bool) {
             unsafe { $libui_fn(self.as_ptr(), value.into()) };
