@@ -18,8 +18,6 @@ See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
 
 ## Project Progress
 
-* As a limitation of [Bumpalo](https://crates.io/crates/bumpalo), *boing* currently leaks most resources (e.g., controls, callbacks) allocated by *libui-ng*. While this can be addressed, the solution may require Nightly Rust.
-
 | Feature       | Docs? | Impl? |
 | ------------- | ----- | ----- |
 | `Area`        | ☐    | ☐    |

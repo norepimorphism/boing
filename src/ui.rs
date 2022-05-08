@@ -5,7 +5,7 @@
 use crate::prelude::*;
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
-impl Ui {
+impl Ui<'_> {
     /// Runs *libui-ng*.
     pub fn run(mut main: impl FnMut(&Self)) -> Result<(), crate::Error> {
         let ui = Self::new()?;
@@ -23,16 +23,18 @@ impl Ui {
 
         let mut result = Err(crate::Error::AlreadyInitedLibui);
         INIT.call_once(|| unsafe {
+            // TODO: Calling `Self::init_unchecked` inside `INIT.call_once` prevents the caller from
+            // retrying `Ui::new` if it fails the first time.
             result = Self::init_unchecked();
         });
 
-        result.map(|_| Self {
-            bump: bumpalo::Bump::new(),
-        })
+        result.map(|_| Self::default())
     }
 
     unsafe fn init_unchecked() -> Result<(), crate::Error> {
+        // TODO: What is `uiInitOptions`? What does the `Size` field mean?
         let mut init_options = uiInitOptions { Size: 0 };
+
         let err_msg = uiInit(ptr::addr_of_mut!(init_options));
 
         let result = Self::result_from_err_msg(err_msg);
@@ -69,14 +71,114 @@ impl Ui {
     }
 }
 
-/// A graphical user interface provided by *libui-ng*.
-pub struct Ui {
-    bump: bumpalo::Bump,
+macro_rules! def_ui {
+    (
+        $(
+            {
+                field: $field:ident,
+                fn: $fn:ident() -> $ty:ident $(,)?
+            }
+        ),* $(,)?
+    ) => {
+        /// A graphical user interface provided by *libui-ng*.
+        pub struct Ui<'ui> {
+            $(
+                $field: typed_arena::Arena<$crate::$ty<'ui>>
+            ),*
+        }
+
+        impl<'ui> Ui<'ui> {
+            // This is intentionally *not* `Default::default`, as we don't want to export this
+            // publicly.
+            fn default() -> Self {
+                Self {
+                    $(
+                        $field: typed_arena::Arena::new()
+                    ),*
+                }
+            }
+
+            $(
+                #[allow(clippy::mut_from_ref)]
+                pub(crate) fn $fn<'a>(&'a self, value: $crate::$ty<'ui>) -> &'a mut $crate::$ty<'ui> {
+                    self.$field.alloc(value)
+                }
+            )*
+        }
+    };
 }
 
-impl<'a> Ui {
-    #[allow(clippy::mut_from_ref)]
-    pub(crate) fn alloc<T>(&'a self, object: T) -> &'a mut T {
-        self.bump.alloc(object)
-    }
-}
+def_ui![
+    {
+        field: areas,
+        fn: alloc_area() -> Area,
+    },
+    {
+        field: buttons,
+        fn: alloc_button() -> Button,
+    },
+    {
+        field: checkboxes,
+        fn: alloc_checkbox() -> Checkbox,
+    },
+    {
+        field: comboboxes,
+        fn: alloc_combobox() -> Combobox,
+    },
+    {
+        field: forms,
+        fn: alloc_form() -> Form,
+    },
+    {
+        field: grids,
+        fn: alloc_grid() -> Grid,
+    },
+    {
+        field: groups,
+        fn: alloc_group() -> Group,
+    },
+    {
+        field: images,
+        fn: alloc_image() -> Image,
+    },
+    {
+        field: labels,
+        fn: alloc_label() -> Label,
+    },
+    {
+        field: menus,
+        fn: alloc_menu() -> Menu,
+    },
+    {
+        field: menu_items,
+        fn: alloc_menu_item() -> MenuItem,
+    },
+    {
+        field: progress_bars,
+        fn: alloc_progress_bar() -> ProgressBar,
+    },
+    {
+        field: sliders,
+        fn: alloc_slider() -> Slider,
+    },
+    {
+        field: spinboxes,
+        fn: alloc_spinbox() -> Spinbox,
+    },
+    {
+        field: tabs,
+        fn: alloc_tab() -> Tab,
+    },
+    {
+        field: tables,
+        fn: alloc_table() -> Table,
+    },
+    {
+        field: uniboxes,
+        fn: alloc_unibox() -> UniBox,
+    },
+    {
+        field: windows,
+        fn: alloc_window() -> Window,
+    },
+];

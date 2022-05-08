@@ -3,36 +3,42 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use crate::prelude::*;
-use std::os::raw::c_void;
+use std::{marker::PhantomData, os::raw::c_void};
 
-#[derive(Debug, Eq, Hash, PartialEq)]
-pub struct Control(*mut uiControl);
-
-impl Control {
-    pub(super) unsafe fn from_ptr(ptr: *mut uiControl) -> Self {
-        Self(ptr)
+impl<'ui> Control<'ui> {
+    pub(crate) fn new(ptr: *mut uiControl) -> Self {
+        Self {
+            ptr,
+            _ui: PhantomData,
+        }
     }
 }
 
-impl Drop for Control {
+#[derive(Debug, Eq, PartialEq)]
+pub struct Control<'ui> {
+    ptr: *mut uiControl,
+    _ui: PhantomData<&'ui Ui<'ui>>,
+}
+
+impl Drop for Control<'_> {
     fn drop(&mut self) {
         unsafe { uiControlDestroy(self.as_ptr()) };
     }
 }
 
-impl Control {
+impl Control<'_> {
     pub fn as_ptr(&self) -> *mut uiControl {
-        self.0
+        self.ptr
     }
 }
 
 macro_rules! impl_downcast {
     ($($type:ident)*) => {
-        impl Control {
-            pub fn downcast(self) -> Option<Downcasted> {
+        impl<'ui> Control<'ui> {
+            pub fn downcast(self) -> Option<Downcasted<'ui>> {
                 match self.type_id() {
                     $(
-                        TypeId::$type => unsafe {
+                        TypeId::$type => {
                             Some(Downcasted::$type($crate::$type::from_control(self)))
                         }
                     )*
@@ -49,10 +55,9 @@ macro_rules! impl_downcast {
             Unknown(u32),
         }
 
-        #[derive(Debug, Eq, PartialEq)]
-        pub enum Downcasted {
+        pub enum Downcasted<'ui> {
             $(
-                $type($crate::$type),
+                $type($crate::$type<'ui>),
             )*
         }
     };
@@ -84,9 +89,9 @@ impl_downcast! {
     Window
 }
 
-impl Control {
+impl Control<'_> {
     pub fn type_id(&self) -> TypeId {
-        TypeId::new(unsafe { (*self.0).TypeSignature })
+        TypeId::new(unsafe { (*self.ptr).TypeSignature })
     }
 }
 
@@ -121,16 +126,28 @@ impl TypeId {
     }
 }
 
-impl Control {
-    pub fn native_handle(&self) -> *mut c_void {
-        unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
-    }
-
+impl Control<'_> {
     bind_bool_fn!(
-        "Determines if this control is visible.",
+        docs: "Determines if this control is visible.",
         is_visible,
         uiControlVisible,
     );
+
+    bind_bool_fn!(
+        docs: "Determines if this control is enabled.",
+        is_enabled,
+        uiControlEnabled,
+    );
+
+    bind_bool_fn!(
+        docs: "Determines if this control is enabled to the user.",
+        is_enabled_to_user,
+        uiControlEnabledToUser,
+    );
+
+    pub fn native_handle(&self) -> *mut c_void {
+        unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
+    }
 
     pub fn show(&self) {
         unsafe { uiControlShow(self.as_ptr()) };
@@ -140,12 +157,6 @@ impl Control {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
-    bind_bool_fn!(
-        "Determines if this control is enabled.",
-        is_enabled,
-        uiControlEnabled,
-    );
-
     pub fn enable(&self) {
         unsafe { uiControlEnable(self.as_ptr()) };
     }
@@ -153,10 +164,4 @@ impl Control {
     pub fn disable(&self) {
         unsafe { uiControlDisable(self.as_ptr()) };
     }
-
-    bind_bool_fn!(
-        "Determines if this control is enabled to the user.",
-        is_enabled_to_user,
-        uiControlEnabledToUser,
-    );
 }

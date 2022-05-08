@@ -6,47 +6,64 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Group`].
-    pub fn create_group(&self, title: impl AsRef<str>) -> Result<&mut Group, crate::Error> {
+    pub fn create_group<'a>(
+        &'a self,
+        title: impl AsRef<str>,
+    ) -> Result<&'a mut Group<'ui>, crate::Error> {
         let title = make_cstring!(title.as_ref());
-        call_libui_new_fn!(self, Group, uiNewGroup, title.as_ptr())
+
+        call_libui_new_fn!(
+            ui: self,
+            ui_lt: 'ui,
+            alloc: alloc_group,
+            fn: uiNewGroup(title.as_ptr()) -> Group,
+        )
     }
 }
 
-def_subcontrol!(Group, uiGroup);
+def_subcontrol!(ty: Group, handle: uiGroup,);
 
-impl Group {
+impl<'ui> Group<'ui> {
     bind_text_fn!(
-        "The title of this group.",
-        title,
-        raw_title,
-        title_ptr,
-        uiGroupTitle,
+        docs: "The title of this group.",
+        self: {
+            fn: title,
+            raw_fn: raw_title,
+            as_ptr_fn: title_ptr,
+        },
+        libui: {
+            fn: uiGroupTitle(),
+        },
     );
 
     bind_set_text_fn!(
-        "Sets the title of this group.",
+        docs: "Sets the title of this group.",
         set_title,
         title,
         uiGroupSetTitle,
     );
 
     bind_add_child_fn!(
-        "Sets the child control of this group.",
-        set_child,
-        child,
-        uiGroupSetChild,
+        docs: "Sets the child control of this group.",
+        self: {
+            fn: set_child<'ui>,
+            child: child,
+        },
+        libui: {
+            fn: uiGroupSetChild,
+        },
     );
 
     bind_bool_fn!(
-        "Determines if this group has margins.",
+        docs: "Determines if this group has margins.",
         is_margined,
         uiGroupMargined,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this group has margins.",
+        docs: "Sets whether or not this group has margins.",
         set_margined,
         uiGroupSetMargined,
     );

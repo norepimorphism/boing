@@ -6,24 +6,46 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl<'ui> Ui<'ui> {
     /// Creates a new horizontal [`UniBox`].
-    pub fn create_horizontal_box(&self) -> Result<&mut UniBox, crate::Error> {
-        call_libui_new_fn!(self, UniBox, uiNewHorizontalBox)
+    pub fn create_horizontal_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
+        call_libui_new_fn!(
+            ui: self,
+            ui_lt: 'ui,
+            alloc: alloc_unibox,
+            fn: uiNewHorizontalBox() -> UniBox,
+        )
     }
 
     /// Creates a new vertical [`UniBox`].
-    pub fn create_vertical_box(&self) -> Result<&mut UniBox, crate::Error> {
-        call_libui_new_fn!(self, UniBox, uiNewVerticalBox)
+    pub fn create_vertical_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
+        call_libui_new_fn!(
+            ui: self,
+            ui_lt: 'ui,
+            alloc: alloc_unibox,
+            fn: uiNewVerticalBox() -> UniBox,
+        )
     }
 }
 
-def_subcontrol!(UniBox, uiBox);
+def_subcontrol!(ty: UniBox, handle: uiBox,);
 
-impl UniBox {
+impl<'ui> UniBox<'ui> {
+    bind_bool_fn!(
+        docs: "Determines if this box is padded.",
+        is_padded,
+        uiBoxPadded,
+    );
+
+    bind_set_bool_fn!(
+        docs: "Sets whether or not this box is padded.",
+        set_padded,
+        uiBoxSetPadded,
+    );
+
     pub fn append_child(
         &self,
-        child: &mut impl DerefMut<Target = Control>,
+        child: &mut impl DerefMut<Target = Control<'ui>>,
         can_stretch: bool,
     ) {
         let child = std::mem::ManuallyDrop::new(child);
@@ -37,16 +59,4 @@ impl UniBox {
     pub fn delete_child(&self, index: u16) {
         unsafe { uiBoxDelete(self.as_ptr(), index.into()) };
     }
-
-    bind_bool_fn!(
-        "Determines if this box is padded.",
-        is_padded,
-        uiBoxPadded,
-    );
-
-    bind_set_bool_fn!(
-        "Sets whether or not this box is padded.",
-        set_padded,
-        uiBoxSetPadded,
-    );
 }

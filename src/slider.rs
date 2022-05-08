@@ -6,35 +6,58 @@
 
 use crate::prelude::*;
 
-impl Ui {
+impl<'ui> Ui<'ui> {
     /// Creates a new [`Slider`].
-    pub fn create_slider(&self, min: u16, max: u16) -> Result<&mut Slider, crate::Error> {
-        call_libui_new_fn!(self, Slider, uiNewSlider, min.into(), max.into())
+    pub fn create_slider<'a>(
+        &'a self,
+        min: u16,
+        max: u16,
+    ) -> Result<&'a mut Slider<'ui>, crate::Error> {
+        call_libui_new_fn!(
+            ui: self,
+            ui_lt: 'ui,
+            alloc: alloc_slider,
+            fn: uiNewSlider(min.into(), max.into()) -> Slider,
+        )
     }
 }
 
-def_subcontrol!(Slider, uiSlider);
+def_subcontrol!(
+    ty: Slider,
+    handle: uiSlider,
+    cb_fns: [
+        on_changed(),
+    ],
+);
 
-impl Slider {
+impl<'ui> Slider<'ui> {
     bind_bool_fn!(
-        "Determines if this slider has a tooltip.",
+        docs: "Determines if this slider has a tooltip.",
         has_tooltip,
         uiSliderHasToolTip,
     );
 
     bind_set_bool_fn!(
-        "Sets whether or not this slider has a tooltip.",
+        docs: "Sets whether or not this slider has a tooltip.",
         set_has_tooltip,
         uiSliderSetHasToolTip,
     );
 
     bind_callback_fn!(
-        "Sets a callback for when this slider changes.",
-        Slider,
-        on_changed,
-        uiSliderOnChanged;
-        f -> (),
-        (),
-        : uiSlider,
+        docs: "Sets a callback for when this slider changes.",
+        self: {
+            ty: Slider<'ui>,
+            handle: uiSlider,
+            fn: on_changed(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiSliderOnChanged(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 }
