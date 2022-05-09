@@ -28,7 +28,6 @@
 //! [examples]: https://github.com/norepimorphism/boing/tree/main/examples
 
 #![allow(non_upper_case_globals)]
-#![feature(concat_idents)]
 
 #[macro_use]
 mod macros;
