@@ -2,8 +2,6 @@
 
 //! [`Tab`].
 
-use std::mem::ManuallyDrop;
-
 use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
@@ -31,7 +29,7 @@ impl<'ui> Tab<'ui> {
         name: impl AsRef<str>,
         control: &mut impl DerefMut<Target = Control<'ui>>,
     ) -> Result<(), crate::Error> {
-        let control = ManuallyDrop::new(control);
+        control.make_child();
         let name = make_cstring!(name.as_ref());
         unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
 
@@ -45,7 +43,7 @@ impl<'ui> Tab<'ui> {
         index: u16,
         control: &mut impl DerefMut<Target = Control<'ui>>,
     ) -> Result<(), crate::Error> {
-        let control = ManuallyDrop::new(control);
+        control.make_child();
         let name = make_cstring!(name.as_ref());
         unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), index.into(), control.as_ptr()) }
 

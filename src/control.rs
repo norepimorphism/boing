@@ -2,7 +2,7 @@
 
 //! [`Control`].
 
-use std::{marker::PhantomData, os::raw::c_void};
+use std::{cell::Cell, marker::PhantomData, os::raw::c_void};
 
 use crate::prelude::*;
 
@@ -10,6 +10,7 @@ impl<'ui> Control<'ui> {
     pub(crate) fn new(ptr: *mut uiControl) -> Self {
         Self {
             ptr,
+            is_child: Cell::new(false),
             _ui: PhantomData,
         }
     }
@@ -22,12 +23,17 @@ impl<'ui> Control<'ui> {
 #[derive(Debug, Eq, PartialEq)]
 pub struct Control<'ui> {
     ptr: *mut uiControl,
+    is_child: Cell<bool>,
     _ui: PhantomData<&'ui Ui<'ui>>,
 }
 
 impl Drop for Control<'_> {
     fn drop(&mut self) {
-        // TODO: unsafe { uiControlDestroy(self.as_ptr()) };
+        if !self.is_child.get() {
+            let ptr = self.as_ptr();
+            tracing::debug!("Destroying control @ {:#?}", ptr);
+            unsafe { uiControlDestroy(ptr) };
+        }
     }
 }
 
@@ -35,6 +41,10 @@ impl Control<'_> {
     /// A handle to the underlying *libui-ng* control object.
     pub fn as_ptr(&self) -> *mut uiControl {
         self.ptr
+    }
+
+    pub(crate) fn make_child(&self) {
+        self.is_child.set(true);
     }
 }
 

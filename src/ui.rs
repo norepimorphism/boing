@@ -104,7 +104,10 @@ macro_rules! def_ui {
             $(
                 #[allow(clippy::mut_from_ref)]
                 pub(crate) fn $fn<'a>(&'a self, value: $crate::$ty<'ui>) -> &'a mut $crate::$ty<'ui> {
-                    self.$field.alloc(value)
+                    let result = self.$field.alloc(value);
+                    tracing::debug!("Allocated new `{}` @ {:#?}", stringify!($ty), result.as_ptr());
+
+                    result
                 }
             )*
         }
@@ -112,13 +115,6 @@ macro_rules! def_ui {
 }
 
 def_ui![
-    // Because struct fields are dropped in the order they are written, the widgets represented by
-    // the following blocks are likewise desroyed in order. Because *libui-ng* panics if a control
-    // is destroyed before its parent, we must be careful to destroy top-level parents first and
-    // work down the hierarchy.
-
-    // Windows will be destroyed first as they themselves have no parents but may be the parents of
-    // many other controls.
     {
         field: windows,
         fn: alloc_window() -> Window,
@@ -155,9 +151,6 @@ def_ui![
         field: uniboxes,
         fn: alloc_unibox() -> UniBox,
     },
-
-    // These controls cannot contain children, so they can never be parents. We destroy them last.
-
     {
         field: buttons,
         fn: alloc_button() -> Button,
@@ -186,10 +179,6 @@ def_ui![
         field: spinboxes,
         fn: alloc_spinbox() -> Spinbox,
     },
-
-    // Menus and menu items are widgets but not controls, so they order in which they are destroyed
-    // is irrelevant. We can safely destroy them last.
-
     {
         field: menus,
         fn: alloc_menu() -> Menu,

@@ -185,7 +185,7 @@ macro_rules! bind_add_child_fn {
     ) => {
         #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control<$ui_lt>>) {
-            let $child = std::mem::ManuallyDrop::new($child);
+            $child.make_child();
             unsafe { $libui_fn(self.as_ptr(), $child.as_ptr()) };
         }
     };

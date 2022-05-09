@@ -50,7 +50,7 @@ impl<'ui> UniBox<'ui> {
         child: &mut impl DerefMut<Target = Control<'ui>>,
         can_stretch: bool,
     ) {
-        let child = std::mem::ManuallyDrop::new(child);
+        child.make_child();
         unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
     }
 

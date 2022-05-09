@@ -87,7 +87,7 @@ impl<'ui> Item<'ui> {
         uiMenuItemSetChecked,
     );
 
-    fn as_ptr(&self) -> *mut uiMenuItem {
+    pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
         self.ptr
     }
 }
