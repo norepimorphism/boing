@@ -112,17 +112,16 @@ macro_rules! def_ui {
 }
 
 def_ui![
+    // Because struct fields are dropped in the order they are written, the widgets represented by the following blocks are likewise desroyed in order. Because *libui-ng* panics if a control is destroyed before its parent, we must be careful to destroy top-level parents first and work down the hierarchy.
+    
+    // Windows will be destroyed first as they themselves have no parents but may be the parents of many other controls.
+    {
+        field: windows,
+        fn: alloc_window() -> Window,
+    },
     {
         field: areas,
         fn: alloc_area() -> Area,
-    },
-    {
-        field: buttons,
-        fn: alloc_button() -> Button,
-    },
-    {
-        field: checkboxes,
-        fn: alloc_checkbox() -> Checkbox,
     },
     {
         field: comboboxes,
@@ -141,20 +140,35 @@ def_ui![
         fn: alloc_group() -> Group,
     },
     {
+        field: tabs,
+        fn: alloc_tab() -> Tab,
+    },
+    {
+        field: tables,
+        fn: alloc_table() -> Table,
+    },
+    {
+        field: uniboxes,
+        fn: alloc_unibox() -> UniBox,
+    },
+    
+    // These controls cannot contain children, so they can never be parents. We destroy them last.
+    
+    {
+        field: buttons,
+        fn: alloc_button() -> Button,
+    },
+    {
+        field: checkboxes,
+        fn: alloc_checkbox() -> Checkbox,
+    },
+    {
         field: images,
         fn: alloc_image() -> Image,
     },
     {
         field: labels,
         fn: alloc_label() -> Label,
-    },
-    {
-        field: menus,
-        fn: alloc_menu() -> Menu,
-    },
-    {
-        field: menu_items,
-        fn: alloc_menu_item() -> MenuItem,
     },
     {
         field: progress_bars,
@@ -168,20 +182,15 @@ def_ui![
         field: spinboxes,
         fn: alloc_spinbox() -> Spinbox,
     },
+    
+    // Menus and menu items are widgets but not controls, so they order in which they are destroyed is irrelevant. We can safely destroy them last.
+    
     {
-        field: tabs,
-        fn: alloc_tab() -> Tab,
+        field: menus,
+        fn: alloc_menu() -> Menu,
     },
     {
-        field: tables,
-        fn: alloc_table() -> Table,
-    },
-    {
-        field: uniboxes,
-        fn: alloc_unibox() -> UniBox,
-    },
-    {
-        field: windows,
-        fn: alloc_window() -> Window,
+        field: menu_items,
+        fn: alloc_menu_item() -> MenuItem,
     },
 ];
