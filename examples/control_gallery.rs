@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+
 //! A clone of the libui example program "libui Control Gallery".
 
 // #![windows_subsystem = "windows"]
@@ -46,12 +48,14 @@ fn setup_help_menu<'a, 'ui>(ui: &'a boing::Ui<'ui>) {
     let menu = ui.create_menu("Help").unwrap();
     menu.append_item(ui, "Documentation").unwrap();
 
-    menu.append_about_item(ui).unwrap().on_clicked(ui, |ui, _| {
-        let window = ui
-            .create_window("About libui Control Gallery", 320, 240, false, false)
-            .unwrap();
-        window.show();
-    });
+    menu.append_about_item(ui)
+        .unwrap()
+        .on_clicked(ui, |ui, _| {
+            let window = ui
+                .create_window("About libui Control Gallery", 320, 240, false, false)
+                .unwrap();
+            window.show();
+        });
 }
 
 fn create_window<'a, 'ui>(ui: &'a boing::Ui<'ui>) -> &'a mut boing::Window<'ui> {

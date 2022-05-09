@@ -1,11 +1,10 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+// SPDX-License-Identifier: MPL-2.0
 
 //! [`Window`].
 
-use crate::prelude::*;
 use std::{os::raw::c_void, ptr};
+
+use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
     /// Creates a new [`Window`].
@@ -225,5 +224,4 @@ macro_rules! impl_present_fn {
 }
 
 impl_present_fn!(present_alert, uiMsgBox,);
-
 impl_present_fn!(present_error, uiMsgBoxError,);

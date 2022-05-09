@@ -1,9 +1,8 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+// SPDX-License-Identifier: MPL-2.0
+
+use std::{marker::PhantomData, os::raw::c_void};
 
 use crate::prelude::*;
-use std::{marker::PhantomData, os::raw::c_void};
 
 impl<'ui> Control<'ui> {
     pub(crate) fn new(ptr: *mut uiControl) -> Self {

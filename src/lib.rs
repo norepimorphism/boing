@@ -1,6 +1,4 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+// SPDX-License-Identifier: MPL-2.0
 
 //! A safe, lightweight wrapper over *[libui-ng-sys]*.
 //!
@@ -53,6 +51,8 @@ pub mod ui;
 pub mod unibox;
 pub mod window;
 
+use std::fmt;
+
 pub use area::Area;
 pub use button::Button;
 pub use checkbox::Checkbox;
@@ -72,8 +72,6 @@ pub use table::Table;
 pub use ui::Ui;
 pub use unibox::UniBox;
 pub use window::Window;
-
-use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
