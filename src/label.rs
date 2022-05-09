@@ -21,7 +21,11 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(ty: Label, handle: uiLabel,);
+def_subcontrol!(
+    docs: "",
+    ty: Label,
+    handle: uiLabel,
+);
 
 impl Label<'_> {
     bind_text_fn!(

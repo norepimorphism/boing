@@ -4,4 +4,8 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(ty: Table, handle: uiTable,);
+def_subcontrol!(
+    docs: "",
+    ty: Table,
+    handle: uiTable,
+);

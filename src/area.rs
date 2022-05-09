@@ -4,4 +4,8 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(ty: Area, handle: uiArea,);
+def_subcontrol!(
+    docs: "",
+    ty: Area,
+    handle: uiArea,
+);

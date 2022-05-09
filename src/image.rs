@@ -20,7 +20,11 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(ty: Image, handle: uiImage,);
+def_subcontrol!(
+    docs: "",
+    ty: Image,
+    handle: uiImage,
+);
 
 #[repr(C)]
 pub struct Pixel {

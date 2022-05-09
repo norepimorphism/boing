@@ -6,15 +6,36 @@
 //!
 //! This crate is by no means production-ready. See the [README] for progress notes.
 //!
+//! ## Background
+//!
+//! *[libui]* is a C library that provides a neutral interface to native GUI technologies (e.g.,
+//! windows, widgets) on major OSes. *[libui-ng]* is the "next generation" of *libui*, developed and
+//! maintained separately. *libui-ng-sys* provides Rust bindings to *libui-ng*, and *boing* is a
+//! safe yet fairly unopinionated layer on top of *libui-ng-sys*.
+//!
+//! ## Usage
+//!
+//! To get started with *boing*, see the [`ui`] module and, in particular, the [`Ui::run`] method.
+//!
 //! ## Examples
 //!
 //! ```no_run
 //! Ui::run(|ui| {
-//!     let menu = ui.create_menu("File")?;
-//!     menu.append_quit_item()?;
+//!     // Append a drop-down menu labeled "File" to the menubar of all windows created with
+//!     // `has_menubar` set to `true`; see [`Ui::create_window`] for more information.
+//!     let file_menu = ui.create_menu("File")?;
+//!     // Append a menu item labeled "Quit" (in English) to the previously-created file menu. This
+//!     // "Quit" item will exit the application when clicked.
+//!     file_menu.append_quit_item()?;
 //!
+//!     // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the
+//!     // application when closed.
 //!     let window = ui.create_window("Hello World!", 200, 200, true, true)?;
+//!     // Create a button labeled "Press Me!" and set it as the main child control of the
+//!     // previously-created window.
 //!     window.set_child(ui.create_button("Press Me!")?);
+//!     // Present the window to the user. Calling this method is necessary for the window to appear
+//!     // at all.
 //!     window.show();
 //! })?;
 //! ```
@@ -23,8 +44,11 @@
 //!
 //! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
 //! [README]: https://github.com/norepimorphism/boing/tree/main/README.md
+//! [libui]: https://github.com/andlabs/libui
+//! [libui-ng]: https://github.com/libui-ng/libui-ng
 //! [examples]: https://github.com/norepimorphism/boing/tree/main/examples
 
+// All *libui-ng-sys* exports violate Rust's naming convention.
 #![allow(non_upper_case_globals)]
 
 #[macro_use]
@@ -41,7 +65,7 @@ pub mod group;
 pub mod image;
 pub mod label;
 pub mod menu;
-pub mod prelude;
+mod prelude;
 pub mod progress_bar;
 pub mod slider;
 pub mod spinbox;
@@ -73,13 +97,23 @@ pub use ui::Ui;
 pub use unibox::UniBox;
 pub use window::Window;
 
+/// The error type returned by fallible *boing* functions.
 #[derive(Debug)]
 pub enum Error {
+    /// *libui-ng* is already initialized.
+    ///
+    /// This error is returned from [`Ui::run`] when called multiple times. Please ensure that
+    /// [`Ui::run`] is invoked exactly once in your application.
     AlreadyInitedLibui,
+    /// A C string failed to be converted to a Rust string.
     ConvertCString(std::str::Utf8Error),
+    /// A Rust string failed to be converted to a C string.
     ConvertRustString(std::ffi::NulError),
+    /// A *libui-ng* function failed.
     LibuiFn {
+        /// The name of the function that failed.
         name: &'static str,
+        /// The cause, if any, of the failure.
         cause: Option<String>,
     },
 }

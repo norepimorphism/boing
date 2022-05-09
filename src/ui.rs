@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
+//! [`Ui`].
+
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
 use crate::prelude::*;

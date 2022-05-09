@@ -21,6 +21,7 @@ impl<'ui> Ui<'ui> {
 }
 
 def_subcontrol!(
+    docs: "",
     ty: Spinbox,
     handle: uiSpinbox,
     cb_fns: [

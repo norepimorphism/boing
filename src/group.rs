@@ -21,7 +21,11 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(ty: Group, handle: uiGroup,);
+def_subcontrol!(
+    docs: "",
+    ty: Group,
+    handle: uiGroup,
+);
 
 impl<'ui> Group<'ui> {
     bind_text_fn!(

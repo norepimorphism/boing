@@ -26,6 +26,7 @@ impl<'ui> Ui<'ui> {
     }
 }
 
+/// A drop-down menu within a menubar that may contain additional [menu items](`Item`).
 pub struct Menu<'ui> {
     ptr: *mut uiMenu,
     _ui: PhantomData<&'ui Ui<'ui>>,

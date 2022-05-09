@@ -20,6 +20,7 @@ targets = [
 ]
 
 [dependencies]
+indoc = "1.0"
 libui-ng-sys = "0.4"
 tracing = "0.1"
 typed-arena = "2.0"

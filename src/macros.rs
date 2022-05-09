@@ -8,6 +8,7 @@ macro_rules! make_cstring {
 
 macro_rules! def_subcontrol {
     (
+        docs: $docs:literal,
         ty: $ty:ident,
         handle: $ptr_ty:ident
         $(
@@ -34,6 +35,7 @@ macro_rules! def_subcontrol {
             }
         }
 
+        #[doc = indoc::indoc!($docs)]
         pub struct $ty<'ui> {
             inner: $crate::Control<'ui>,
             $(
@@ -47,6 +49,7 @@ macro_rules! def_subcontrol {
         }
 
         impl<'ui> $ty<'ui> {
+            /// A handle to the underlying *libui-ng* object.
             pub fn as_ptr(&self) -> *mut $ptr_ty {
                 self.inner.as_ptr().cast()
             }
@@ -108,7 +111,7 @@ macro_rules! bind_callback_fn {
     ) => {
         // Wow, callbacks are complicated!
 
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn<'a, F>(&'a mut self, ui: &Ui<'ui>, $user_cb: F)
         where
             F: $ui_lt + for<'b> FnMut(&'b Ui<'ui>, &'b mut $self_ty<$ui_lt>) -> $user_cb_out,
@@ -180,7 +183,7 @@ macro_rules! bind_add_child_fn {
             fn: $libui_fn:ident $(,)?
         } $(,)?
     ) => {
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control<$ui_lt>>) {
             let $child = std::mem::ManuallyDrop::new($child);
             unsafe { $libui_fn(self.as_ptr(), $child.as_ptr()) };
@@ -200,7 +203,7 @@ macro_rules! bind_text_fn {
             fn: $libui_fn:ident($($arg:expr),* $(,)?) $(,)?
         } $(,)?
     ) => {
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self) -> String {
             self.$fn_ptr().to_string_lossy().into()
         }
@@ -227,7 +230,7 @@ macro_rules! bind_text_fn {
 
 macro_rules! bind_set_text_fn {
     (docs: $docs:literal, $fn:ident, $arg:ident, $libui_fn:ident $(,)?) => {
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self, $arg: impl AsRef<str>) -> Result<(), $crate::Error> {
             // Normally, this is a bad idea: `$arg` is a `CString` that will be dropped at the end
             // of this scope, but its pointer is being passed to a C function that may, in theory,
@@ -245,7 +248,7 @@ macro_rules! bind_set_text_fn {
 /// Defines a binding to a *libui-ng-sys* function that returns `bool`.
 macro_rules! bind_bool_fn {
     (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self) -> bool {
             let result = unsafe { $libui_fn(self.as_ptr()) };
 
@@ -262,7 +265,7 @@ macro_rules! bind_bool_fn {
 /// Defines a binding to a *libui-ng-sys* function that accepts a `bool`.
 macro_rules! bind_set_bool_fn {
     (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
-        #[doc = $docs]
+        #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self, value: bool) {
             unsafe { $libui_fn(self.as_ptr(), value.into()) };
         }

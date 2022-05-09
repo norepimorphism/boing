@@ -26,7 +26,11 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(ty: UniBox, handle: uiBox,);
+def_subcontrol!(
+    docs: "",
+    ty: UniBox,
+    handle: uiBox,
+);
 
 impl<'ui> UniBox<'ui> {
     bind_bool_fn!(

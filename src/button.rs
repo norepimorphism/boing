@@ -5,6 +5,7 @@
 use crate::prelude::*;
 
 impl<'ui> Ui<'ui> {
+    /// Creates a new [`Button`].
     pub fn create_button<'a>(
         &'a self,
         text: impl AsRef<str>,
@@ -21,6 +22,24 @@ impl<'ui> Ui<'ui> {
 }
 
 def_subcontrol!(
+    docs: r#"
+        A clickable button containing customizable text.
+
+        # Examples
+
+        ```
+        use boing::{Button, Ui, Window};
+
+        let ui: &Ui;
+        let window: &mut Window;
+
+        let button: &mut Button = ui.create_button("Click Me!")?;
+        button.on_clicked(|_, button| {
+            button.disable();
+            button.set_text("Oops, You Can't Click Me Anymore!")?;
+        });
+        ```
+    "#,
     ty: Button,
     handle: uiButton,
     cb_fns: [

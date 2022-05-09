@@ -61,6 +61,7 @@ impl<'ui> Ui<'ui> {
 }
 
 def_subcontrol!(
+    docs: "",
     ty: Window,
     handle: uiWindow,
     cb_fns: [

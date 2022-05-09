@@ -21,6 +21,7 @@ impl<'ui> Ui<'ui> {
 }
 
 def_subcontrol!(
+    docs: "",
     ty: Slider,
     handle: uiSlider,
     cb_fns: [

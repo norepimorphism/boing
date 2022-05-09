@@ -4,6 +4,10 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(ty: Combobox, handle: uiCombobox,);
+def_subcontrol!(
+    docs: "",
+    ty: Combobox,
+    handle: uiCombobox,
+);
 
 impl Combobox<'_> {}

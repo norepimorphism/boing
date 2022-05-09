@@ -18,7 +18,11 @@ impl<'ui> Ui<'ui> {
     }
 }
 
-def_subcontrol!(ty: Tab, handle: uiTab,);
+def_subcontrol!(
+    docs: "",
+    ty: Tab,
+    handle: uiTab,
+);
 
 impl<'ui> Tab<'ui> {
     /// Appends a page.

@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
+//! [`Control`].
+
 use std::{marker::PhantomData, os::raw::c_void};
 
 use crate::prelude::*;
@@ -13,6 +15,10 @@ impl<'ui> Control<'ui> {
     }
 }
 
+/// A type-erased control.
+///
+/// This type provides the underlying features that all controls must provide. If you have access to
+/// a [`Control`] but not the concrete control object, you can downcast with [`Control::downcast`].
 #[derive(Debug, Eq, PartialEq)]
 pub struct Control<'ui> {
     ptr: *mut uiControl,
@@ -26,6 +32,7 @@ impl Drop for Control<'_> {
 }
 
 impl Control<'_> {
+    /// A handle to the underlying *libui-ng* control object.
     pub fn as_ptr(&self) -> *mut uiControl {
         self.ptr
     }
@@ -46,11 +53,16 @@ macro_rules! impl_downcast {
             }
         }
 
+        /// The concrete type of a [`Control`].
         #[derive(Clone, Copy, Debug, Eq, PartialEq)]
         pub enum TypeId {
             $(
+                #[doc = concat!("A [`crate::", stringify!($type), "`].")]
                 $type,
             )*
+            /// The control is of an unknown type.
+            ///
+            /// [`Control`]s with this type ID cannot be downcasted into a concrete control object.
             Unknown(u32),
         }
 
@@ -89,12 +101,14 @@ impl_downcast! {
 }
 
 impl Control<'_> {
+    /// The concrete type of this control.
     pub fn type_id(&self) -> TypeId {
         TypeId::new(unsafe { (*self.ptr).TypeSignature })
     }
 }
 
 impl TypeId {
+    /// Creates a new [`TypeId`] from a raw control type signature.
     fn new(sig: u32) -> Self {
         match sig {
             uiAreaSignature => Self::Area,
@@ -133,33 +147,39 @@ impl Control<'_> {
     );
 
     bind_bool_fn!(
-        docs: "Determines if this control is enabled.",
+        docs: "Determines if this control is interactable.",
         is_enabled,
         uiControlEnabled,
     );
 
+    // TODO: What does this function even do?
     bind_bool_fn!(
-        docs: "Determines if this control is enabled to the user.",
+        docs: "Determines if this control is interactable to the user.",
         is_enabled_to_user,
         uiControlEnabledToUser,
     );
 
+    /// A handle to the underlying OS object.
     pub fn native_handle(&self) -> *mut c_void {
         unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
     }
 
+    /// Makes this control visible.
     pub fn show(&self) {
         unsafe { uiControlShow(self.as_ptr()) };
     }
 
+    /// Makes this control invisible.
     pub fn hide(&self) {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
+    /// Makes this control interactable.
     pub fn enable(&self) {
         unsafe { uiControlEnable(self.as_ptr()) };
     }
 
+    /// Makes this control uninteractable.
     pub fn disable(&self) {
         unsafe { uiControlDisable(self.as_ptr()) };
     }

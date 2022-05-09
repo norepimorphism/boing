@@ -5,6 +5,7 @@
 use crate::prelude::*;
 
 def_subcontrol!(
+    docs: "A toggleable button with adjacent customizable text.",
     ty: Checkbox,
     handle: uiCheckbox,
     cb_fns: [
