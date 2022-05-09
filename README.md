@@ -12,6 +12,14 @@ A safe, lightweight wrapper over [*libui-ng-sys*](https://crates.io/crates/libui
 
 Currently, *boing* only links with *libui-ng*&mdash;not the original *libui*. However, *libui-ng-sys* may be updated in the future to support a *libui* feature flag, in which case it should be trivial to update *boing* as well.
 
+## Features
+
+### Lightweight
+
+*boing* allocates UI control data in a set of typed bump allocators&mdash;each a single heap allocation, reallocated as necessary and freed at the end of `Ui::run`. This reduces the number of allocations performed, saving time in the process.
+
+## Pitfalls
+
 ## Design
 
 See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
