@@ -22,7 +22,7 @@ pub struct Control<'ui> {
 
 impl Drop for Control<'_> {
     fn drop(&mut self) {
-        unsafe { uiControlDestroy(self.as_ptr()) };
+        // TODO: unsafe { uiControlDestroy(self.as_ptr()) };
     }
 }
 

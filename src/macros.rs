@@ -207,9 +207,7 @@ macro_rules! bind_text_fn {
             self.$fn_ptr().to_string_lossy().into()
         }
 
-        #[doc = "The lossless yet fallible version of [`"]
-        #[doc = stringify!($fn)]
-        #[doc = "]`."]
+        #[doc = concat!("The lossless yet fallible version of [`Self::", stringify!($fn), "`].")]
         pub fn $raw_fn(&self) -> Result<&str, $crate::Error> {
             self.$fn_ptr()
                 .to_str()
