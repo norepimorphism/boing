@@ -20,8 +20,9 @@
 //! ## Examples
 //!
 //! ```no_run
-//! use boing::Ui;
-//!
+//! # fn main() -> Result<(), boing::Error> {
+//! # use boing::Ui;
+//! #
 //! let ui = Ui::new()?;
 //!
 //! // Append a drop-down menu labeled "File" to the menubar of all windows created with
@@ -29,20 +30,23 @@
 //! let file_menu = ui.create_menu("File")?;
 //! // Append a menu item labeled "Quit" (in English) to the previously-created file menu. This
 //! // "Quit" item will exit the application when clicked.
-//! file_menu.append_quit_item()?;
+//! file_menu.append_quit_item(&ui)?;
 //!
-//! // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the
-//! // application when closed.
+//! // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the application
+//! // when closed.
 //! let window = ui.create_window("Hello World!", 200, 200, true, true)?;
 //! // Create a button labeled "Press Me!" and set it as the main child control of the
 //! // previously-created window.
-//! window.set_child(ui.create_button("Press Me!")?);
-//! // Present the window to the user. Calling this method is necessary for the window to appear
-//! // at all.
+//! window.set_child(&mut ui.create_button("Press Me!")?);
+//! // Present the window to the user. Calling this method is necessary for the window to appear at
+//! // all.
 //! window.show();
 //!
 //! // Enter the UI event loop. As [`Ui::run`] borrows immutably, this can be called again.
 //! ui.run();
+//! #
+//! # Ok(())
+//! # }
 //! ```
 //!
 //! For more examples, including a control gallery, see the *[examples]* subdirectory.

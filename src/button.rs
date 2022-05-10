@@ -32,18 +32,24 @@ def_subcontrol!(
         # Examples
 
         ```no_run
-        use boing::{Button, Ui, Window};
+        # fn main() -> Result<(), boing::Error> {
+        use boing::{Ui, Window};
 
         let ui: Ui;
         # let ui = Ui::new()?;
         let window: Window;
-        # let window = ui.create_window("", 0, 0, false, false);
+        # let window = ui.create_window("", 0, 0, false, false)?;
 
-        let button = ui.create_button("Click Me!")?;
+        let mut button = ui.create_button("Click Me!")?;
+        window.set_child(&mut button);
+
         button.on_clicked(|button| {
             button.disable();
-            button.set_text("Oops, You Can't Click Me Anymore!")?;
+            let _ = button.set_text("Oops, You Can't Click Me Anymore!");
         });
+        #
+        # Ok(())
+        # }
         ```
     "#,
     ty: Button,

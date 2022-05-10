@@ -19,10 +19,10 @@ impl Ui {
     /// ```no_run, should_panic
     /// use boing::Ui;
     ///
-    /// assert_eq!(Ok(()), Ui::new());
+    /// assert!(Ui::new().is_ok());
     ///
     /// // ERROR: *libui-ng* is already initialized.
-    /// assert_eq!(Ok(()), Ui::new());
+    /// assert!(Ui::new().is_ok());
     /// ```
     pub fn new() -> Result<Self, crate::Error> {
         use std::sync::Once;
@@ -89,6 +89,7 @@ impl Ui {
 /// # Examples
 ///
 /// ```no_run
+/// # fn main() -> Result<(), boing::Error> {
 /// use boing::Ui;
 ///
 /// let ui = Ui::new()?;
@@ -104,10 +105,13 @@ impl Ui {
 ///     false,
 ///     // Should this window quit the application when closed?
 ///     true,
-/// );
+/// )?;
 ///
 /// window.show();
 /// ui.run();
+/// #
+/// # Ok(())
+/// # }
 /// ```
 pub struct Ui(
     // Spooky! Nothing's here! As it turns out, [`Ui`] serves no functional purpose besides
@@ -128,6 +132,7 @@ impl Ui {
     /// # Examples
     ///
     /// ```no_run
+    /// # fn main() -> Result<(), boing::Error> {
     /// use boing::Ui;
     ///
     /// let ui: Ui;
@@ -137,6 +142,9 @@ impl Ui {
     /// loop {
     ///     ui.run();
     /// }
+    /// #
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn run(&self) {
         unsafe { uiMain() };
