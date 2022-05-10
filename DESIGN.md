@@ -33,9 +33,9 @@ Widget construction requires that `uiInit` has previously been called.
 ### Reasons
 
 Constructing a widget before `uiInit` is called...
-* ...on Windows *TODO*
-* ...on macOS *TODO*
-* ...on Linux *TODO*
+* ...on Windows bypasses calling `InitCommonControls`, causing WinAPI window functions to return `ERROR_CANNOT_FIND_WND_CLASS`.
+* ...on macOS dereferences an uninitialized pointer.
+* ...on Linux bypasses calling `gtk_init_with_args`.
 
 ### Solution
 
