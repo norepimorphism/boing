@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/boing)](https://crates.io/crates/boing)
 [![docs](https://docs.rs/boing/badge.svg)](https://docs.rs/boing)
-[![MPL 2.0 licensed](https://img.shields.io/github/license/norepimorphism/boing)](./LICENSE)
+[![MPL 2.0 licensed](https://img.shields.io/badge/license-MPL2-green)](./LICENSE)
 
 A safe, lightweight wrapper over [*libui-ng-sys*](https://crates.io/crates/libui-ng-sys).
 
@@ -16,9 +16,15 @@ Currently, *boing* only links with *libui-ng*&mdash;not the original *libui*. Ho
 
 ### Lightweight
 
-*boing* allocates UI control data in a set of typed bump allocators&mdash;each a single heap allocation, reallocated as necessary and freed at the end of `Ui::run`. This reduces the number of allocations performed, saving time in the process.
+*TODO*
 
 ## Pitfalls
+
+*TODO*
+
+## Terminology
+
+In the context that *boing* uses them, the terms "widget" and "control" are *not* interchangeable. A **widget** is an interactive visual element, while **controls** are a specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular, all widgets are controls except for `Menu` and `MenuItem`.
 
 ## Design
 
