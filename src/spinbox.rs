@@ -4,17 +4,15 @@
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`Spinbox`].
-    pub fn create_spinbox<'a>(
-        &'a self,
+    pub fn create_spinbox(
+        &self,
         min: u16,
         max: u16,
-    ) -> Result<&'a mut Spinbox<'ui>, crate::Error> {
+    ) -> Result<Spinbox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_spinbox,
             fn: uiNewSpinbox(min.into(), max.into()) -> Spinbox,
         )
     }
@@ -25,15 +23,15 @@ def_subcontrol!(
     ty: Spinbox,
     handle: uiSpinbox,
     cb_fns: [
-        on_changed(),
+        on_changed<'a>(),
     ],
 );
 
-impl<'ui> Spinbox<'ui> {
+impl<'a> Spinbox<'a> {
     bind_callback_fn!(
         docs: "Sets a callback for when this spinbox changes.",
         self: {
-            ty: Spinbox<'ui>,
+            ty: Spinbox<'a>,
             handle: uiSpinbox,
             fn: on_changed(),
             cb: {

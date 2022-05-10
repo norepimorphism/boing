@@ -4,13 +4,11 @@
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`ProgressBar`].
-    pub fn create_progress_bar<'a>(&'a self) -> Result<&'a mut ProgressBar<'ui>, crate::Error> {
+    pub fn create_progress_bar(&self) -> Result<ProgressBar, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_progress_bar,
             fn: uiNewProgressBar() -> ProgressBar,
         )
     }
@@ -22,7 +20,7 @@ def_subcontrol!(
     handle: uiProgressBar,
 );
 
-impl ProgressBar<'_> {
+impl ProgressBar {
     pub fn set_value(&self, value: i32) {
         unsafe { uiProgressBarSetValue(self.as_ptr(), value) }
     }

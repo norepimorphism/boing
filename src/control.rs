@@ -1,33 +1,37 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Control`].
+//! A type-erased control.
 
-use std::{cell::Cell, marker::PhantomData, os::raw::c_void};
+use std::{cell::Cell, os::raw::c_void};
 
 use crate::prelude::*;
 
-impl<'ui> Control<'ui> {
+impl Control {
     pub(crate) fn new(ptr: *mut uiControl) -> Self {
         Self {
             ptr,
             is_child: Cell::new(false),
-            _ui: PhantomData,
         }
     }
 }
 
 /// A type-erased control.
 ///
-/// This type provides the underlying features that all controls must provide. If you have access to
-/// a [`Control`] but not the concrete control object, you can downcast with [`Control::downcast`].
+/// This type provides the underlying features that all controls must provide. When this type is
+/// dropped, the control is destroyed, after which it may disappear for the user.
+///
+/// # Examples
+///
+/// ```no_run
+///
+/// ```
 #[derive(Debug, Eq, PartialEq)]
-pub struct Control<'ui> {
+pub struct Control {
     ptr: *mut uiControl,
     is_child: Cell<bool>,
-    _ui: PhantomData<&'ui Ui<'ui>>,
 }
 
-impl Drop for Control<'_> {
+impl Drop for Control {
     fn drop(&mut self) {
         if !self.is_child.get() {
             let ptr = self.as_ptr();
@@ -37,8 +41,17 @@ impl Drop for Control<'_> {
     }
 }
 
-impl Control<'_> {
+impl Control {
     /// A handle to the underlying *libui-ng* control object.
+    ///
+    /// # Safety
+    ///
+    /// The returned pointer is guaranteed to be non-null. Beyond that, it is your responsibility to
+    /// use the handle appropriately. Consulting the *libui-ng* documentation or source code will be
+    /// of utility in this regard, as well as the *boing* source code. See *[libui-ng-sys]* for
+    /// *libui-ng* bindings.
+    ///
+    /// [libui-ng-sys]: https://github.com/norepimorphism/libui-ng-sys
     pub fn as_ptr(&self) -> *mut uiControl {
         self.ptr
     }
@@ -46,110 +59,7 @@ impl Control<'_> {
     pub(crate) fn make_child(&self) {
         self.is_child.set(true);
     }
-}
 
-macro_rules! impl_downcast {
-    ($($type:ident)*) => {
-        impl<'ui> Control<'ui> {
-            pub fn downcast(self) -> Option<Downcasted<'ui>> {
-                match self.type_id() {
-                    $(
-                        TypeId::$type => {
-                            Some(Downcasted::$type($crate::$type::from_control(self)))
-                        }
-                    )*
-                    TypeId::Unknown(_) => None,
-                }
-            }
-        }
-
-        /// The concrete type of a [`Control`].
-        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-        pub enum TypeId {
-            $(
-                #[doc = concat!("A [`crate::", stringify!($type), "`].")]
-                $type,
-            )*
-            /// The control is of an unknown type.
-            ///
-            /// [`Control`]s with this type ID cannot be downcasted into a concrete control object.
-            Unknown(u32),
-        }
-
-        pub enum Downcasted<'ui> {
-            $(
-                $type($crate::$type<'ui>),
-            )*
-        }
-    };
-}
-
-impl_downcast! {
-    Area
-    UniBox
-    Button
-    Checkbox
-    // ColorButton
-    Combobox
-    // DateTimePicker
-    // EditableCombobox
-    // FormEntry
-    // FontButton
-    Form
-    Grid
-    Group
-    Label
-    // MultilineFormEntry
-    ProgressBar
-    // RadioButtons
-    // Separator
-    Slider
-    Spinbox
-    Tab
-    Table
-    Window
-}
-
-impl Control<'_> {
-    /// The concrete type of this control.
-    pub fn type_id(&self) -> TypeId {
-        TypeId::new(unsafe { (*self.ptr).TypeSignature })
-    }
-}
-
-impl TypeId {
-    /// Creates a new [`TypeId`] from a raw control type signature.
-    fn new(sig: u32) -> Self {
-        match sig {
-            uiAreaSignature => Self::Area,
-            uiBoxSignature => Self::UniBox,
-            uiButtonSignature => Self::Button,
-            uiCheckboxSignature => Self::Checkbox,
-            // uiColorButtonSignature => Self::ColorButton,
-            uiComboboxSignature => Self::Combobox,
-            // uiDateTimePickerSignature => Self::DateTimePicker,
-            // uiEditableComboboxSignature => Self::EditableCombobox,
-            // uiEntrySignature => Self::FormEntry,
-            // uiFontButtonSignature => Self::FontButton,
-            uiFormSignature => Self::Form,
-            uiGridSignature => Self::Grid,
-            uiGroupSignature => Self::Group,
-            uiLabelSignature => Self::Label,
-            // uiMultilineEntrySignature => Self::MultilineFormEntry,
-            uiProgressBarSignature => Self::ProgressBar,
-            // uiRadioButtonsSignature => Self::RadioButtons,
-            // uiSeparatorSignature => Self::Separator,
-            uiSliderSignature => Self::Slider,
-            uiSpinboxSignature => Self::Spinbox,
-            uiTabSignature => Self::Tab,
-            uiTableSignature => Self::Table,
-            uiWindowSignature => Self::Window,
-            _ => Self::Unknown(sig),
-        }
-    }
-}
-
-impl Control<'_> {
     bind_bool_fn!(
         docs: "Determines if this control is visible.",
         is_visible,

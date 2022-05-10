@@ -6,8 +6,14 @@ use std::{os::raw::c_void, ptr};
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`Window`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    ///
+    /// ```
     pub fn create_window(
         &self,
         title: impl AsRef<str>,
@@ -15,12 +21,10 @@ impl<'ui> Ui<'ui> {
         height: u16,
         has_menubar: bool,
         should_quit_on_close: bool,
-    ) -> Result<&mut Window<'ui>, crate::Error> {
+    ) -> Result<Window, crate::Error> {
         let title = make_cstring!(title.as_ref());
         let window = call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_window,
             fn: uiNewWindow(
                 title.as_ptr(),
                 width.into(),
@@ -65,12 +69,12 @@ def_subcontrol!(
     ty: Window,
     handle: uiWindow,
     cb_fns: [
-        on_content_size_changed(),
-        on_closing() -> bool,
+        on_content_size_changed<'a>(),
+        on_closing<'b>() -> bool,
     ],
 );
 
-impl<'ui> Window<'ui> {
+impl<'a, 'b> Window<'a, 'b> {
     bind_text_fn!(
         docs: "The title of this window.",
         self: {
@@ -93,7 +97,7 @@ impl<'ui> Window<'ui> {
     bind_callback_fn!(
         docs: "Sets a callback for when the content size of this window changes.",
         self: {
-            ty: Window<'ui>,
+            ty: Window<'a>,
             handle: uiWindow,
             fn: on_content_size_changed(),
             cb: {
@@ -111,7 +115,7 @@ impl<'ui> Window<'ui> {
     bind_callback_fn!(
         docs: "Sets a callback for when this window is requested to close.",
         self: {
-            ty: Window<'ui>,
+            ty: Window<'b>,
             handle: uiWindow,
             fn: on_closing(),
             cb: {
@@ -208,7 +212,7 @@ impl<'ui> Window<'ui> {
 
 macro_rules! impl_present_fn {
     ($name:ident, $fn:ident $(,)?) => {
-        impl Window<'_> {
+        impl Window<'_, '_> {
             pub fn $name(
                 &self,
                 title: impl AsRef<str>,

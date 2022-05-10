@@ -10,4 +10,4 @@ def_subcontrol!(
     handle: uiForm,
 );
 
-impl Form<'_> {}
+impl Form {}

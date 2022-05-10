@@ -3,17 +3,24 @@
 use super::Menu;
 use crate::prelude::*;
 
+// Contrary to intuition, it is perfectly acceptable for the lifetime of a menu item to be different
+// or even longer than that of its parent menu. This is because the [`Drop`] implementation of
+// [`Menu`] is a stub, so drop order is irrelevant.
+//
+// However, the lifetime of a menu item *is* bound to the [`Ui`] object that created its menu. This
+// is because, like menus, menu items cannot be destroyed, so *libui-ng* assumes they (and, by
+// extension, their containing callback) live until the final invocation of `uiQuit`. For this
+// reason, the `Menu::append_*_item` methods require a reference to a [`Ui`] object. Another
+// consequence of this is that the callback optionally contained by [`Item`] must live for at least
+// as long as the aforementioned [`Ui`] object.
+
 macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
-        impl<'ui> Menu<'ui> {
-            pub fn $boing_fn<'a>(
-                &self,
-                ui: &'a Ui<'ui>,
-                name: impl AsRef<str>,
-            ) -> Result<&'a mut Item<'ui>, $crate::Error> {
+        impl Menu {
+            pub fn $boing_fn<'ui>(&self, _: &'ui Ui, name: impl AsRef<str>) -> Result<Item<'ui>, $crate::Error> {
                 let name = make_cstring!(name.as_ref());
                 call_fallible_libui_fn!($libui_fn(self.as_ptr(), name.as_ptr()))
-                    .map(|ptr| ui.alloc_menu_item(Item::new(ptr)))
+                    .map(|ptr| Item::new(ptr))
             }
         }
     };
@@ -21,13 +28,10 @@ macro_rules! impl_append_item_fn_with_name {
 
 macro_rules! impl_append_item_fn {
     ($boing_fn:ident, $libui_fn:ident) => {
-        impl<'ui> Menu<'ui> {
-            pub fn $boing_fn<'a>(
-                &self,
-                ui: &'a Ui<'ui>,
-            ) -> Result<&'a mut Item<'ui>, $crate::Error> {
+        impl Menu {
+            pub fn $boing_fn<'ui>(&self, _: &'ui Ui) -> Result<Item<'ui>, $crate::Error> {
                 call_fallible_libui_fn!($libui_fn(self.as_ptr()))
-                    .map(|ptr| ui.alloc_menu_item(Item::new(ptr)))
+                    .map(|ptr| Item::new(ptr))
             }
         }
     };
@@ -50,10 +54,7 @@ impl Item<'_> {
 
 pub struct Item<'ui> {
     ptr: *mut uiMenuItem,
-    on_clicked: Option<(
-        *const Ui<'ui>,
-        Box<dyn 'ui + for<'a> FnMut(&'a Ui<'ui>, &'a mut Item<'ui>)>,
-    )>,
+    on_clicked: Option<Box<dyn 'ui + FnMut(&mut Self)>>,
 }
 
 impl<'ui> Item<'ui> {

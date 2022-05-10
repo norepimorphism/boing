@@ -4,18 +4,16 @@
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`Group`].
-    pub fn create_group<'a>(
-        &'a self,
+    pub fn create_group(
+        &self,
         title: impl AsRef<str>,
-    ) -> Result<&'a mut Group<'ui>, crate::Error> {
+    ) -> Result<Group, crate::Error> {
         let title = make_cstring!(title.as_ref());
 
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_group,
             fn: uiNewGroup(title.as_ptr()) -> Group,
         )
     }
@@ -27,7 +25,7 @@ def_subcontrol!(
     handle: uiGroup,
 );
 
-impl<'ui> Group<'ui> {
+impl<'ui> Group {
     bind_text_fn!(
         docs: "The title of this group.",
         self: {

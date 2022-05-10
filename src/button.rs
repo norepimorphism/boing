@@ -1,21 +1,25 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Button`].
+//! A clickable button containing customizable text.
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`Button`].
-    pub fn create_button<'a>(
-        &'a self,
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    ///
+    /// ```
+    pub fn create_button(
+        &self,
         text: impl AsRef<str>,
-    ) -> Result<&'a mut Button<'ui>, crate::Error> {
+    ) -> Result<Button, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_button,
             fn: uiNewButton(text.as_ptr()) -> Button,
         )
     }
@@ -27,14 +31,16 @@ def_subcontrol!(
 
         # Examples
 
-        ```
+        ```no_run
         use boing::{Button, Ui, Window};
 
-        let ui: &Ui;
-        let window: &mut Window;
+        let ui: Ui;
+        # let ui = Ui::new()?;
+        let window: Window;
+        # let window = ui.create_window("", 0, 0, false, false);
 
-        let button: &mut Button = ui.create_button("Click Me!")?;
-        button.on_clicked(|_, button| {
+        let button = ui.create_button("Click Me!")?;
+        button.on_clicked(|button| {
             button.disable();
             button.set_text("Oops, You Can't Click Me Anymore!")?;
         });
@@ -43,7 +49,7 @@ def_subcontrol!(
     ty: Button,
     handle: uiButton,
     cb_fns: [
-        on_clicked(),
+        on_clicked<'a>(),
     ],
 );
 

@@ -4,23 +4,19 @@
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new horizontal [`UniBox`].
-    pub fn create_horizontal_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
+    pub fn create_horizontal_box(&self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_unibox,
             fn: uiNewHorizontalBox() -> UniBox,
         )
     }
 
     /// Creates a new vertical [`UniBox`].
-    pub fn create_vertical_box<'a>(&'a self) -> Result<&'a mut UniBox<'ui>, crate::Error> {
+    pub fn create_vertical_box(&self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_unibox,
             fn: uiNewVerticalBox() -> UniBox,
         )
     }
@@ -32,7 +28,7 @@ def_subcontrol!(
     handle: uiBox,
 );
 
-impl<'ui> UniBox<'ui> {
+impl UniBox {
     bind_bool_fn!(
         docs: "Determines if this box is padded.",
         is_padded,
@@ -47,7 +43,7 @@ impl<'ui> UniBox<'ui> {
 
     pub fn append_child(
         &self,
-        child: &mut impl DerefMut<Target = Control<'ui>>,
+        child: &mut impl DerefMut<Target = Control>,
         can_stretch: bool,
     ) {
         child.make_child();

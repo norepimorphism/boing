@@ -15,29 +15,34 @@
 //!
 //! ## Usage
 //!
-//! To get started with *boing*, see the [`ui`] module and, in particular, the [`Ui::run`] method.
+//! To get started with *boing*, see [`Ui`].
 //!
 //! ## Examples
 //!
 //! ```no_run
-//! Ui::run(|ui| {
-//!     // Append a drop-down menu labeled "File" to the menubar of all windows created with
-//!     // `has_menubar` set to `true`; see [`Ui::create_window`] for more information.
-//!     let file_menu = ui.create_menu("File")?;
-//!     // Append a menu item labeled "Quit" (in English) to the previously-created file menu. This
-//!     // "Quit" item will exit the application when clicked.
-//!     file_menu.append_quit_item()?;
+//! use boing::Ui;
 //!
-//!     // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the
-//!     // application when closed.
-//!     let window = ui.create_window("Hello World!", 200, 200, true, true)?;
-//!     // Create a button labeled "Press Me!" and set it as the main child control of the
-//!     // previously-created window.
-//!     window.set_child(ui.create_button("Press Me!")?);
-//!     // Present the window to the user. Calling this method is necessary for the window to appear
-//!     // at all.
-//!     window.show();
-//! })?;
+//! let ui = Ui::new()?;
+//!
+//! // Append a drop-down menu labeled "File" to the menubar of all windows created with
+//! // `has_menubar` set to `true`; see [`Ui::create_window`] for more information.
+//! let file_menu = ui.create_menu("File")?;
+//! // Append a menu item labeled "Quit" (in English) to the previously-created file menu. This
+//! // "Quit" item will exit the application when clicked.
+//! file_menu.append_quit_item()?;
+//!
+//! // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the
+//! // application when closed.
+//! let window = ui.create_window("Hello World!", 200, 200, true, true)?;
+//! // Create a button labeled "Press Me!" and set it as the main child control of the
+//! // previously-created window.
+//! window.set_child(ui.create_button("Press Me!")?);
+//! // Present the window to the user. Calling this method is necessary for the window to appear
+//! // at all.
+//! window.show();
+//!
+//! // Enter the UI event loop. As [`Ui::run`] borrows immutably, this can be called again.
+//! ui.run();
 //! ```
 //!
 //! For more examples, including a control gallery, see the *[examples]* subdirectory.
@@ -102,8 +107,8 @@ pub use window::Window;
 pub enum Error {
     /// *libui-ng* is already initialized.
     ///
-    /// This error is returned from [`Ui::run`] when called multiple times. Please ensure that
-    /// [`Ui::run`] is invoked exactly once in your application.
+    /// This error is returned from [`Ui::new`] when called multiple times. Please ensure that
+    /// [`Ui::new`] is invoked exactly once in your application.
     AlreadyInitedLibui,
     /// A C string failed to be converted to a Rust string.
     ConvertCString(std::str::Utf8Error),

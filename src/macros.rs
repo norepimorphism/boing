@@ -1,11 +1,17 @@
 // SPDX-License-Identifier: MPL-2.0
 
+/// Creates a new `CString`, returning from the current scope if an error occurs during the
+/// conversion.
 macro_rules! make_cstring {
     ($contents:expr $(,)?) => {
         std::ffi::CString::new($contents).map_err($crate::Error::ConvertRustString)?
     };
 }
 
+/// Defines a new control type.
+///
+/// Note that this function should not and cannot be used on all widgets, and in particular,
+/// [`crate::Menu`] and [`crate::MenuItem`].
 macro_rules! def_subcontrol {
     (
         docs: $docs:literal,
@@ -14,16 +20,16 @@ macro_rules! def_subcontrol {
         $(
             ,
             cb_fns: [
-                $($cb:ident() $(-> $out:ty)?),* $(,)?
+                $($cb:ident<$lt:lifetime>() $(-> $out:ty)?),* $(,)?
             ]
         )? $(,)?
     ) => {
-        impl<'ui> $ty<'ui> {
+        impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
             pub(crate) fn new(ptr: *mut $ptr_ty) -> Self {
-                Self::from_control(Control::<'ui>::new(ptr.cast()))
+                Self::from_control(Control::new(ptr.cast()))
             }
 
-            pub(crate) fn from_control(control: Control<'ui>) -> Self {
+            pub(crate) fn from_control(control: Control) -> Self {
                 Self {
                     inner: control,
                     $(
@@ -36,34 +42,31 @@ macro_rules! def_subcontrol {
         }
 
         #[doc = indoc::indoc!($docs)]
-        pub struct $ty<'ui> {
-            inner: $crate::Control<'ui>,
+        pub struct $ty$(<$($lt),*>)? {
+            inner: $crate::Control,
             $(
                 $(
-                    $cb: Option<(
-                        *const Ui<'ui>,
-                        Box<dyn 'ui + for<'a> FnMut(&'a Ui<'ui>, &'a mut $ty<'ui>) $(-> $out)?>,
-                    )>
+                    $cb: Option<Box<dyn $lt + FnMut(&mut Self) $(-> $out)?>>
                 ),*
             )?
         }
 
-        impl<'ui> $ty<'ui> {
+        impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
             /// A handle to the underlying *libui-ng* object.
             pub fn as_ptr(&self) -> *mut $ptr_ty {
                 self.inner.as_ptr().cast()
             }
         }
 
-        impl<'ui> std::ops::Deref for $ty<'ui> {
-            type Target = Control<'ui>;
+        impl$(<$($lt),*>)? std::ops::Deref for $ty$(<$($lt),*>)? {
+            type Target = Control;
 
             fn deref(&self) -> &Self::Target {
                 &self.inner
             }
         }
 
-        impl std::ops::DerefMut for $ty<'_> {
+        impl$(<$($lt),*>)? std::ops::DerefMut for $ty$(<$($lt),*>)? {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.inner
             }
@@ -81,12 +84,10 @@ macro_rules! call_fallible_libui_fn {
 macro_rules! call_libui_new_fn {
     (
         ui: $ui:expr,
-        ui_lt: $ui_lt:lifetime,
-        alloc: $alloc:ident,
         fn: $fn:ident( $($arg:expr),* $(,)? ) -> $out_ty:ident,
     ) => {
         call_fallible_libui_fn!( $fn($($arg),*) )
-            .map(|ptr| $ui.$alloc($out_ty::<$ui_lt>::new(ptr)))
+            .map(|ptr| $out_ty::new(ptr))
     };
 }
 
@@ -94,7 +95,7 @@ macro_rules! bind_callback_fn {
     (
         docs: $docs:literal,
         self: {
-            ty: $self_ty:tt<$ui_lt:lifetime>,
+            ty: $self_ty:tt<$cb_lt:lifetime>,
             handle: $self_handle_ty:ident,
             fn: $fn:ident(),
             cb: {
@@ -112,26 +113,21 @@ macro_rules! bind_callback_fn {
         // Wow, callbacks are complicated!
 
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn<'a, F>(&'a mut self, ui: &Ui<'ui>, $user_cb: F)
+        pub fn $fn<F>(&mut self, $user_cb: F)
         where
-            F: $ui_lt + for<'b> FnMut(&'b Ui<'ui>, &'b mut $self_ty<$ui_lt>) -> $user_cb_out,
+            F: $cb_lt + FnMut(&mut Self) -> $user_cb_out,
         {
             /// A trampoline function to the user-set callback.
             unsafe extern "C" fn trampoline(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                data: *mut std::os::raw::c_void,
+                user_cb: *mut std::os::raw::c_void,
             ) -> $libui_cb_out {
                 // Ensure nothing wonky has happened in the meantime.
                 debug_assert!(!handle.is_null());
-                debug_assert!(!data.is_null());
+                debug_assert!(!user_cb.is_null());
 
-                type Data<'ui> = (
-                    *const Ui<'ui>,
-                    Box<dyn for<'a> FnMut(&'a Ui<'ui>, &'a mut $self_ty<'ui>) -> $user_cb_out>,
-                );
-
-                let data: &mut Option<Data> = &mut *data.cast();
+                let user_cb: &mut Option<&mut dyn FnMut(&mut $self_ty) -> $user_cb_out> = &mut *user_cb.cast();
 
                 // SAFETY:
                 //
@@ -140,14 +136,12 @@ macro_rules! bind_callback_fn {
                 // so this should be safe.
                 //
                 // [`Option` docs]: https://doc.rust-lang.org/std/option/index.html#representation
-                debug_assert!(data.is_some());
-                let data: &mut Data = std::mem::transmute(data);
+                debug_assert!(user_cb.is_some());
+                let user_cb: &mut &mut dyn FnMut(&mut $self_ty) -> $user_cb_out = std::mem::transmute(user_cb);
 
-                let (ui, user_cb): &mut (*const Ui, Box<_>) = data;
-                let ui: &Ui = &**ui;
-                let mut handle = std::mem::ManuallyDrop::<$self_ty>::new(<$self_ty>::new(handle));
+                let mut handle = std::mem::ManuallyDrop::new(<$self_ty>::new(handle));
 
-                let result = (user_cb)(ui, &mut handle);
+                let result = (user_cb)(&mut handle);
                 $(
                     let result = $map_user_cb(result);
                 )?
@@ -155,8 +149,7 @@ macro_rules! bind_callback_fn {
                 result
             }
 
-            // Store the callback data.
-            self.$fn = Some((std::ptr::addr_of!(*ui), Box::new($user_cb)));
+            self.$fn = Some(Box::new($user_cb));
 
             unsafe {
                 $libui_fn(
@@ -184,8 +177,11 @@ macro_rules! bind_add_child_fn {
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control<$ui_lt>>) {
+        pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control>) {
+            // Inform the child control that it should not destroy itself as *libui-ng* will take
+            // care of that for us.
             $child.make_child();
+
             unsafe { $libui_fn(self.as_ptr(), $child.as_ptr()) };
         }
     };
@@ -197,7 +193,7 @@ macro_rules! bind_text_fn {
         self: {
             fn: $fn:ident,
             raw_fn: $raw_fn:ident,
-            as_ptr_fn: $fn_ptr:ident $(,)?
+            as_ptr_fn: $as_ptr_fn:ident $(,)?
         },
         libui: {
             fn: $libui_fn:ident($($arg:expr),* $(,)?) $(,)?
@@ -205,24 +201,31 @@ macro_rules! bind_text_fn {
     ) => {
         #[doc = indoc::indoc!($docs)]
         pub fn $fn(&self) -> String {
-            self.$fn_ptr().to_string_lossy().into()
+            let ptr = self.$as_ptr_fn();
+            let string = unsafe { std::ffi::CStr::from_ptr(ptr).to_string_lossy().into() };
+
+            // Now that the contents of `ptr` have been copied into `string`, we can safely free the
+            // original string.
+            unsafe { uiFreeText(ptr) };
+
+            string
         }
 
         #[doc = concat!("The lossless yet fallible version of [`Self::", stringify!($fn), "`].")]
         pub fn $raw_fn(&self) -> Result<&str, $crate::Error> {
-            self.$fn_ptr()
+            unsafe { std::ffi::CStr::from_ptr(self.$as_ptr_fn()) }
                 .to_str()
                 .map_err($crate::Error::ConvertCString)
         }
 
-        fn $fn_ptr(&self) -> &std::ffi::CStr {
+        pub fn $as_ptr_fn(&self) -> *mut std::os::raw::c_char {
             unsafe {
-                std::ffi::CStr::from_ptr($libui_fn(
+                $libui_fn(
                     $(
                         $($arg),*
                     )?
                     self.as_ptr(),
-                ))
+                )
             }
         }
     };

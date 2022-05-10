@@ -4,13 +4,11 @@
 
 use crate::prelude::*;
 
-impl<'ui> Ui<'ui> {
+impl Ui {
     /// Creates a new [`Tab`].
-    pub fn create_tab<'a>(&'a self) -> Result<&'a mut Tab<'ui>, crate::Error> {
+    pub fn create_tab(&self) -> Result<Tab, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            ui_lt: 'ui,
-            alloc: alloc_tab,
             fn: uiNewTab() -> Tab,
         )
     }
@@ -22,12 +20,12 @@ def_subcontrol!(
     handle: uiTab,
 );
 
-impl<'ui> Tab<'ui> {
+impl Tab {
     /// Appends a page.
     pub fn append_page(
         &self,
         name: impl AsRef<str>,
-        control: &mut impl DerefMut<Target = Control<'ui>>,
+        control: &mut impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
         control.make_child();
         let name = make_cstring!(name.as_ref());
@@ -41,7 +39,7 @@ impl<'ui> Tab<'ui> {
         &self,
         name: impl AsRef<str>,
         index: u16,
-        control: &mut impl DerefMut<Target = Control<'ui>>,
+        control: &mut impl DerefMut<Target = Control>,
     ) -> Result<(), crate::Error> {
         control.make_child();
         let name = make_cstring!(name.as_ref());

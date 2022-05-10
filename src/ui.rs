@@ -1,23 +1,30 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Ui`].
+//! A graphical user interface provided by *libui-ng*.
 
 use std::{ffi::CStr, os::raw::c_char, ptr};
 
 use crate::prelude::*;
 
-impl Ui<'_> {
-    /// Runs *libui-ng*.
-    pub fn run(mut main: impl FnMut(&Self)) -> Result<(), crate::Error> {
-        let ui = Self::new()?;
-        main(&ui);
-        unsafe { uiMain() };
-
-        Ok(())
-    }
-
+impl Ui {
     /// Creates a new [`Ui`].
-    fn new() -> Result<Self, crate::Error> {
+    ///
+    /// # Errors
+    ///
+    /// This function may only be called once. Calling [`Ui::new`] a second time will return
+    /// [`crate::Error::AlreadyInitedLibui`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run, should_panic
+    /// use boing::Ui;
+    ///
+    /// assert_eq!(Ok(()), Ui::new());
+    ///
+    /// // ERROR: *libui-ng* is already initialized.
+    /// assert_eq!(Ok(()), Ui::new());
+    /// ```
+    pub fn new() -> Result<Self, crate::Error> {
         use std::sync::Once;
 
         static INIT: Once = Once::new();
@@ -29,9 +36,10 @@ impl Ui<'_> {
             result = Self::init_unchecked();
         });
 
-        result.map(|_| Self::default())
+        result.map(|_| Self(()))
     }
 
+    // Initializes *libui-ng* with the assumption that *libui-ng* is not already initialized.
     unsafe fn init_unchecked() -> Result<(), crate::Error> {
         // TODO: What is `uiInitOptions`? What does the `Size` field mean?
         let mut init_options = uiInitOptions { Size: 0 };
@@ -74,117 +82,63 @@ impl Ui<'_> {
     }
 }
 
-macro_rules! def_ui {
-    (
-        $(
-            {
-                field: $field:ident,
-                fn: $fn:ident() -> $ty:ident $(,)?
-            }
-        ),* $(,)?
-    ) => {
-        /// A graphical user interface provided by *libui-ng*.
-        pub struct Ui<'ui> {
-            $(
-                $field: typed_arena::Arena<$crate::$ty<'ui>>
-            ),*
-        }
+/// A graphical user interface provided by *libui-ng*.
+///
+/// Access to a [`Ui`] object is necessary for creating widgets.
+///
+/// # Examples
+///
+/// ```no_run
+/// use boing::Ui;
+///
+/// let ui = Ui::new()?;
+///
+/// let window = ui.create_window(
+///     // Title.
+///     "Hello World!",
+///     // Width, in px.
+///     640,
+///     // Height, in px.
+///     480,
+///     // Does this window have a menubar?
+///     false,
+///     // Should this window quit the application when closed?
+///     true,
+/// );
+///
+/// window.show();
+/// ui.run();
+/// ```
+pub struct Ui(
+    // Spooky! Nothing's here! As it turns out, [`Ui`] serves no functional purpose besides
+    // instructing the compiler as to when it is valid for widgets to be created, used, and
+    // destroyed.
+    ()
+);
 
-        impl<'ui> Ui<'ui> {
-            // This is intentionally *not* `Default::default`, as we don't want to export this
-            // publicly.
-            fn default() -> Self {
-                Self {
-                    $(
-                        $field: typed_arena::Arena::new()
-                    ),*
-                }
-            }
-
-            $(
-                #[allow(clippy::mut_from_ref)]
-                pub(crate) fn $fn<'a>(&'a self, value: $crate::$ty<'ui>) -> &'a mut $crate::$ty<'ui> {
-                    let result = self.$field.alloc(value);
-                    tracing::debug!("Allocated new `{}` @ {:#?}", stringify!($ty), result.as_ptr());
-
-                    result
-                }
-            )*
-        }
-    };
+impl Ui {
+    /// Runs *libui-ng*.
+    ///
+    /// Due to the nature of this method entering the OS' main UI event loop, [`Ui::run`] does not
+    /// return instantaneously; rather, it returns only once the user clicks a "Quit" menu item or
+    /// closes a window created with `should_quit_on_close = true`.
+    ///
+    /// Although of little value, it is permissible to call this method multiple times.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use boing::Ui;
+    ///
+    /// let ui: Ui;
+    /// # ui = Ui::new()?;
+    ///
+    /// // Muahahaha! Run forever! Force the user to close us with Task Manager!
+    /// loop {
+    ///     ui.run();
+    /// }
+    /// ```
+    pub fn run(&self) {
+        unsafe { uiMain() };
+    }
 }
-
-def_ui![
-    {
-        field: windows,
-        fn: alloc_window() -> Window,
-    },
-    {
-        field: areas,
-        fn: alloc_area() -> Area,
-    },
-    {
-        field: comboboxes,
-        fn: alloc_combobox() -> Combobox,
-    },
-    {
-        field: forms,
-        fn: alloc_form() -> Form,
-    },
-    {
-        field: grids,
-        fn: alloc_grid() -> Grid,
-    },
-    {
-        field: groups,
-        fn: alloc_group() -> Group,
-    },
-    {
-        field: tabs,
-        fn: alloc_tab() -> Tab,
-    },
-    {
-        field: tables,
-        fn: alloc_table() -> Table,
-    },
-    {
-        field: uniboxes,
-        fn: alloc_unibox() -> UniBox,
-    },
-    {
-        field: buttons,
-        fn: alloc_button() -> Button,
-    },
-    {
-        field: checkboxes,
-        fn: alloc_checkbox() -> Checkbox,
-    },
-    {
-        field: images,
-        fn: alloc_image() -> Image,
-    },
-    {
-        field: labels,
-        fn: alloc_label() -> Label,
-    },
-    {
-        field: progress_bars,
-        fn: alloc_progress_bar() -> ProgressBar,
-    },
-    {
-        field: sliders,
-        fn: alloc_slider() -> Slider,
-    },
-    {
-        field: spinboxes,
-        fn: alloc_spinbox() -> Spinbox,
-    },
-    {
-        field: menus,
-        fn: alloc_menu() -> Menu,
-    },
-    {
-        field: menu_items,
-        fn: alloc_menu_item() -> MenuItem,
-    },
-];
