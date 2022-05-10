@@ -8,39 +8,83 @@ To guarantee safety to the end user, both type-level and runtime decisions were 
 
 `uiInit` must be called exactly once.
 
-* On Windows, calling `uiInit` multiple times duplicates calls to `RegisterClassEx`, which returns `ERROR_CLASS_ALREADY_EXISTS` if called a second time. The *libui-ng* utility window will also be created multiple times.
+### Reasons
 
-To guarantee this, *boing*'s `Ui::run` sets a global boolean when called for the first time, and aborts if the boolean is already set.
+Calling `uinit` twice...
+* ...on Windows returns `ERROR_CLASS_ALREADY_EXISTS` from `RegisterClassEx`.
+* ...on macOS duplicates the app delegate and autorelease pool.
+
+### Solution
+
+*boing*'s `Ui::new` sets a global boolean when called for the first time, and aborts if the boolean is already set.
 
 ```rust
-Ui::run(|_| {});
+// OK.
+let _ = ui.new()?;
 
 // ERROR: *libui-ng* is already initialized.
-Ui::run(|_| {});
+let _ = ui.new()?;
 ```
 
-## Control Construction
+## Widget Construction
 
-`uiControl` construction requires that `uiInit` has previously been called.
+Widget construction requires that `uiInit` has previously been called.
 
-* *TODO*
+### Reasons
 
-To guarantee this, to be constructed, all *boing* controls require access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
+Constructing a widget before `uiInit` is called...
+* ...on Windows bypasses calling `InitCommonControls`, causing WinAPI window functions to return `ERROR_CANNOT_FIND_WND_CLASS`.
+* ...on macOS dereferences an uninitialized pointer.
+* ...on Linux bypasses calling `gtk_init_with_args`.
+
+### Solution
+
+To be construted, *boing* widgets require access to a `Ui` object, which can only be obtained after `Ui::new` and, by extension, `uiInit`, are called.
 
 ```rust
+// ERROR: This function doesn't exist!
+let window = Window::new(/* ... */);
 
+// OK.
+let ui = Ui::new()?;
+let window = ui.create_window(/* ... */);
+```
+
+## Main Loop
+
+Although not explicitly stated, *libui-ng* seems to permit calling `uiMain` and `uiQuit` multiple times; it should likewise be possible to invoke the main loop multiple times from *boing*. Furthermore, widgets may be modified after `uiMain` or `uiQuit` are invoked.
+
+### Solution
+
+```rust
+// OK.
+let ui: Ui;
+let window = ui.create_window(/* ... */);
+ui.run();
+
+// OK (but weird!).
+ui.run();
+window.set_fullscreen(true);
 ```
 
 ## Control Destruction
 
-`uiControlDestroy` must be called on a given `uiControl` exactly once, after which the control must no longer be accessed.
+`uiControlDestroy` must be called on a given control exactly once, after which the control must no longer be accessed.
 
-* *TODO*
+### Reasons
+
+Destroying a control twice, as well as accessing a control after it has already been destroyed, causes a use-after-free on all platforms.
+
+### Solution
+
+*boing* controls feature a `Drop` implementation that destroys their *libui-ng* representation, ensuring not only that `uiControlDestroy` is called once and only once, but also that the controls may not be accessed after destruction.
 
 ```rust
+// OK.
+let window: Window;
+drop(window);
 
-```
-
-```rust
-
+// ERROR: `window` was already destroyed by its `Drop` implementation.
+window.set_fullscreen(true);
+drop(window);
 ```
