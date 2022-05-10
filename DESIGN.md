@@ -8,38 +8,71 @@ To guarantee safety to the end user, both type-level and runtime decisions were 
 
 `uiInit` must be called exactly once.
 
-* On Windows, calling `uiInit` multiple times duplicates calls to `RegisterClassEx`, which returns `ERROR_CLASS_ALREADY_EXISTS` if called a second time. The *libui-ng* utility window will also be created multiple times.
+### Reasons
 
-To guarantee this, *boing*'s `Ui::run` sets a global boolean when called for the first time, and aborts if the boolean is already set.
+Calling `uinit` twice...
+* ...on Windows returns `ERROR_CLASS_ALREADY_EXISTS` from `RegisterClassEx`.
+* ...on macOS duplicates the app delegate and autorelease pool.
+
+### Solution
+
+*boing*'s `Ui::new` sets a global boolean when called for the first time, and aborts if the boolean is already set.
 
 ```rust
-Ui::run(|_| {});
+let _ = ui.new()?;
 
 // ERROR: *libui-ng* is already initialized.
-Ui::run(|_| {});
+let _ = ui.new()?;
 ```
 
-## Control Construction
+## Widget Construction
 
-`uiControl` construction requires that `uiInit` has previously been called.
+Widget construction requires that `uiInit` has previously been called.
 
-* *TODO*
+### Reasons
 
-To guarantee this, to be constructed, all *boing* controls require access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
+Constructing a widget before `uiInit` is called...
+* ...on Windows *TODO*
+* ...on macOS *TODO*
+* ...on Linux *TODO*
+
+### Solution
+
+To be construted, *boing* widgets require access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
 
 ```rust
 
+```
+
+## Main Loop
+
+Although not explicitly stated, *libui-ng* seems to permit calling `uiMain` and `uiQuit` multiple times. It should likewise be possible to invoke the main loop multiple times from *boing*.
+
+### Solution
+
+```rust
+let ui: Ui;
+ui.run();
+
+// This is OK (but weird!).
+ui.run();
 ```
 
 ## Control Destruction
 
-`uiControlDestroy` must be called on a given `uiControl` exactly once, after which the control must no longer be accessed.
+`uiControlDestroy` must be called on a given control exactly once, after which the control must no longer be accessed.
 
-* *TODO*
+### Reasons
 
-```rust
+Destroying a control twice...
+* ...on Windows *TODO*
+* ...on macOS *TODO*
+* ...on Linux *TODO*
 
-```
+Accessing a control after it has been destroyed...
+* ...on Windows *TODO*
+* ...on macOS *TODO*
+* ...on Linux *TODO*
 
 ```rust
 
