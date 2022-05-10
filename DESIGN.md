@@ -19,6 +19,7 @@ Calling `uinit` twice...
 *boing*'s `Ui::new` sets a global boolean when called for the first time, and aborts if the boolean is already set.
 
 ```rust
+// OK.
 let _ = ui.new()?;
 
 // ERROR: *libui-ng* is already initialized.
@@ -38,24 +39,32 @@ Constructing a widget before `uiInit` is called...
 
 ### Solution
 
-To be construted, *boing* widgets require access to a `Ui` object, which can only be obtained after `Ui::run` and, by extension, `uiInit`, are called.
+To be construted, *boing* widgets require access to a `Ui` object, which can only be obtained after `Ui::new` and, by extension, `uiInit`, are called.
 
 ```rust
+// ERROR: This function doesn't exist!
+let window = Window::new(/* ... */);
 
+// OK.
+let ui = Ui::new()?;
+let window = ui.create_window(/* ... */);
 ```
 
 ## Main Loop
 
-Although not explicitly stated, *libui-ng* seems to permit calling `uiMain` and `uiQuit` multiple times. It should likewise be possible to invoke the main loop multiple times from *boing*.
+Although not explicitly stated, *libui-ng* seems to permit calling `uiMain` and `uiQuit` multiple times; it should likewise be possible to invoke the main loop multiple times from *boing*. Furthermore, widgets may be modified after `uiMain` or `uiQuit` are invoked.
 
 ### Solution
 
 ```rust
+// OK.
 let ui: Ui;
+let window = ui.create_window(/* ... */);
 ui.run();
 
-// This is OK (but weird!).
+// OK (but weird!).
 ui.run();
+window.set_fullscreen(true);
 ```
 
 ## Control Destruction
@@ -64,16 +73,18 @@ ui.run();
 
 ### Reasons
 
-Destroying a control twice...
-* ...on Windows *TODO*
-* ...on macOS *TODO*
-* ...on Linux *TODO*
+Destroying a control twice, as well as accessing a control after it has already been destroyed, causes a use-after-free on all platforms.
 
-Accessing a control after it has been destroyed...
-* ...on Windows *TODO*
-* ...on macOS *TODO*
-* ...on Linux *TODO*
+### Solution
+
+*boing* controls feature a `Drop` implementation that destroys their *libui-ng* representation, ensuring not only that `uiControlDestroy` is called once and only once, but also that the controls may not be accessed after destruction.
 
 ```rust
+// OK.
+let window: Window;
+drop(window);
 
+// ERROR: `window` was already destroyed by its `Drop` implementation.
+window.set_fullscreen(true);
+drop(window);
 ```
