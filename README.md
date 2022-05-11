@@ -42,7 +42,12 @@ fn main() -> Result<(), Error> {
 
 fn create_button<'cb>(ui: &Ui, text: &'cb String) -> Result<Button<'cb>, Error> {
     let button = ui.create_button("Press Me!")?;
-    button.on_clicked(&|| println!("{}", text));
+    
+    button.on_clicked(
+        // This closure is dropped at the end of scope, so its lifetime ends before
+        // that of `button`. It is not coerced to `fn()` because it captures `text`.
+        &|| println!("{}", text)
+    );
     
     button
 }
