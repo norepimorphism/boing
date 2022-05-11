@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Image`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_image(
         &self,
         width: f64,
@@ -33,6 +39,13 @@ pub struct Pixel {
 }
 
 impl Image {
+    ///
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn append(&self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
         unsafe {
             uiImageAppend(

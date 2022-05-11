@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Group`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_group(
         &self,
         title: impl AsRef<str>,
@@ -27,7 +33,15 @@ def_subcontrol!(
 
 impl<'ui> Group {
     bind_text_fn!(
-        docs: "The title of this group.",
+        docs: "
+            The title of this group.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             fn: title(),
             raw_fn: raw_title(),
@@ -37,25 +51,57 @@ impl<'ui> Group {
     );
 
     bind_set_text_fn!(
-        docs: "Sets the title of this group.",
+        docs: "
+            Sets the title of this group.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_title(title) },
         libui: { fn: uiGroupSetTitle() },
     );
 
     bind_add_child_fn!(
-        docs: "Sets the child control of this group.",
+        docs: "
+            Sets the child control of this group.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_child<'ui>(child) },
         libui: { fn: uiGroupSetChild() },
     );
 
     bind_bool_fn!(
-        docs: "Determines if this group has margins.",
+        docs: "
+            Determines if this group has margins.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: is_margined() },
         libui: { fn: uiGroupMargined() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this group has margins.",
+        docs: "
+            Sets whether or not this group has margins.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_margined() },
         libui: { fn: uiGroupSetMargined() },
     );

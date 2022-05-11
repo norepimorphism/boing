@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Tab`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_tab(&self) -> Result<Tab, crate::Error> {
         call_libui_new_fn!(
             ui: self,
@@ -22,6 +28,12 @@ def_subcontrol!(
 
 impl Tab {
     /// Appends a page.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn append_page(
         &self,
         name: impl AsRef<str>,
@@ -35,6 +47,12 @@ impl Tab {
     }
 
     /// Inserts a page at the given index.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn insert_page(
         &self,
         name: impl AsRef<str>,
@@ -61,11 +79,23 @@ impl Tab {
     );
 
     /// Determines if the page represented by the given index is margined.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn is_page_margined(&self, index: u16) -> bool {
         unsafe { uiTabMargined(self.as_ptr(), index.into()) == 1 }
     }
 
     /// Sets whether or not the page represented by the given index should be margined.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    ///  // TODO
+    /// ```
     pub fn set_page_margined(&self, index: u16, value: bool) {
         unsafe { uiTabSetMargined(self.as_ptr(), index.into(), value.into()) }
     }

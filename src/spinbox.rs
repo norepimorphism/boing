@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Spinbox`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_spinbox(
         &self,
         min: u16,
@@ -19,7 +25,15 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Spinbox,
     handle: uiSpinbox,
     cb_fns: [ on_changed<'a>() ],
@@ -27,7 +41,15 @@ def_subcontrol!(
 
 impl<'a> Spinbox<'a> {
     bind_callback_fn!(
-        docs: "Sets a callback for when this spinbox changes.",
+        docs: "
+            Sets a callback for when this spinbox changes.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Spinbox<'a>,
             handle: uiSpinbox,

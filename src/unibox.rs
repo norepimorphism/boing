@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new horizontal [`UniBox`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_horizontal_box(&self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
@@ -14,6 +20,12 @@ impl Ui {
     }
 
     /// Creates a new vertical [`UniBox`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_vertical_box(&self) -> Result<UniBox, crate::Error> {
         call_libui_new_fn!(
             ui: self,

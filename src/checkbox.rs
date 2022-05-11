@@ -5,7 +5,15 @@
 use crate::prelude::*;
 
 def_subcontrol!(
-    docs: "A toggleable button with adjacent customizable text.",
+    docs: "
+        A toggleable button with adjacent customizable text.
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Checkbox,
     handle: uiCheckbox,
     cb_fns: [ on_toggled<'a>() ],
@@ -13,7 +21,15 @@ def_subcontrol!(
 
 impl<'a> Checkbox<'a> {
     bind_text_fn!(
-        docs: "The text displayed next to this checkbox.",
+        docs: "
+            The text displayed next to this checkbox.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             fn: text(),
             raw_fn: raw_text(),
@@ -23,13 +39,29 @@ impl<'a> Checkbox<'a> {
     );
 
     bind_set_text_fn!(
-        docs: "Sets the text displayed next to this checkbox.",
+        docs: "
+            Sets the text displayed next to this checkbox.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_text(text) },
         libui: { fn: uiCheckboxSetText() },
     );
 
     bind_callback_fn!(
-        docs: "Sets a callback for when this checkbox is toggled.",
+        docs: "
+            Sets a callback for when this checkbox is toggled.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Checkbox<'a>,
             handle: uiCheckbox,
@@ -43,13 +75,31 @@ impl<'a> Checkbox<'a> {
     );
 
     bind_bool_fn!(
-        docs: "Determines if this checkbox is checked.",
+        docs: "
+            Determines if this checkbox is checked.
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: checked() },
         libui: { fn: uiCheckboxChecked() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this checkbox is checked.",
+        docs: "
+            Sets whether or not this checkbox is checked.
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_checked() },
         libui: { fn: uiCheckboxSetChecked() },
     );

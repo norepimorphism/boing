@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Slider`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_slider(
         &self,
         min: u16,
@@ -19,7 +25,15 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Slider,
     handle: uiSlider,
     cb_fns: [
@@ -29,19 +43,43 @@ def_subcontrol!(
 
 impl<'a> Slider<'a> {
     bind_bool_fn!(
-        docs: "Determines if this slider has a tooltip.",
+        docs: "
+            Determines if this slider has a tooltip.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: has_tooltip() },
         libui: { fn: uiSliderHasToolTip() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this slider has a tooltip.",
+        docs: "
+            Sets whether or not this slider has a tooltip.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_has_tooltip() },
         libui: { fn: uiSliderSetHasToolTip() },
     );
 
     bind_callback_fn!(
-        docs: "Sets a callback for when this slider changes.",
+        docs: "
+            Sets a callback for when this slider changes.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Slider<'a>,
             handle: uiSlider,

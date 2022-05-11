@@ -2,6 +2,11 @@
 
 /// Creates a new `CString`, returning from the current scope if an error occurs during the
 /// conversion.
+///
+/// This macro is commonly used such that the returned `CString` is immediately dropped after a
+/// pointer to its buffer is passed to a *libui-ng* function. This seems like a typical
+/// use-after-free, but it's actually OK! As far as I can tell, *libui-ng* (or the underlying OS UI
+/// libraries) `strdup` string arguments.
 macro_rules! make_cstring {
     ($contents:expr $(,)?) => {
         std::ffi::CString::new($contents).map_err($crate::Error::ConvertRustString)?

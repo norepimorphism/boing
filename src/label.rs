@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Label`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_label(
         &self,
         text: impl AsRef<str>,
@@ -27,7 +33,15 @@ def_subcontrol!(
 
 impl Label {
     bind_text_fn!(
-        docs: "The text displayed by this label.",
+        docs: "
+            The text displayed by this label.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             fn: text(),
             raw_fn: raw_text(),
@@ -37,7 +51,15 @@ impl Label {
     );
 
     bind_set_text_fn!(
-        docs: "Sets the text displayed by this label.",
+        docs: "
+            Sets the text displayed by this label.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_text(text) },
         libui: { fn: uiLabelSetText() },
     );

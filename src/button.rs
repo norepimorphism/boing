@@ -10,7 +10,7 @@ impl Ui {
     /// # Examples
     ///
     /// ```no_run
-    ///
+    /// // TODO
     /// ```
     pub fn create_button(
         &self,
@@ -59,7 +59,15 @@ def_subcontrol!(
 
 impl<'ui> Button<'ui> {
     bind_text_fn!(
-        docs: "The text displayed within this button.",
+        docs: "
+            The text displayed within this button.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             fn: text(),
             raw_fn: raw_text(),
@@ -69,13 +77,29 @@ impl<'ui> Button<'ui> {
     );
 
     bind_set_text_fn!(
-        docs: "Sets the text displayed within this button.",
+        docs: "
+            Sets the text displayed within this button.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_text(text) },
         libui: { fn: uiButtonSetText() },
     );
 
     bind_callback_fn!(
-        docs: "Sets a callback for when this button is clicked.",
+        docs: "
+            Sets a callback for when this button is clicked.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Button<'ui>,
             handle: uiButton,

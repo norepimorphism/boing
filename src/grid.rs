@@ -6,6 +6,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Grid`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_grid(&self) -> Result<Grid, crate::Error> {
         call_libui_new_fn!(
             ui: self,
