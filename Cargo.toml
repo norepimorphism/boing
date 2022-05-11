@@ -16,10 +16,10 @@ categories = ["api-bindings", "gui"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
+bumpalo = "3.9"
 indoc = "1.0"
 libui-ng-sys = "0.4"
 tracing = "0.1"
-typed-arena = "2.0"
 
 [dev-dependencies]
 tracing-subscriber = "0.3"

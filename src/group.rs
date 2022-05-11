@@ -26,7 +26,15 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Group,
     handle: uiGroup,
 );

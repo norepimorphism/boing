@@ -42,6 +42,34 @@ def_subcontrol!(
 );
 
 impl<'a> Slider<'a> {
+    bind_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: value() -> i32 },
+        libui: { fn: uiSliderValue() },
+    );
+
+    bind_set_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_value(value: u16) },
+        libui: { fn: uiSliderSetValue() },
+    );
+
     bind_bool_fn!(
         docs: "
             Determines if this slider has a tooltip.
@@ -95,4 +123,15 @@ impl<'a> Slider<'a> {
             },
         },
     );
+
+    ///
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    pub fn set_range(&self, min: u16, max: u16) {
+        unsafe { uiSliderSetRange(self.as_ptr(), min.into(), max.into()) };
+    }
 }

@@ -40,6 +40,34 @@ def_subcontrol!(
 );
 
 impl<'a> Spinbox<'a> {
+    bind_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: value() -> i32 },
+        libui: { fn: uiSpinboxValue() },
+    );
+
+    bind_set_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_value(value: u16) },
+        libui: { fn: uiSpinboxSetValue() },
+    );
+
     bind_callback_fn!(
         docs: "
             Sets a callback for when this spinbox changes.

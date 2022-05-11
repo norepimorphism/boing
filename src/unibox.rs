@@ -35,24 +35,63 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: UniBox,
     handle: uiBox,
 );
 
 impl UniBox {
     bind_bool_fn!(
-        docs: "Determines if this box is padded.",
+        docs: "
+            Determines if this box is padded.
+
+            # Examples
+
+            ```no_run
+            use boing::UniBox;
+
+            let unibox: UniBox;
+            # let ui = boing::Ui::new().unwrap();
+            # unibox = ui.create_horizontal_box().unwrap();
+            assert!(!unibox.is_padded());
+
+            unibox.set_padded(true);
+            assert!(unibox.is_padded());
+            ```
+        ",
         self: { fn: is_padded() },
         libui: { fn: uiBoxPadded() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this box is padded.",
+        docs: "
+            Sets whether or not this box is padded.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: set_padded() },
         libui: { fn: uiBoxSetPadded() },
     );
 
+    /// Inserts a child control at the zero-based index `self.child_count() - 1`.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn append_child(
         &self,
         child: &mut impl DerefMut<Target = Control>,
@@ -63,13 +102,61 @@ impl UniBox {
     }
 
     bind_ty_fn!(
-        docs: "",
+        docs: "
+            The number of child controls this box contains.
+
+            # Examples
+
+            ```no_run
+            use boing::UniBox;
+
+            let outer: UniBox;
+            # let ui = boing::Ui::new().unwrap();
+            # outer = ui.create_horizontal_box().unwrap();
+
+            // Box-ception!
+            for _ in 0..5 {
+                let mut inner: UniBox;
+                # inner = ui.create_horizontal_box().unwrap();
+                outer.append_child(&mut inner, false);
+            }
+
+            assert_eq!(5, outer.child_count());
+            ```
+        ",
         self: { fn: child_count() -> i32 },
         libui: { fn: uiBoxNumChildren() },
     );
 
     bind_set_ty_fn!(
-        docs: "",
+        docs: r#"
+            Removes the child control at the given index.
+
+            # Examples
+
+            ```no_run
+            use boing::UniBox;
+
+            let unibox: UniBox;
+            # let ui = boing::Ui::new().unwrap();
+            # unibox = ui.create_horizontal_box().unwrap();
+
+            let mut progress_bar: boing::ProgressBar;
+            # progress_bar = ui.create_progress_bar().unwrap();
+            unibox.append_child(&mut progress_bar, false);
+
+            let mut button: boing::Button;
+            # button = ui.create_button("").unwrap();
+            unibox.append_child(&mut button, false);
+
+            // Remove the button from the box.
+            unibox.delete_child(1);
+            // Remove the progress bar from the box.
+            unibox.delete_child(0);
+
+            assert_eq!(0, unibox.child_count());
+            ```
+        "#,
         self: { fn: delete_child(index: u16) },
         libui: { fn: uiBoxDelete() },
     );

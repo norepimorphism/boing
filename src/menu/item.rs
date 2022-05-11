@@ -10,9 +10,7 @@ use crate::prelude::*;
 // However, the lifetime of a menu item *is* bound to the [`Ui`] object that created its menu. This
 // is because, like menus, menu items cannot be destroyed, so *libui-ng* assumes they (and, by
 // extension, their containing callback) live until the final invocation of `uiQuit`. For this
-// reason, the `Menu::append_*_item` methods require a reference to a [`Ui`] object. Another
-// consequence of this is that the callback optionally contained by [`Item`] must live for at least
-// as long as the aforementioned [`Ui`] object.
+// reason, menu items are allocated in the [`Ui`] object's arena with [`Ui::alloc_object`].
 
 macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
@@ -24,14 +22,14 @@ macro_rules! impl_append_item_fn_with_name {
             /// ```no_run
             /// // TODO
             /// ```
-            pub fn $boing_fn<'ui>(&self, _: &'ui Ui, name: impl AsRef<str>) -> Result<Item<'ui>, $crate::Error> {
+            pub fn $boing_fn<'ui>(&self, ui: &'ui Ui, name: impl AsRef<str>) -> Result<&'ui mut Item<'ui>, $crate::Error> {
                 // `name` is dropped at the end of scope, at which point the underling string buffer
                 // is freed, but that's OK! The `uiMenuItemAppend*Item` functions `strdup` the
                 // string argument.
                 let name = make_cstring!(name.as_ref());
 
                 call_fallible_libui_fn!($libui_fn(self.as_ptr(), name.as_ptr()))
-                    .map(|ptr| Item::new(ptr))
+                    .map(|ptr| ui.alloc_object(Item::new(ptr)))
             }
         }
     };
@@ -47,9 +45,9 @@ macro_rules! impl_append_item_fn {
             /// ```no_run
             /// // TODO
             /// ```
-            pub fn $boing_fn<'ui>(&self, _: &'ui Ui) -> Result<Item<'ui>, $crate::Error> {
+            pub fn $boing_fn<'ui>(&self, ui: &'ui Ui) -> Result<&'ui mut Item<'ui>, $crate::Error> {
                 call_fallible_libui_fn!($libui_fn(self.as_ptr()))
-                    .map(|ptr| Item::new(ptr))
+                    .map(|ptr| ui.alloc_object(Item::new(ptr)))
             }
         }
     };
@@ -82,6 +80,34 @@ impl<'ui> Item<'ui> {
     pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
         self.ptr
     }
+
+    bind_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: enable() -> () },
+        libui: { fn: uiMenuItemEnable() },
+    );
+
+    bind_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: disable() -> () },
+        libui: { fn: uiMenuItemDisable() },
+    );
 
     bind_callback_fn!(
         docs: "

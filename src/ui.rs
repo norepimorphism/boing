@@ -36,7 +36,7 @@ impl Ui {
             result = Self::init_unchecked();
         });
 
-        result.map(|_| Self(()))
+        result.map(|_| Self { arena: bumpalo::Bump::new() })
     }
 
     // Initializes *libui-ng* with the assumption that *libui-ng* is not already initialized.
@@ -113,12 +113,13 @@ impl Ui {
 /// # Ok(())
 /// # }
 /// ```
-pub struct Ui(
-    // Spooky! Nothing's here! As it turns out, [`Ui`] serves no functional purpose besides
+pub struct Ui {
+    // Spooky! Nearly nothing's here! As it turns out, [`Ui`] serves no functional purpose besides
     // instructing the compiler as to when it is valid for widgets to be created, used, and
-    // destroyed.
-    ()
-);
+    // destroyed, as well as store callback data for [`MenuItem`]s, which is the express purpose for
+    // the `arena` field.
+    arena: bumpalo::Bump,
+}
 
 impl Ui {
     /// Runs *libui-ng*.
@@ -148,5 +149,12 @@ impl Ui {
     /// ```
     pub fn run(&self) {
         unsafe { uiMain() };
+    }
+
+    /// Allocates an object.
+    ///
+    /// Wrap a value in this method when you need it to live for as long as [`Ui`].
+    pub(crate) fn alloc_object<T>(&self, value: T) -> &mut T {
+        self.arena.alloc(value)
     }
 }

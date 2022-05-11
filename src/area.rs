@@ -5,7 +5,15 @@
 use crate::prelude::*;
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Area,
     handle: uiArea,
 );

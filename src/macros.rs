@@ -132,23 +132,23 @@ macro_rules! bind_callback_fn {
             unsafe extern "C" fn trampoline(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                user_cb: *mut std::os::raw::c_void,
+                user_cb_ptr: *mut std::os::raw::c_void,
             ) -> $libui_cb_out {
                 // Ensure nothing wonky has happened in the meantime.
                 debug_assert!(!handle.is_null());
-                debug_assert!(!user_cb.is_null());
+                debug_assert!(!user_cb_ptr.is_null());
 
-                let user_cb: &mut Option<&mut dyn FnMut(&mut $self_ty) -> $user_cb_out> = &mut *user_cb.cast();
+                let user_cb: &mut Option<Box<dyn FnMut(&mut $self_ty) -> $user_cb_out>> = &mut *user_cb_ptr.cast();
 
                 // SAFETY:
                 //
-                // The [`Option` docs] state that transmutation is valid from `Some(T)` to `T`. In
-                // this case, the `Option` is definitely `Some` (unless something wonky happened!),
-                // so this should be safe.
+                // The [`Option` docs] state that `Some(T)` is equivalent in memory to `T`. In this
+                // case, the `Option` is definitely `Some` (unless something wonky happened!), so
+                // this should be safe.
                 //
                 // [`Option` docs]: https://doc.rust-lang.org/std/option/index.html#representation
                 debug_assert!(user_cb.is_some());
-                let user_cb: &mut &mut dyn FnMut(&mut $self_ty) -> $user_cb_out = std::mem::transmute(user_cb);
+                let user_cb: &mut Box<dyn FnMut(&mut $self_ty) -> $user_cb_out> = &mut *user_cb_ptr.cast();
 
                 let mut handle = std::mem::ManuallyDrop::new(<$self_ty>::new(handle));
 

@@ -21,7 +21,15 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Tab,
     handle: uiTab,
 );
@@ -67,13 +75,29 @@ impl Tab {
     }
 
     bind_set_ty_fn!(
-        docs: "Deletes the page represented by the given index.",
+        docs: "
+            Deletes the page represented by the given index.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: delete_page(index: u16) },
         libui: { fn: uiTabDelete() },
     );
 
     bind_ty_fn!(
-        docs: "The number of pages contained within this tab.",
+        docs: "
+            The number of pages contained within this tab.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: { fn: page_count() -> i32 },
         libui: { fn: uiTabNumPages() },
     );

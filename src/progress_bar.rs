@@ -35,6 +35,20 @@ def_subcontrol!(
 );
 
 impl ProgressBar {
+    bind_ty_fn!(
+        docs: "
+
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: value() -> i32 },
+        libui: { fn: uiProgressBarValue() },
+    );
+
     bind_set_ty_fn!(
         docs: "
 

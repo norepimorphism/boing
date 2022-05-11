@@ -27,52 +27,58 @@ See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
 ```rust
 use boing::{Button, Error, Ui, Window};
 
-fn main() -> Result<(), Error> {    
+fn main() -> Result<(), Error> {
     let ui: Ui;
     let window: Window;
-    
+
     let mut button = create_button(&ui, "Hello World!".into())?;
     window.set_child(&mut button);
-    
+
     window.show();
     ui.run();
-    
+
     Ok(())
 }
 
 fn create_button<'cb>(ui: &Ui, text: &'cb String) -> Result<Button<'cb>, Error> {
     let button = ui.create_button("Press Me!")?;
-    
+
     button.on_clicked(
-        // This closure is dropped at the end of scope, so its lifetime ends before
-        // that of `button`. It is not coerced to `fn()` because it captures `text`.
-        &|| println!("{}", text)
+        // This closure is dropped at the end of scope, so its lifetime ends before that of
+        // `button`. It is not coerced to `fn()` because it captures `text`.
+        &|| println!("{}", text),
     );
-    
+
     button
 }
 ```
 
-In this case, the closure passed to `Button::on_clicked` would need to be routed through `create_button` as an argument. Such a hindrance on convenience was deemed untenable, hence the current callback design.
+In this case, the closure passed to `Button::on_clicked` would need to be routed through `create_button` as an argument. Such a hindrance was deemed untenable, hence the current callback design.
 
 ## Project Progress
 
-| Feature       | Docs? | Impl? |
-| ------------- | ----- | ----- |
-| `Area`        | ☐    | ☐    |
-| `Button`      | ☑    | ☑    |
-| `Checkbox`    | ☑    | ☑    |
-| `Combobox`    | ☐    | ☐    |
-| `Grid`        | ☐    | ☐    |
-| `Group`       | ☐    | ☑    |
-| `Image`       | ☐    | ☑    |
-| `Label`       | ☐    | ☑    |
-| `Menu`        | ☐    | ☑    |
-| `MenuItem`    | ☐    | ☐    |
-| `ProgressBar` | ☐    | ☐    |
-| `Slider`      | ☐    | ☐    |
-| `Spinbox`     | ☐    | ☐    |
-| `Tab`         | ☐    | ☑    |
-| `Table`       | ☐    | ☐    |
-| `UniBox`      | ☐    | ☑    |
-| `Window`      | ☐    | ☑    |
+| Feature       | Docs? | Impl? | *libui-ng* Type |
+| ------------- | ----- | ----- | --------------- |
+| `Area`        | ☐    | ☐    | `uiArea`
+| `Button`      | ☐    | ☑    | `uiButton`
+| `Checkbox`    | ☐    | ☑    | `uiCheckbox`
+| `Combobox`    | ☐    | ☐    | `uiCombobox`
+| `FontButton`  | ☐    | ☐    | `uiFontButton`
+| `Form`        | ☐    | ☐    | `uiForm`
+| `FormEntry`   | ☐    | ☐    | `uiEntry`
+| `Grid`        | ☐    | ☐    | `uiGrid`
+| `Group`       | ☐    | ☑    | `uiGroup`
+| `Image`       | ☐    | ☑    | `uiImage`
+| `Label`       | ☐    | ☑    | `uiLabel`
+| `Menu`        | ☐    | ☑    | `uiMenu`
+| `MenuItem`    | ☐    | ☑    | `uiMenuItem`
+| `Path`        | ☐    | ☐    | `uiDrawPath`
+| `ProgressBar` | ☐    | ☑    | `uiProgressBar`
+| `RadioButtons`| ☐    | ☐    | `uiRadioButtons`
+| `Separator`   | ☐    | ☐    | `uiSeparator`
+| `Slider`      | ☐    | ☑    | `uiSlider`
+| `Spinbox`     | ☐    | ☑    | `uiSpinbox`
+| `Tab`         | ☐    | ☑    | `uiTab`
+| `Table`       | ☐    | ☐    | `uiTable`
+| `UniBox`      | ☐    | ☑    | `uiBox`
+| `Window`      | ☐    | ☑    | `uiWindow`
