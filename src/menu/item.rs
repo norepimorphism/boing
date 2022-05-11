@@ -18,7 +18,9 @@ macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
             pub fn $boing_fn<'ui>(&self, _: &'ui Ui, name: impl AsRef<str>) -> Result<Item<'ui>, $crate::Error> {
+                // `name` is dropped at the end of scope, at which point the underling string buffer is freed, but that's OK! The `uiMenuItemAppend*Item` functions `strdup` the string argument.
                 let name = make_cstring!(name.as_ref());
+                
                 call_fallible_libui_fn!($libui_fn(self.as_ptr(), name.as_ptr()))
                     .map(|ptr| Item::new(ptr))
             }
@@ -52,6 +54,8 @@ impl Item<'_> {
     }
 }
 
+// Menu items are *not* controls as they are not backed by a `uiControl`. Do not use them as such! See the note above the definition of [`Menu`] in *menu.rs* for more information.
+
 pub struct Item<'ui> {
     ptr: *mut uiMenuItem,
     on_clicked: Option<Box<dyn 'ui + FnMut(&mut Self)>>,
@@ -77,13 +81,29 @@ impl<'ui> Item<'ui> {
     );
 
     bind_bool_fn!(
-        docs: "Determines if this item is checked.",
+        docs: "
+            Determines if this item is checked.
+        
+            # Examples
+        
+            ```no_run
+            // TODO
+            ```
+        ",
         is_checked,
         uiMenuItemChecked,
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this item is checked.",
+        docs: "
+            Sets whether or not this item is checked.
+        
+            # Examples
+        
+            ```no_run
+            // TODO
+            ```
+        ",
         set_checked,
         uiMenuItemSetChecked,
     );
