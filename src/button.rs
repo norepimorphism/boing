@@ -54,29 +54,24 @@ def_subcontrol!(
     "#,
     ty: Button,
     handle: uiButton,
-    cb_fns: [
-        on_clicked<'a>(),
-    ],
+    cb_fns: [ on_clicked<'a>() ],
 );
 
 impl<'ui> Button<'ui> {
     bind_text_fn!(
         docs: "The text displayed within this button.",
         self: {
-            fn: text,
-            raw_fn: raw_text,
-            as_ptr_fn: text_ptr,
+            fn: text(),
+            raw_fn: raw_text(),
+            as_ptr_fn: text_ptr(),
         },
-        libui: {
-            fn: uiButtonText(),
-        },
+        libui: { fn: uiButtonText() },
     );
 
     bind_set_text_fn!(
         docs: "Sets the text displayed within this button.",
-        set_text,
-        text,
-        uiButtonSetText,
+        self: { fn: set_text(text) },
+        libui: { fn: uiButtonSetText() },
     );
 
     bind_callback_fn!(
@@ -85,15 +80,11 @@ impl<'ui> Button<'ui> {
             ty: Button<'ui>,
             handle: uiButton,
             fn: on_clicked(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiButtonOnClicked(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 }

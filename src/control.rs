@@ -62,21 +62,21 @@ impl Control {
 
     bind_bool_fn!(
         docs: "Determines if this control is visible.",
-        is_visible,
-        uiControlVisible,
+        self: { fn: is_visible() },
+        libui: { fn: uiControlVisible() },
     );
 
     bind_bool_fn!(
         docs: "Determines if this control is interactable.",
-        is_enabled,
-        uiControlEnabled,
+        self: { fn: is_enabled() },
+        libui: { fn: uiControlEnabled() },
     );
 
     // TODO: What does this function even do?
     bind_bool_fn!(
         docs: "Determines if this control is interactable to the user.",
-        is_enabled_to_user,
-        uiControlEnabledToUser,
+        self: { fn: is_enabled_to_user() },
+        libui: { fn: uiControlEnabledToUser() },
     );
 
     /// A handle to the underlying OS object.

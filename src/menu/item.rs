@@ -58,6 +58,10 @@ pub struct Item<'ui> {
 }
 
 impl<'ui> Item<'ui> {
+    pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
+        self.ptr
+    }
+
     bind_callback_fn!(
         docs: "Sets a callback for when this item is clicked.",
         self: {
@@ -78,17 +82,13 @@ impl<'ui> Item<'ui> {
 
     bind_bool_fn!(
         docs: "Determines if this item is checked.",
-        is_checked,
-        uiMenuItemChecked,
+        self: { fn: is_checked() },
+        libui: { fn: uiMenuItemChecked() },
     );
 
     bind_set_bool_fn!(
         docs: "Sets whether or not this item is checked.",
-        set_checked,
-        uiMenuItemSetChecked,
+        self: { fn: set_checked() },
+        libui: { fn: uiMenuItemSetChecked() },
     );
-
-    pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
-        self.ptr
-    }
 }

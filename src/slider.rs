@@ -30,14 +30,14 @@ def_subcontrol!(
 impl<'a> Slider<'a> {
     bind_bool_fn!(
         docs: "Determines if this slider has a tooltip.",
-        has_tooltip,
-        uiSliderHasToolTip,
+        self: { fn: has_tooltip() },
+        libui: { fn: uiSliderHasToolTip() },
     );
 
     bind_set_bool_fn!(
         docs: "Sets whether or not this slider has a tooltip.",
-        set_has_tooltip,
-        uiSliderSetHasToolTip,
+        self: { fn: set_has_tooltip() },
+        libui: { fn: uiSliderSetHasToolTip() },
     );
 
     bind_callback_fn!(

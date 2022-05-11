@@ -29,42 +29,34 @@ impl<'ui> Group {
     bind_text_fn!(
         docs: "The title of this group.",
         self: {
-            fn: title,
-            raw_fn: raw_title,
-            as_ptr_fn: title_ptr,
+            fn: title(),
+            raw_fn: raw_title(),
+            as_ptr_fn: title_ptr(),
         },
-        libui: {
-            fn: uiGroupTitle(),
-        },
+        libui: { fn: uiGroupTitle() },
     );
 
     bind_set_text_fn!(
         docs: "Sets the title of this group.",
-        set_title,
-        title,
-        uiGroupSetTitle,
+        self: { fn: set_title(title) },
+        libui: { fn: uiGroupSetTitle() },
     );
 
     bind_add_child_fn!(
         docs: "Sets the child control of this group.",
-        self: {
-            fn: set_child<'ui>,
-            child: child,
-        },
-        libui: {
-            fn: uiGroupSetChild,
-        },
+        self: { fn: set_child<'ui>(child) },
+        libui: { fn: uiGroupSetChild() },
     );
 
     bind_bool_fn!(
         docs: "Determines if this group has margins.",
-        is_margined,
-        uiGroupMargined,
+        self: { fn: is_margined() },
+        libui: { fn: uiGroupMargined() },
     );
 
     bind_set_bool_fn!(
         docs: "Sets whether or not this group has margins.",
-        set_margined,
-        uiGroupSetMargined,
+        self: { fn: set_margined() },
+        libui: { fn: uiGroupSetMargined() },
     );
 }

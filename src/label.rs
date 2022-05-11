@@ -29,19 +29,16 @@ impl Label {
     bind_text_fn!(
         docs: "The text displayed by this label.",
         self: {
-            fn: text,
-            raw_fn: raw_text,
-            as_ptr_fn: text_ptr,
+            fn: text(),
+            raw_fn: raw_text(),
+            as_ptr_fn: text_ptr(),
         },
-        libui: {
-            fn: uiLabelText(),
-        }
+        libui: { fn: uiLabelText() },
     );
 
     bind_set_text_fn!(
         docs: "Sets the text displayed by this label.",
-        set_text,
-        text,
-        uiLabelSetText,
+        self: { fn: set_text(text) },
+        libui: { fn: uiLabelSetText() },
     );
 }

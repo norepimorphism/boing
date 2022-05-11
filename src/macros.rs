@@ -10,7 +10,7 @@ macro_rules! make_cstring {
 
 /// Defines a new control type.
 ///
-/// Note that this function should not and cannot be used on all widgets, and in particular,
+/// Note that this macro should not and cannot be used on all widgets, and in particular,
 /// [`crate::Menu`] and [`crate::MenuItem`].
 macro_rules! def_subcontrol {
     (
@@ -53,6 +53,12 @@ macro_rules! def_subcontrol {
 
         impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
             /// A handle to the underlying *libui-ng* object.
+            ///
+            /// # Examples
+            ///
+            /// ```no_run
+            /// // TODO
+            /// ```
             pub fn as_ptr(&self) -> *mut $ptr_ty {
                 self.inner.as_ptr().cast()
             }
@@ -106,7 +112,7 @@ macro_rules! bind_callback_fn {
         libui: {
             fn: $libui_fn:ident($(, $($libui_arg:expr),* )?),
             cb: {
-                sig: ($($cb_arg:ty),*) -> $libui_cb_out:ty $(,)?,
+                sig: ($($cb_arg:ty),*) -> $libui_cb_out:ty $(,)?
             } $(,)?
         } $(,)?
     ) => {
@@ -169,39 +175,39 @@ macro_rules! bind_add_child_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $fn:ident<$ui_lt:lifetime>,
-            child: $child:ident $(,)?
+            fn: $self_fn:ident<$ui_lt:lifetime>($self_child:ident $(,)?) $(,)?
         },
         libui: {
-            fn: $libui_fn:ident $(,)?
+            fn: $libui_fn:ident() $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self, $child: &mut impl std::ops::DerefMut<Target = Control>) {
+        pub fn $self_fn(&self, $self_child: &mut impl std::ops::DerefMut<Target = Control>) {
             // Inform the child control that it should not destroy itself as *libui-ng* will take
             // care of that for us.
-            $child.make_child();
+            $self_child.make_child();
 
-            unsafe { $libui_fn(self.as_ptr(), $child.as_ptr()) };
+            unsafe { $libui_fn(self.as_ptr(), $self_child.as_ptr()) };
         }
     };
 }
 
+/// Defines a binding to a *libui-ng-sys* function that returns a C-style string.
 macro_rules! bind_text_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $fn:ident,
-            raw_fn: $raw_fn:ident,
-            as_ptr_fn: $as_ptr_fn:ident $(,)?
+            fn: $self_fn:ident(),
+            raw_fn: $self_raw_fn:ident(),
+            as_ptr_fn: $self_as_ptr_fn:ident() $(,)?
         },
         libui: {
-            fn: $libui_fn:ident($($arg:expr),* $(,)?) $(,)?
+            fn: $libui_fn:ident($($libui_arg:expr),* $(,)?) $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self) -> String {
-            let ptr = self.$as_ptr_fn();
+        pub fn $self_fn(&self) -> String {
+            let ptr = self.$self_as_ptr_fn();
             let string = unsafe { std::ffi::CStr::from_ptr(ptr).to_string_lossy().into() };
 
             // Now that the contents of `ptr` have been copied into `string`, we can safely free the
@@ -211,18 +217,32 @@ macro_rules! bind_text_fn {
             string
         }
 
-        #[doc = concat!("The lossless yet fallible version of [`Self::", stringify!($fn), "`].")]
-        pub fn $raw_fn(&self) -> Result<&str, $crate::Error> {
-            unsafe { std::ffi::CStr::from_ptr(self.$as_ptr_fn()) }
+        #[doc = concat!("The lossless yet fallible version of [`Self::", stringify!($self_fn), "`].")]
+        #[doc = indoc::indoc!("
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ")]
+        pub fn $self_raw_fn(&self) -> Result<&str, $crate::Error> {
+            unsafe { std::ffi::CStr::from_ptr(self.$self_as_ptr_fn()) }
                 .to_str()
                 .map_err($crate::Error::ConvertCString)
         }
 
-        pub fn $as_ptr_fn(&self) -> *mut std::os::raw::c_char {
+        ///
+        ///
+        /// # Examples
+        ///
+        /// ```no_run
+        /// // TODO
+        /// ```
+        pub fn $self_as_ptr_fn(&self) -> *mut std::os::raw::c_char {
             unsafe {
                 $libui_fn(
                     $(
-                        $($arg),*
+                        $($libui_arg),*
                     )?
                     self.as_ptr(),
                 )
@@ -231,17 +251,26 @@ macro_rules! bind_text_fn {
     };
 }
 
+/// Defines a binding to a *libui-ng-sys* function that accepts a C-style string.
 macro_rules! bind_set_text_fn {
-    (docs: $docs:literal, $fn:ident, $arg:ident, $libui_fn:ident $(,)?) => {
+    (
+        docs: $docs:literal,
+        self: {
+            fn: $self_fn:ident($self_arg:ident $(,)?) $(,)?
+        },
+        libui: {
+            fn: $libui_fn:ident() $(,)?
+        } $(,)?
+    ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self, $arg: impl AsRef<str>) -> Result<(), $crate::Error> {
+        pub fn $self_fn(&self, $self_arg: impl AsRef<str>) -> Result<(), $crate::Error> {
             // Normally, this is a bad idea: `$arg` is a `CString` that will be dropped at the end
             // of this scope, but its pointer is being passed to a C function that may, in theory,
             // refer to it indefinitiely long. However, as far as I know, *libui-ng* `strdup`s all
             // string arguments before using them, so this should be safe.
-            let $arg = make_cstring!($arg.as_ref());
+            let $self_arg = make_cstring!($self_arg.as_ref());
 
-            unsafe { $libui_fn(self.as_ptr(), $arg.as_ptr()) };
+            unsafe { $libui_fn(self.as_ptr(), $self_arg.as_ptr()) };
 
             Ok(())
         }
@@ -250,9 +279,17 @@ macro_rules! bind_set_text_fn {
 
 /// Defines a binding to a *libui-ng-sys* function that returns `bool`.
 macro_rules! bind_bool_fn {
-    (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
+    (
+        docs: $docs:literal,
+        self: {
+            fn: $self_fn:ident() $(,)?
+        },
+        libui: {
+            fn: $libui_fn:ident() $(,)?
+        } $(,)?
+    ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self) -> bool {
+        pub fn $self_fn(&self) -> bool {
             let result = unsafe { $libui_fn(self.as_ptr()) };
 
             // A boolean should be 0 or 1; if not, something may be awry.
@@ -267,10 +304,53 @@ macro_rules! bind_bool_fn {
 
 /// Defines a binding to a *libui-ng-sys* function that accepts a `bool`.
 macro_rules! bind_set_bool_fn {
-    (docs: $docs:literal, $fn:ident, $libui_fn:ident $(,)?) => {
+    (
+        docs: $docs:literal,
+        self: {
+            fn: $self_fn:ident() $(,)?
+        },
+        libui: {
+            fn: $libui_fn:ident() $(,)?
+        } $(,)?
+    ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $fn(&self, value: bool) {
+        pub fn $self_fn(&self, value: bool) {
             unsafe { $libui_fn(self.as_ptr(), value.into()) };
+        }
+    };
+}
+
+/// Defines a binding to a *libui-ng-sys* function that returns `impl Into<$self_fn_out>`.
+macro_rules! bind_ty_fn {
+    (
+        docs: $docs:literal,
+        self: {
+            fn: $self_fn:ident() -> $self_fn_out:ty $(,)?
+        },
+        libui: {
+            fn: $libui_fn:ident() $(,)?
+        } $(,)?
+    ) => {
+        #[doc = indoc::indoc!($docs)]
+        pub fn $self_fn(&self) -> $self_fn_out {
+            unsafe { $libui_fn(self.as_ptr()).into() }
+        }
+    };
+}
+
+macro_rules! bind_set_ty_fn {
+    (
+        docs: $docs:literal,
+        self: {
+            fn: $self_fn:ident($self_arg:ident : $self_ty:ty $(,)?) $(,)?
+        },
+        libui: {
+            fn: $libui_fn:ident() $(,)?
+        } $(,)?
+    ) => {
+        #[doc = indoc::indoc!($docs)]
+        pub fn $self_fn(&self, $self_arg: $self_ty) {
+            unsafe { $libui_fn(self.as_ptr(), $self_arg.into()) }
         }
     };
 }

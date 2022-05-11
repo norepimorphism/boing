@@ -12,7 +12,7 @@ impl Ui {
     /// # Examples
     ///
     /// ```no_run
-    ///
+    /// // TODO
     /// ```
     pub fn create_window(
         &self,
@@ -76,26 +76,47 @@ def_subcontrol!(
 
 impl<'a, 'b> Window<'a, 'b> {
     bind_text_fn!(
-        docs: "The title of this window.",
+        docs: "
+            The title of this window.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
-            fn: title,
-            raw_fn: raw_title,
-            as_ptr_fn: title_ptr,
+            fn: title(),
+            raw_fn: raw_title(),
+            as_ptr_fn: title_ptr(),
         },
-        libui: {
-            fn: uiWindowTitle(),
-        },
+        libui: { fn: uiWindowTitle() },
     );
 
     bind_set_text_fn!(
-        docs: "Sets the title of this window.",
-        set_title,
-        title,
-        uiWindowSetTitle,
+        docs: "
+            Sets the title of this window.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_title(title) },
+        libui: { fn: uiWindowSetTitle() },
     );
 
     bind_callback_fn!(
-        docs: "Sets a callback for when the content size of this window changes.",
+        docs: "
+            Sets a callback for when the content size of this window changes.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Window<'a>,
             handle: uiWindow,
@@ -113,7 +134,15 @@ impl<'a, 'b> Window<'a, 'b> {
     );
 
     bind_callback_fn!(
-        docs: "Sets a callback for when this window is requested to close.",
+        docs: "
+            Sets a callback for when this window is requested to close.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
         self: {
             ty: Window<'b>,
             handle: uiWindow,
@@ -132,64 +161,138 @@ impl<'a, 'b> Window<'a, 'b> {
     );
 
     bind_bool_fn!(
-        docs: "Determines if this window is fullscreen.",
-        is_fullscreen,
-        uiWindowFullscreen,
+        docs: "
+            Determines if this window is fullscreen.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_fullscreen() },
+        libui: { fn: uiWindowFullscreen() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this window is fullscreen.",
-        set_fullscreen,
-        uiWindowSetFullscreen,
+        docs: "
+            Sets whether or not this window is fullscreen.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_fullscreen() },
+        libui: { fn: uiWindowSetFullscreen() },
     );
 
     bind_bool_fn!(
-        docs: "Determines if this window is borderless.",
-        is_borderless,
-        uiWindowBorderless,
+        docs: "
+            Determines if this window is borderless.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_borderless() },
+        libui: { fn: uiWindowBorderless() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this window is borderless.",
-        set_borderless,
-        uiWindowSetBorderless,
+        docs: "
+            Sets whether or not this window is borderless.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_borderless() },
+        libui: { fn: uiWindowSetBorderless() },
     );
 
     bind_add_child_fn!(
-        docs: "Sets the child control of this window.",
-        self: {
-            fn: set_child<'ui>,
-            child: child,
-        },
-        libui: {
-            fn: uiWindowSetChild,
-        }
+        docs: "
+            Sets the child control of this window.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_child<'ui>(child) },
+        libui: { fn: uiWindowSetChild() },
     );
 
     bind_bool_fn!(
-        docs: "Determines if this window has margins.",
-        is_margined,
-        uiWindowMargined,
+        docs: "
+            Determines if this window has margins.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_margined() },
+        libui: { fn: uiWindowMargined() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this window has margins.",
-        set_margined,
-        uiWindowSetMargined,
+        docs: "
+            Sets whether or not this window has margins.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_margined() },
+        libui: { fn: uiWindowSetMargined() },
     );
 
     bind_bool_fn!(
-        docs: "Determines if this window is resizeable.",
-        is_resizeable,
-        uiWindowResizeable,
+        docs: "
+            Determines if this window is resizeable.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_resizeable() },
+        libui: { fn: uiWindowResizeable() },
     );
 
     bind_set_bool_fn!(
-        docs: "Sets whether or not this window is resizeable.",
-        set_resizeable,
-        uiWindowSetResizeable,
+        docs: "
+            Sets whether or not this window is resizeable.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_resizeable() },
+        libui: { fn: uiWindowSetResizeable() },
     );
 
+    /// The inner size of this window.
+    ///
+    /// # Examples
+    ///
+    ///  ```no_run
+    /// // TODO
+    /// ```
     pub fn content_size(&self) -> (i32, i32) {
         let (mut width, mut height) = (0, 0);
         unsafe {
@@ -203,6 +306,13 @@ impl<'a, 'b> Window<'a, 'b> {
         (width, height)
     }
 
+    /// Sets the inner size of this window.
+    ///
+    /// # Examples
+    ///
+    ///  ```no_run
+    /// // TODO
+    /// ```
     pub fn set_content_size(&self, width: u16, height: u16) {
         unsafe {
             uiWindowSetContentSize(self.as_ptr(), width.into(), height.into());
@@ -228,5 +338,5 @@ macro_rules! impl_present_fn {
     };
 }
 
-impl_present_fn!(present_alert, uiMsgBox,);
-impl_present_fn!(present_error, uiMsgBoxError,);
+impl_present_fn!(present_alert, uiMsgBox);
+impl_present_fn!(present_error, uiMsgBoxError);

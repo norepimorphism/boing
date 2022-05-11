@@ -13,6 +13,13 @@
 //! maintained separately. *libui-ng-sys* provides Rust bindings to *libui-ng*, and *boing* is a
 //! safe yet fairly unopinionated layer on top of *libui-ng-sys*.
 //!
+//! ## Terminology
+//!
+//! In the context that *boing* uses them, the terms "widget" and "control" are *not*
+//! interchangeable. A **widget** is an interactive visual element, while **controls** are a
+//! specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular,
+//! all widgets are controls except for [`Menu`] and [`MenuItem`].
+//!
 //! ## Usage
 //!
 //! To get started with *boing*, see [`Ui`].

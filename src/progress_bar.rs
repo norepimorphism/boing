@@ -21,7 +21,9 @@ def_subcontrol!(
 );
 
 impl ProgressBar {
-    pub fn set_value(&self, value: i32) {
-        unsafe { uiProgressBarSetValue(self.as_ptr(), value) }
-    }
+    bind_set_ty_fn!(
+        docs: "",
+        self: { fn: set_value(value: i32) },
+        libui: { fn: uiProgressBarSetValue() },
+    );
 }

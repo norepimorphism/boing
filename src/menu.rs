@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Menu`] and [`Item`].
+//! A drop-down menu within a menubar that may contain additional [menu items](`Item`).
 
 pub mod item;
 

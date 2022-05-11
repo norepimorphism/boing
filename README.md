@@ -35,8 +35,6 @@ See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
 | Feature       | Docs? | Impl? |
 | ------------- | ----- | ----- |
 | `Area`        | ☐    | ☐    |
-| `UniBox`      | ☐    | ☑    |
-| `BiBox`       | ☐    | ☐    |
 | `Button`      | ☑    | ☑    |
 | `Checkbox`    | ☑    | ☑    |
 | `Combobox`    | ☐    | ☐    |
@@ -51,4 +49,5 @@ See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
 | `Spinbox`     | ☐    | ☐    |
 | `Tab`         | ☐    | ☑    |
 | `Table`       | ☐    | ☐    |
+| `UniBox`      | ☐    | ☑    |
 | `Window`      | ☐    | ☑    |

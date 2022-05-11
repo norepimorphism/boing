@@ -48,15 +48,17 @@ impl Tab {
         Ok(())
     }
 
-    /// Deletes the page represented by the given index.
-    pub fn delete_page(&self, index: u16) {
-        unsafe { uiTabDelete(self.as_ptr(), index.into()) }
-    }
+    bind_set_ty_fn!(
+        docs: "Deletes the page represented by the given index.",
+        self: { fn: delete_page(index: u16) },
+        libui: { fn: uiTabDelete() },
+    );
 
-    /// The number of pages contained within this tab.
-    pub fn page_count(&self) -> i32 {
-        unsafe { uiTabNumPages(self.as_ptr()) }
-    }
+    bind_ty_fn!(
+        docs: "The number of pages contained within this tab.",
+        self: { fn: page_count() -> i32 },
+        libui: { fn: uiTabNumPages() },
+    );
 
     /// Determines if the page represented by the given index is margined.
     pub fn is_page_margined(&self, index: u16) -> bool {

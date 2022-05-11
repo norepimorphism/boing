@@ -22,9 +22,7 @@ def_subcontrol!(
     docs: "",
     ty: Spinbox,
     handle: uiSpinbox,
-    cb_fns: [
-        on_changed<'a>(),
-    ],
+    cb_fns: [ on_changed<'a>() ],
 );
 
 impl<'a> Spinbox<'a> {
@@ -34,15 +32,11 @@ impl<'a> Spinbox<'a> {
             ty: Spinbox<'a>,
             handle: uiSpinbox,
             fn: on_changed(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiSpinboxOnChanged(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 }
