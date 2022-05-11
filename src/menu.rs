@@ -10,6 +10,12 @@ use crate::prelude::*;
 
 impl Ui {
     /// Creates a new [`Menu`].
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn create_menu(
         &self,
         name: impl AsRef<str>,
@@ -23,6 +29,8 @@ impl Ui {
     }
 }
 
+// Why is it that all widgets are controls except for [`Menu`] and [`Item`], you ask? It's simply because `uiMenu` is *not* backed by a `uiControl`. Whereas `uiWindow`, `uiButton`, and `uiLabel` are `uiControls` with additional metadata, `uiMenu` and `uiMenuItem` do not begin with a `uiControl`, and as such, it is unsound to cast them to `*mut uiControl` and use them so.
+
 /// A drop-down menu within a menubar that may contain additional [menu items](`Item`).
 pub struct Menu {
     ptr: *mut uiMenu,
@@ -33,6 +41,13 @@ impl Menu {
         self.ptr
     }
 
+    /// Inserts a separator below the last [item](Item).
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn append_separator(&self) {
         unsafe { uiMenuAppendSeparator(self.as_ptr()) };
     }
