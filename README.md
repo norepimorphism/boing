@@ -12,16 +12,6 @@ A safe, lightweight wrapper over [*libui-ng-sys*](https://crates.io/crates/libui
 
 Currently, *boing* only links with *libui-ng*&mdash;not the original *libui*. However, *libui-ng-sys* may be updated in the future to support a *libui* feature flag, in which case it should be trivial to update *boing* as well.
 
-## Features
-
-### Lightweight
-
-*TODO*
-
-## Pitfalls
-
-*TODO*
-
 ## Terminology
 
 In the context that *boing* uses them, the terms "widget" and "control" are *not* interchangeable. A **widget** is an interactive visual element, while **controls** are a specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular, all widgets are controls except for `Menu` and `MenuItem`.
@@ -29,6 +19,36 @@ In the context that *boing* uses them, the terms "widget" and "control" are *not
 ## Design
 
 See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
+
+## Limitations
+
+*boing* currently boxes callbacks passed to methods such as `Window::on_closing` and `Button::on_clicked`. This incurs a small performance and memory cost. However, this is an intentional choice for the purpose of convenience. For example, if callbacks were instead borrowed rather than owned by a transfer of ownership, the following code would fail to compile:
+
+```rust
+use boing::{Button, Error, Ui, Window};
+
+fn main() -> Result<(), Error> {    
+    let ui: Ui;
+    let window: Window;
+    
+    let mut button = create_button(&ui, "Hello World!".into())?;
+    window.set_child(&mut button);
+    
+    window.show();
+    ui.run();
+    
+    Ok(())
+}
+
+fn create_button<'cb>(ui: &Ui, text: &'cb String) -> Result<Button<'cb>, Error> {
+    let button = ui.create_button("Press Me!")?;
+    button.on_clicked(&|| println!("{}", text));
+    
+    button
+}
+```
+
+In this case, the closure passed to `Button::on_clicked` would need to be routed through `create_button` as an argument. Such a hindrance on convenience was deemed untenable, hence the current callback design.
 
 ## Project Progress
 
