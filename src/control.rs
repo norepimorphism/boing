@@ -7,6 +7,36 @@ use std::{cell::Cell, os::raw::c_void};
 use crate::prelude::*;
 
 impl Control {
+    /// Creates a new [`Control`].
+    ///
+    /// Contrary to intuition, the created control is not bound to any lifetime. This is because *libui-ng* permits controls to be accessed as long as they are not destroyed and *libui-ng* is initialized. Therefore, the following is perfectly valid:
+    ///
+    /// ```no_run
+    /// # fn main() -> Result<(), boing::Error> {
+    /// use boing::{Control, Ui};
+    ///
+    /// let ui: Ui;
+    /// # ui = Ui::new()?;
+    ///
+    /// let control: *mut uiControl;
+    /// # control = std::ptr::null_mut();
+    /// let control = Control::new(control);
+    /// 
+    /// // The [`Ui`] [`Drop`] implementation is actually a stub, so this doesn't even do anything!
+    /// drop(ui);
+    ///
+    /// // Free the control's resources.
+    /// drop(control);
+    /// #
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub(crate) fn new(ptr: *mut uiControl) -> Self {
         Self {
             ptr,
@@ -51,11 +81,26 @@ impl Control {
     /// of utility in this regard, as well as the *boing* source code. See *[libui-ng-sys]* for
     /// *libui-ng* bindings.
     ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    ///
     /// [libui-ng-sys]: https://github.com/norepimorphism/libui-ng-sys
     pub fn as_ptr(&self) -> *mut uiControl {
         self.ptr
     }
 
+    /// Indicates that this control is a child of another widget.
+    ///
+    /// It is *imperative* that this method is called on child controls or else a double-free will occur. This is because *libui-ng* automatically manages the memory of child controls, freeing them when their parents are destroyed.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TOODO
+    /// ```
     pub(crate) fn make_child(&self) {
         self.is_child.set(true);
     }
@@ -80,26 +125,56 @@ impl Control {
     );
 
     /// A handle to the underlying OS object.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn native_handle(&self) -> *mut c_void {
         unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
     }
 
     /// Makes this control visible.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn show(&self) {
         unsafe { uiControlShow(self.as_ptr()) };
     }
 
     /// Makes this control invisible.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn hide(&self) {
         unsafe { uiControlHide(self.as_ptr()) };
     }
 
     /// Makes this control interactable.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn enable(&self) {
         unsafe { uiControlEnable(self.as_ptr()) };
     }
 
     /// Makes this control uninteractable.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
     pub fn disable(&self) {
         unsafe { uiControlDisable(self.as_ptr()) };
     }
