@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Combobox`].
+//! [`RadioButtonGroup`].
 
 use crate::prelude::*;
 
 impl Ui {
-    /// Creates a new [`Combobox`].
+    /// Creates a new [`RadioButtonGroup`].
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_combobox() -> Result<Combobox, crate::Error> {
+    pub fn create_radio_button_group() -> Result<RadioButtonGroup, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewCombobox() -> Combobox,
+            fn: uiNewRadioButtons() -> RadioButtonGroup,
         )
     }
 }
@@ -30,8 +30,6 @@ def_subcontrol!(
         // TODO
         ```
     ",
-    ty: Combobox,
-    handle: uiCombobox,
+    ty: RadioButtonGroup,
+    handle: uiRadioButtons,
 );
-
-impl Combobox {}

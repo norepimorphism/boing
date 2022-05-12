@@ -1,21 +1,21 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Combobox`].
+//! [`FontSelectorButton`].
 
 use crate::prelude::*;
 
 impl Ui {
-    /// Creates a new [`Combobox`].
+    /// Creates a new [`FontSelectorButton`].
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_combobox() -> Result<Combobox, crate::Error> {
+    pub fn create_font_selector_button() -> Result<FontSelectorButton, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewCombobox() -> Combobox,
+            fn: uiNewFontButton() -> FontSelectorButton,
         )
     }
 }
@@ -30,8 +30,6 @@ def_subcontrol!(
         // TODO
         ```
     ",
-    ty: Combobox,
-    handle: uiCombobox,
+    ty: FontSelectorButton,
+    handle: uiFontButton,
 );
-
-impl Combobox {}

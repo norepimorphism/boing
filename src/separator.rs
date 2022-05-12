@@ -4,20 +4,6 @@
 
 use crate::prelude::*;
 
-def_subcontrol!(
-    docs: "
-
-
-        # Examples
-
-        ```no_run
-        // TODO
-        ```
-    ",
-    ty: Separator,
-    handle: uiSeparator,
-);
-
 impl Ui {
     /// Creates a new horizontal [`Separator`].
     ///
@@ -47,3 +33,17 @@ impl Ui {
         )
     }
 }
+
+def_subcontrol!(
+    docs: "
+
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
+    ty: Separator,
+    handle: uiSeparator,
+);

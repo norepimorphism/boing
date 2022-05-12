@@ -2,10 +2,6 @@
 
 //! A safe, lightweight wrapper over *[libui-ng-sys]*.
 //!
-//! ## Notice
-//!
-//! This crate is by no means production-ready. See the [README] for progress notes.
-//!
 //! ## Background
 //!
 //! *[libui]* is a C library that provides a neutral interface to native GUI technologies (e.g.,
@@ -58,11 +54,24 @@
 //!
 //! For more examples, including a control gallery, see the *[examples]* subdirectory.
 //!
+//! ## Screenshots
+//!
+//! ![A screenshot.][control-gallery]
+//!
 //! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
 //! [README]: https://github.com/norepimorphism/boing/tree/main/README.md
 //! [libui]: https://github.com/andlabs/libui
 //! [libui-ng]: https://github.com/libui-ng/libui-ng
 //! [examples]: https://github.com/norepimorphism/boing/tree/main/examples
+#![cfg_attr(feature = "doc-images",
+cfg_attr(all(),
+doc = ::embed_doc_image::embed_image!("myimagelabel", "images/foo.png"),
+doc = ::embed_doc_image::embed_image!("foobaring", "assets/foobaring.png")))]
+#![cfg_attr(
+not(feature = "doc-images"),
+doc = "**Doc images not enabled**. Compile with feature `doc-images` and Rust version >= 1.54 \
+           to enable."
+)]
 
 // All *libui-ng-sys* exports violate Rust's naming convention.
 #![allow(non_upper_case_globals)]
@@ -75,7 +84,7 @@ pub mod button;
 pub mod checkbox;
 pub mod combobox;
 pub mod control;
-pub mod font_button;
+pub mod font_selector_button;
 pub mod form;
 pub mod grid;
 pub mod group;
@@ -85,7 +94,7 @@ pub mod menu;
 pub mod path;
 mod prelude;
 pub mod progress_bar;
-pub mod radio_buttons;
+pub mod radio_button_group;
 pub mod separator;
 pub mod slider;
 pub mod spinbox;
@@ -102,7 +111,7 @@ pub use button::Button;
 pub use checkbox::Checkbox;
 pub use combobox::Combobox;
 pub use control::Control;
-pub use font_button::FontButton;
+pub use font_selector_button::FontSelectorButton;
 pub use form::Form;
 pub use grid::Grid;
 pub use group::Group;
@@ -110,8 +119,9 @@ pub use image::Image;
 pub use label::Label;
 pub use menu::{Item as MenuItem, Menu};
 pub use path::Path;
+use prelude::*;
 pub use progress_bar::ProgressBar;
-pub use radio_buttons::RadioButtons;
+pub use radio_button_group::RadioButtonGroup;
 pub use separator::Separator;
 pub use slider::Slider;
 pub use spinbox::Spinbox;
