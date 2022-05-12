@@ -35,7 +35,7 @@ def_subcontrol!(
 );
 
 impl ProgressBar {
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
 
 
@@ -49,7 +49,7 @@ impl ProgressBar {
         libui: { fn: uiProgressBarValue() },
     );
 
-    bind_set_ty_fn!(
+    bind_fn!(
         docs: "
 
 

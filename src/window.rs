@@ -170,11 +170,11 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: is_fullscreen() },
+        self: { fn: is_fullscreen() -> bool },
         libui: { fn: uiWindowFullscreen() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this window is fullscreen.
 
@@ -184,7 +184,7 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: set_fullscreen() },
+        self: { fn: set_fullscreen(value: bool) },
         libui: { fn: uiWindowSetFullscreen() },
     );
 
@@ -198,11 +198,11 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: is_borderless() },
+        self: { fn: is_borderless() -> bool },
         libui: { fn: uiWindowBorderless() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this window is borderless.
 
@@ -212,7 +212,7 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: set_borderless() },
+        self: { fn: set_borderless(value: bool) },
         libui: { fn: uiWindowSetBorderless() },
     );
 
@@ -240,11 +240,11 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: is_margined() },
+        self: { fn: is_margined() -> bool },
         libui: { fn: uiWindowMargined() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this window has margins.
 
@@ -254,7 +254,7 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: set_margined() },
+        self: { fn: set_margined(value: bool) },
         libui: { fn: uiWindowSetMargined() },
     );
 
@@ -268,11 +268,11 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: is_resizeable() },
+        self: { fn: is_resizeable() -> bool },
         libui: { fn: uiWindowResizeable() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this window is resizeable.
 
@@ -282,7 +282,7 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: set_resizeable() },
+        self: { fn: set_resizeable(value: bool) },
         libui: { fn: uiWindowSetResizeable() },
     );
 
@@ -290,7 +290,7 @@ impl<'a, 'b> Window<'a, 'b> {
     ///
     /// # Examples
     ///
-    ///  ```no_run
+    /// ```no_run
     /// // TODO
     /// ```
     pub fn content_size(&self) -> (i32, i32) {
@@ -306,18 +306,19 @@ impl<'a, 'b> Window<'a, 'b> {
         (width, height)
     }
 
-    /// Sets the inner size of this window.
-    ///
-    /// # Examples
-    ///
-    ///  ```no_run
-    /// // TODO
-    /// ```
-    pub fn set_content_size(&self, width: u16, height: u16) {
-        unsafe {
-            uiWindowSetContentSize(self.as_ptr(), width.into(), height.into());
-        }
-    }
+    bind_fn!(
+        docs: "
+            Sets the inner size of this window.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_content_size(width: u16, height: u16) },
+        libui: { fn: uiWindowSetContentSize() },
+    );
 }
 
 macro_rules! impl_present_fn {

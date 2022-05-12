@@ -81,7 +81,7 @@ impl<'ui> Item<'ui> {
         self.ptr
     }
 
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
 
 
@@ -91,11 +91,11 @@ impl<'ui> Item<'ui> {
             // TODO
             ```
         ",
-        self: { fn: enable() -> () },
+        self: { fn: enable() },
         libui: { fn: uiMenuItemEnable() },
     );
 
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
 
 
@@ -105,7 +105,7 @@ impl<'ui> Item<'ui> {
             // TODO
             ```
         ",
-        self: { fn: disable() -> () },
+        self: { fn: disable() },
         libui: { fn: uiMenuItemDisable() },
     );
 
@@ -145,11 +145,11 @@ impl<'ui> Item<'ui> {
             // TODO
             ```
         ",
-        self: { fn: is_checked() },
+        self: { fn: is_checked() -> bool },
         libui: { fn: uiMenuItemChecked() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this item is checked.
 
@@ -159,7 +159,7 @@ impl<'ui> Item<'ui> {
             // TODO
             ```
         ",
-        self: { fn: set_checked() },
+        self: { fn: set_checked(value: bool) },
         libui: { fn: uiMenuItemSetChecked() },
     );
 }

@@ -120,7 +120,7 @@ impl Control {
             // TODO
             ```
         ",
-        self: { fn: is_visible() },
+        self: { fn: is_visible() -> bool },
         libui: { fn: uiControlVisible() },
     );
 
@@ -134,7 +134,7 @@ impl Control {
             // TODO
             ```
         ",
-        self: { fn: is_enabled() },
+        self: { fn: is_enabled() -> bool },
         libui: { fn: uiControlEnabled() },
     );
 
@@ -149,62 +149,77 @@ impl Control {
             // TODO
             ```
         ",
-        self: { fn: is_enabled_to_user() },
+        self: { fn: is_enabled_to_user() -> bool },
         libui: { fn: uiControlEnabledToUser() },
     );
 
-    /// A handle to the underlying OS object.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn native_handle(&self) -> *mut c_void {
-        unsafe { uiControlHandle(self.as_ptr()) as *mut c_void }
-    }
+    bind_fn!(
+        docs: "
+            A handle to the underlying OS object.
 
-    /// Makes this control visible.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn show(&self) {
-        unsafe { uiControlShow(self.as_ptr()) };
-    }
+            # Examples
 
-    /// Makes this control invisible.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn hide(&self) {
-        unsafe { uiControlHide(self.as_ptr()) };
-    }
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: native_handle() -> *mut c_void },
+        libui: { fn: uiControlHandle() },
+    );
 
-    /// Makes this control interactable.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn enable(&self) {
-        unsafe { uiControlEnable(self.as_ptr()) };
-    }
+    bind_fn!(
+        docs: "
+            Makes this control visible.
 
-    /// Makes this control uninteractable.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn disable(&self) {
-        unsafe { uiControlDisable(self.as_ptr()) };
-    }
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: show() },
+        libui: { fn: uiControlShow() },
+    );
+
+    bind_fn!(
+        docs: "
+            Makes this control invisible.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: hide() },
+        libui: { fn: uiControlHide() },
+    );
+
+    bind_fn!(
+        docs: "
+            Makes this control interactable.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: enable() },
+        libui: { fn: uiControlEnable() },
+    );
+
+    bind_fn!(
+        docs: "
+            Makes this control uninteractable.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: disable() },
+        libui: { fn: uiControlDisable() },
+    );
 }

@@ -67,11 +67,11 @@ impl UniBox {
             assert!(unibox.is_padded());
             ```
         ",
-        self: { fn: is_padded() },
+        self: { fn: is_padded() -> bool },
         libui: { fn: uiBoxPadded() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this box is padded.
 
@@ -81,7 +81,7 @@ impl UniBox {
             // TODO
             ```
         ",
-        self: { fn: set_padded() },
+        self: { fn: set_padded(value: bool) },
         libui: { fn: uiBoxSetPadded() },
     );
 
@@ -101,7 +101,7 @@ impl UniBox {
         unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
     }
 
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
             The number of child controls this box contains.
 
@@ -128,7 +128,7 @@ impl UniBox {
         libui: { fn: uiBoxNumChildren() },
     );
 
-    bind_set_ty_fn!(
+    bind_fn!(
         docs: r#"
             Removes the child control at the given index.
 

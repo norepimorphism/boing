@@ -85,11 +85,11 @@ impl<'a> Checkbox<'a> {
             // TODO
             ```
         ",
-        self: { fn: checked() },
+        self: { fn: checked() -> bool },
         libui: { fn: uiCheckboxChecked() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this checkbox is checked.
 
@@ -100,7 +100,7 @@ impl<'a> Checkbox<'a> {
             // TODO
             ```
         ",
-        self: { fn: set_checked() },
+        self: { fn: set_checked(value: bool) },
         libui: { fn: uiCheckboxSetChecked() },
     );
 }

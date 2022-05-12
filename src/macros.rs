@@ -31,6 +31,9 @@ macro_rules! def_subcontrol {
     ) => {
         impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
             pub(crate) fn new(ptr: *mut $ptr_ty) -> Self {
+                // Here, we cast `ptr` to `*mut uiControl`. This is safe because the memory layout
+                // of all subcontrols begins with a `uiControl` struct, so they are effectively
+                // subclasses of `uiControl`.
                 Self::from_control(Control::new(ptr.cast()))
             }
 
@@ -65,6 +68,7 @@ macro_rules! def_subcontrol {
             /// // TODO
             /// ```
             pub fn as_ptr(&self) -> *mut $ptr_ty {
+                // This is OK for the same reason outlined in [`Self::new`].
                 self.inner.as_ptr().cast()
             }
         }
@@ -87,6 +91,7 @@ macro_rules! def_subcontrol {
 
 macro_rules! call_fallible_libui_fn {
     ($fn:ident( $($arg:expr),* $(,)? )) => {
+        // `<pointer>::as_mut` checks for NULL.
         unsafe { $fn( $($arg),* ).as_mut() }
             .ok_or($crate::Error::LibuiFn { name: stringify!($fn), cause: None })
     };
@@ -287,15 +292,15 @@ macro_rules! bind_bool_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $self_fn:ident() $(,)?
+            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty),* $(,)?) -> bool $(,)?
         },
         libui: {
             fn: $libui_fn:ident() $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self) -> bool {
-            let result = unsafe { $libui_fn(self.as_ptr()) };
+        pub fn $self_fn(&self, $($self_arg: $self_ty),*) -> bool {
+            let result = unsafe { $libui_fn(self.as_ptr(), $($self_arg.into()),*) };
 
             // A boolean should be 0 or 1; if not, something may be awry.
             debug_assert!((result == 0) || (result == 1));
@@ -307,55 +312,20 @@ macro_rules! bind_bool_fn {
     };
 }
 
-/// Defines a binding to a *libui-ng-sys* function that accepts a `bool`.
-macro_rules! bind_set_bool_fn {
+/// Defines a binding to a *libui-ng-sys* function.
+macro_rules! bind_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $self_fn:ident() $(,)?
+            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty),* $(,)?) $(-> $self_fn_out:ty)? $(,)?
         },
         libui: {
             fn: $libui_fn:ident() $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self, value: bool) {
-            unsafe { $libui_fn(self.as_ptr(), value.into()) };
-        }
-    };
-}
-
-/// Defines a binding to a *libui-ng-sys* function that returns `impl Into<$self_fn_out>`.
-macro_rules! bind_ty_fn {
-    (
-        docs: $docs:literal,
-        self: {
-            fn: $self_fn:ident() -> $self_fn_out:ty $(,)?
-        },
-        libui: {
-            fn: $libui_fn:ident() $(,)?
-        } $(,)?
-    ) => {
-        #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self) -> $self_fn_out {
-            unsafe { $libui_fn(self.as_ptr()).into() }
-        }
-    };
-}
-
-macro_rules! bind_set_ty_fn {
-    (
-        docs: $docs:literal,
-        self: {
-            fn: $self_fn:ident($self_arg:ident : $self_ty:ty $(,)?) $(,)?
-        },
-        libui: {
-            fn: $libui_fn:ident() $(,)?
-        } $(,)?
-    ) => {
-        #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self, $self_arg: $self_ty) {
-            unsafe { $libui_fn(self.as_ptr(), $self_arg.into()) }
+        pub fn $self_fn(&self, $($self_arg: $self_ty),*) $(-> $self_fn_out)? {
+            unsafe { $libui_fn(self.as_ptr(), $($self_arg.into()),*) $(as $self_fn_out)? }
         }
     };
 }

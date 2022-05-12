@@ -40,7 +40,7 @@ def_subcontrol!(
 );
 
 impl<'a> Spinbox<'a> {
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
 
 
@@ -54,7 +54,7 @@ impl<'a> Spinbox<'a> {
         libui: { fn: uiSpinboxValue() },
     );
 
-    bind_set_ty_fn!(
+    bind_fn!(
         docs: "
 
 

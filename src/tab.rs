@@ -74,7 +74,7 @@ impl Tab {
         Ok(())
     }
 
-    bind_set_ty_fn!(
+    bind_fn!(
         docs: "
             Deletes the page represented by the given index.
 
@@ -88,7 +88,7 @@ impl Tab {
         libui: { fn: uiTabDelete() },
     );
 
-    bind_ty_fn!(
+    bind_fn!(
         docs: "
             The number of pages contained within this tab.
 
@@ -102,25 +102,31 @@ impl Tab {
         libui: { fn: uiTabNumPages() },
     );
 
-    /// Determines if the page represented by the given index is margined.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn is_page_margined(&self, index: u16) -> bool {
-        unsafe { uiTabMargined(self.as_ptr(), index.into()) == 1 }
-    }
+    bind_bool_fn!(
+        docs: "
+            Determines if the page represented by the given index is margined.
 
-    /// Sets whether or not the page represented by the given index should be margined.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    ///  // TODO
-    /// ```
-    pub fn set_page_margined(&self, index: u16, value: bool) {
-        unsafe { uiTabSetMargined(self.as_ptr(), index.into(), value.into()) }
-    }
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_page_margined(index: u16) -> bool },
+        libui: { fn: uiTabMargined() },
+    );
+
+    bind_fn!(
+        docs: "
+            Sets whether or not the page represented by the given index should be margined.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_page_margined(index: u16, value: bool) },
+        libui: { fn: uiTabSetMargined() },
+    );
 }

@@ -51,14 +51,17 @@ impl Menu {
         self.ptr
     }
 
-    /// Inserts a separator below the last [item](Item).
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn append_separator(&self) {
-        unsafe { uiMenuAppendSeparator(self.as_ptr()) };
-    }
+    bind_fn!(
+        docs: "
+            Inserts a separator below the last [item](Item).
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: append_separator() },
+        libui: { fn: uiMenuAppendSeparator() },
+    );
 }

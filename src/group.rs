@@ -39,7 +39,7 @@ def_subcontrol!(
     handle: uiGroup,
 );
 
-impl<'ui> Group {
+impl Group {
     bind_text_fn!(
         docs: "
             The title of this group.
@@ -96,11 +96,11 @@ impl<'ui> Group {
             // TODO
             ```
         ",
-        self: { fn: is_margined() },
+        self: { fn: is_margined() -> bool },
         libui: { fn: uiGroupMargined() },
     );
 
-    bind_set_bool_fn!(
+    bind_fn!(
         docs: "
             Sets whether or not this group has margins.
 
@@ -110,7 +110,7 @@ impl<'ui> Group {
             // TODO
             ```
         ",
-        self: { fn: set_margined() },
+        self: { fn: set_margined(value: bool) },
         libui: { fn: uiGroupSetMargined() },
     );
 }
