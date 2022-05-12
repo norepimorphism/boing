@@ -22,7 +22,7 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
+        A button that opens a dialog to select a font when clicked.
 
         # Examples
 
