@@ -12,10 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_button(
-        &self,
-        text: impl AsRef<str>,
-    ) -> Result<Button, crate::Error> {
+    pub fn create_button(&self, text: impl AsRef<str>) -> Result<Button, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(

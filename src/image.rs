@@ -12,11 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_image(
-        &self,
-        width: f64,
-        height: f64,
-    ) -> Result<Image, crate::Error> {
+    pub fn create_image(&self, width: f64, height: f64) -> Result<Image, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewImage(width, height) -> Image,
@@ -47,8 +43,6 @@ pub struct Pixel {
 }
 
 impl Image {
-    ///
-    ///
     /// # Examples
     ///
     /// ```no_run

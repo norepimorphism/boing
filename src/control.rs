@@ -75,41 +75,6 @@ impl Drop for Control {
 }
 
 impl Control {
-    /// A handle to the underlying *libui-ng* control object.
-    ///
-    /// # Safety
-    ///
-    /// The returned pointer is guaranteed to be non-null. Beyond that, it is your responsibility to
-    /// use the handle appropriately. Consulting the *libui-ng* documentation or source code will be
-    /// of utility in this regard, as well as the *boing* source code. See *[libui-ng-sys]* for
-    /// *libui-ng* bindings.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    ///
-    /// [libui-ng-sys]: https://github.com/norepimorphism/libui-ng-sys
-    pub fn as_ptr(&self) -> *mut uiControl {
-        self.ptr
-    }
-
-    /// Indicates that this control is a child of another widget.
-    ///
-    /// It is *imperative* that this method is called on child controls or else a double-free will
-    /// occur. This is because *libui-ng* automatically manages the memory of child controls,
-    /// freeing them when their parents are destroyed.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub(crate) fn make_child(&self) {
-        self.is_child.set(true);
-    }
-
     bind_bool_fn!(
         docs: "
             Determines if this control is visible.
@@ -222,4 +187,39 @@ impl Control {
         self: { fn: disable() },
         libui: { fn: uiControlDisable() },
     );
+
+    /// A handle to the underlying *libui-ng* control object.
+    ///
+    /// # Safety
+    ///
+    /// The returned pointer is guaranteed to be non-null. Beyond that, it is your responsibility to
+    /// use the handle appropriately. Consulting the *libui-ng* documentation or source code will be
+    /// of utility in this regard, as well as the *boing* source code. See *[libui-ng-sys]* for
+    /// *libui-ng* bindings.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    ///
+    /// [libui-ng-sys]: https://github.com/norepimorphism/libui-ng-sys
+    pub fn as_ptr(&self) -> *mut uiControl {
+        self.ptr
+    }
+
+    /// Indicates that this control is a child of another widget.
+    ///
+    /// It is *imperative* that this method is called on child controls or else a double-free will
+    /// occur. This is because *libui-ng* automatically manages the memory of child controls,
+    /// freeing them when their parents are destroyed.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    pub(crate) fn make_child(&self) {
+        self.is_child.set(true);
+    }
 }

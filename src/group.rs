@@ -12,10 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_group(
-        &self,
-        title: impl AsRef<str>,
-    ) -> Result<Group, crate::Error> {
+    pub fn create_group(&self, title: impl AsRef<str>) -> Result<Group, crate::Error> {
         let title = make_cstring!(title.as_ref());
 
         call_libui_new_fn!(

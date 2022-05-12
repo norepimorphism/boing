@@ -12,11 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_slider(
-        &self,
-        min: u16,
-        max: u16,
-    ) -> Result<Slider, crate::Error> {
+    pub fn create_slider(&self, min: u16, max: u16) -> Result<Slider, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewSlider(min.into(), max.into()) -> Slider,

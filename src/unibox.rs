@@ -85,22 +85,6 @@ impl UniBox {
         libui: { fn: uiBoxSetPadded() },
     );
 
-    /// Inserts a child control at the zero-based index `self.child_count() - 1`.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn append_child(
-        &self,
-        child: &mut impl DerefMut<Target = Control>,
-        can_stretch: bool,
-    ) {
-        child.make_child();
-        unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
-    }
-
     bind_fn!(
         docs: "
             The number of child controls this box contains.
@@ -160,4 +144,16 @@ impl UniBox {
         self: { fn: delete_child(index: u16) },
         libui: { fn: uiBoxDelete() },
     );
+
+    /// Inserts a child control at the zero-based index `self.child_count() - 1`.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    pub fn append_child(&self, child: &mut impl DerefMut<Target = Control>, can_stretch: bool) {
+        child.make_child();
+        unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
+    }
 }

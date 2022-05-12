@@ -12,10 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_label(
-        &self,
-        text: impl AsRef<str>,
-    ) -> Result<Label, crate::Error> {
+    pub fn create_label(&self, text: impl AsRef<str>) -> Result<Label, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(

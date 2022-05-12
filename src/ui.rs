@@ -36,7 +36,11 @@ impl Ui {
             result = Self::init_unchecked();
         });
 
-        result.map(|_| Self { arena: bumpalo::Bump::new() })
+        result.map(|_| {
+            Self {
+                arena: bumpalo::Bump::new(),
+            }
+        })
     }
 
     // Initializes *libui-ng* with the assumption that *libui-ng* is not already initialized.
@@ -116,8 +120,8 @@ impl Ui {
 pub struct Ui {
     // Spooky! Nearly nothing's here! As it turns out, [`Ui`] serves no functional purpose besides
     // instructing the compiler as to when it is valid for widgets to be created, used, and
-    // destroyed, as well as store callback data for [`MenuItem`]s, which is the express purpose for
-    // the `arena` field.
+    // destroyed, as well as store callback data for [`MenuItem`]s, which is the express purpose
+    // for the `arena` field.
     arena: bumpalo::Bump,
 }
 

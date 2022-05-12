@@ -35,45 +35,6 @@ def_subcontrol!(
 );
 
 impl Tab {
-    /// Appends a page.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn append_page(
-        &self,
-        name: impl AsRef<str>,
-        control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<(), crate::Error> {
-        control.make_child();
-        let name = make_cstring!(name.as_ref());
-        unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
-
-        Ok(())
-    }
-
-    /// Inserts a page at the given index.
-    ///
-    /// # Examples
-    ///
-    /// ```no_run
-    /// // TODO
-    /// ```
-    pub fn insert_page(
-        &self,
-        name: impl AsRef<str>,
-        index: u16,
-        control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<(), crate::Error> {
-        control.make_child();
-        let name = make_cstring!(name.as_ref());
-        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), index.into(), control.as_ptr()) }
-
-        Ok(())
-    }
-
     bind_fn!(
         docs: "
             Deletes the page represented by the given index.
@@ -129,4 +90,43 @@ impl Tab {
         self: { fn: set_page_margined(index: u16, value: bool) },
         libui: { fn: uiTabSetMargined() },
     );
+
+    /// Appends a page.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    pub fn append_page(
+        &self,
+        name: impl AsRef<str>,
+        control: &mut impl DerefMut<Target = Control>,
+    ) -> Result<(), crate::Error> {
+        control.make_child();
+        let name = make_cstring!(name.as_ref());
+        unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
+
+        Ok(())
+    }
+
+    /// Inserts a page at the given index.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// // TODO
+    /// ```
+    pub fn insert_page(
+        &self,
+        name: impl AsRef<str>,
+        index: u16,
+        control: &mut impl DerefMut<Target = Control>,
+    ) -> Result<(), crate::Error> {
+        control.make_child();
+        let name = make_cstring!(name.as_ref());
+        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), index.into(), control.as_ptr()) }
+
+        Ok(())
+    }
 }

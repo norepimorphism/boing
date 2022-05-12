@@ -15,14 +15,16 @@ use crate::prelude::*;
 macro_rules! impl_append_item_fn_with_name {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
-            ///
-            ///
             /// # Examples
             ///
             /// ```no_run
             /// // TODO
             /// ```
-            pub fn $boing_fn<'ui>(&self, ui: &'ui Ui, name: impl AsRef<str>) -> Result<&'ui mut Item<'ui>, $crate::Error> {
+            pub fn $boing_fn<'ui>(
+                &self,
+                ui: &'ui Ui,
+                name: impl AsRef<str>,
+            ) -> Result<&'ui mut Item<'ui>, $crate::Error> {
                 // `name` is dropped at the end of scope, at which point the underling string buffer
                 // is freed, but that's OK! The `uiMenuItemAppend*Item` functions `strdup` the
                 // string argument.
@@ -38,8 +40,6 @@ macro_rules! impl_append_item_fn_with_name {
 macro_rules! impl_append_item_fn {
     ($boing_fn:ident, $libui_fn:ident) => {
         impl Menu {
-            ///
-            ///
             /// # Examples
             ///
             /// ```no_run
@@ -77,10 +77,6 @@ pub struct Item<'ui> {
 }
 
 impl<'ui> Item<'ui> {
-    pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
-        self.ptr
-    }
-
     bind_fn!(
         docs: "
 
@@ -162,4 +158,8 @@ impl<'ui> Item<'ui> {
         self: { fn: set_checked(value: bool) },
         libui: { fn: uiMenuItemSetChecked() },
     );
+
+    pub(crate) fn as_ptr(&self) -> *mut uiMenuItem {
+        self.ptr
+    }
 }

@@ -286,6 +286,20 @@ impl<'a, 'b> Window<'a, 'b> {
         libui: { fn: uiWindowSetResizeable() },
     );
 
+    bind_fn!(
+        docs: "
+            Sets the inner size of this window.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_content_size(width: u16, height: u16) },
+        libui: { fn: uiWindowSetContentSize() },
+    );
+
     /// The inner size of this window.
     ///
     /// # Examples
@@ -305,20 +319,6 @@ impl<'a, 'b> Window<'a, 'b> {
 
         (width, height)
     }
-
-    bind_fn!(
-        docs: "
-            Sets the inner size of this window.
-
-            # Examples
-
-            ```no_run
-            // TODO
-            ```
-        ",
-        self: { fn: set_content_size(width: u16, height: u16) },
-        libui: { fn: uiWindowSetContentSize() },
-    );
 }
 
 macro_rules! impl_present_fn {

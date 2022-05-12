@@ -12,11 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_spinbox(
-        &self,
-        min: u16,
-        max: u16,
-    ) -> Result<Spinbox, crate::Error> {
+    pub fn create_spinbox(&self, min: u16, max: u16) -> Result<Spinbox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewSpinbox(min.into(), max.into()) -> Spinbox,
