@@ -65,7 +65,7 @@ impl Group {
             // TODO
             ```
         ",
-        self: { fn: set_title(title) },
+        self: { fn: set_title(title) -> () },
         libui: { fn: uiGroupSetTitle() },
     );
 

@@ -45,7 +45,14 @@ impl ProgressBar {
             // TODO
             ```
         ",
-        self: { fn: value() -> i32 },
+        self: {
+            fn: value() -> u16,
+            map_out: |_, value| {
+                assert_uint!(value);
+
+                value as u16
+            },
+        },
         libui: { fn: uiProgressBarValue() },
     );
 
@@ -59,7 +66,19 @@ impl ProgressBar {
             // TODO
             ```
         ",
-        self: { fn: set_value(value: i32) },
+        self: { fn: set_value(value: u16) },
         libui: { fn: uiProgressBarSetValue() },
+    );
+
+    bind_fn!(
+        docs: "
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_indefinite() },
+        libui: { fn: uiProgressBarSetValue(-1) },
     );
 }

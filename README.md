@@ -76,7 +76,7 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Path`        | ☐    | ☐    | `uiDrawPath`
 | `ProgressBar` | ☐    | ☑    | `uiProgressBar`
 | `Pushbutton`  | ☐    | ☑    | `uiButton`
-| `RadioButtons`| ☐    | ☐    | `uiRadioButtons`
+| `RadioButtons`| ☐    | ☑    | `uiRadioButtons`
 | `Separator`   | ☐    | ☑    | `uiSeparator`
 | `Slider`      | ☐    | ☑    | `uiSlider`
 | `Spinbox`     | ☐    | ☑    | `uiSpinbox`

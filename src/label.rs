@@ -65,7 +65,7 @@ impl Label {
             // TODO
             ```
         ",
-        self: { fn: set_text(text) },
+        self: { fn: set_text(text) -> () },
         libui: { fn: uiLabelSetText() },
     );
 }

@@ -48,7 +48,14 @@ impl<'a> Slider<'a> {
             // TODO
             ```
         ",
-        self: { fn: value() -> i32 },
+        self: {
+            fn: value() -> u16,
+            map_out: |_, value| {
+                assert_uint!(value);
+
+                value as u16
+            },
+        },
         libui: { fn: uiSliderValue() },
     );
 

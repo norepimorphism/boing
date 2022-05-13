@@ -67,7 +67,14 @@ impl Combobox {
             // TODO
             ```
         ",
-        self: { fn: item_count() -> i32 },
+        self: {
+            fn: item_count() -> u16,
+            map_out: |_, count| {
+                assert_uint!(count);
+
+                count as u16
+            },
+        },
         libui: { fn: uiComboboxNumItems() },
     );
 

@@ -57,7 +57,7 @@ impl<'a> Checkbox<'a> {
             // TODO
             ```
         ",
-        self: { fn: set_text(text) },
+        self: { fn: set_text(text) -> () },
         libui: { fn: uiCheckboxSetText() },
     );
 

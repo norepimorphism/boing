@@ -34,6 +34,10 @@ def_subcontrol!(
     handle: uiTab,
 );
 
+pub struct Page {
+    index: u16,
+}
+
 impl Tab {
     bind_fn!(
         docs: "
@@ -45,7 +49,7 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: delete_page(index: u16) },
+        self: { fn: delete_page(page: Page => |page: Page| page.index) },
         libui: { fn: uiTabDelete() },
     );
 
@@ -59,7 +63,14 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: page_count() -> i32 },
+        self: {
+            fn: page_count() -> u16,
+            map_out: |_, count| {
+                assert_uint!(count);
+
+                count as u16
+            },
+        },
         libui: { fn: uiTabNumPages() },
     );
 
@@ -73,7 +84,7 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: is_page_margined(index: u16) -> bool },
+        self: { fn: is_page_margined(page: Page => |page: Page| page.index) -> bool },
         libui: { fn: uiTabMargined() },
     );
 
@@ -87,7 +98,12 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: set_page_margined(index: u16, value: bool) },
+        self: {
+            fn: set_page_margined(
+                page: Page => |page: Page| page.index,
+                value: bool,
+            )
+        },
         libui: { fn: uiTabSetMargined() },
     );
 
@@ -98,16 +114,18 @@ impl Tab {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append_page(
+    pub fn append_new_page(
         &self,
         name: impl AsRef<str>,
         control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<(), crate::Error> {
+    ) -> Result<Page, crate::Error> {
+        let index = self.page_count();
+
         control.make_child();
         let name = make_cstring!(name.as_ref());
         unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
 
-        Ok(())
+        Ok(Page { index })
     }
 
     /// Inserts a page at the given index.
@@ -117,16 +135,18 @@ impl Tab {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn insert_page(
+    pub fn insert_new_page(
         &self,
         name: impl AsRef<str>,
-        index: u16,
+        before: Page,
         control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<(), crate::Error> {
+    ) -> Result<Page, crate::Error> {
+        let index = self.page_count();
+
         control.make_child();
         let name = make_cstring!(name.as_ref());
-        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), index.into(), control.as_ptr()) }
+        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), before.index.into(), control.as_ptr()) }
 
-        Ok(())
+        Ok(Page { index })
     }
 }

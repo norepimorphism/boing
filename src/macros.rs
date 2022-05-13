@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 
+macro_rules! assert_uint {
+    ($it:expr) => {
+        debug_assert!($it >= 0);
+    };
+}
+
 /// Creates a new `CString`, returning from the current scope if an error occurs during the
 /// conversion.
 ///
@@ -23,9 +29,13 @@ macro_rules! def_subcontrol {
         ty: $ty:ident,
         handle: $ptr_ty:ident
         $(
-            ,
-            cb_fns: [
+            , cb_fns: [
                 $($cb:ident<$lt:lifetime>() $(-> $out:ty)?),* $(,)?
+            ]
+        )?
+        $(
+            , fields: [
+                $($field_name:ident : $field_ty:ty = $field_default:expr),* $(,)?
             ]
         )? $(,)?
     ) => {
@@ -39,11 +49,12 @@ macro_rules! def_subcontrol {
 
             pub(crate) fn from_control(control: Control) -> Self {
                 Self {
-                    inner: control,
+                    inner: control
                     $(
-                        $(
-                            $cb: None
-                        ),*
+                        , $($cb: None),*
+                    )?
+                    $(
+                        , $($field_name: $field_default),*
                     )?
                 }
             }
@@ -51,11 +62,12 @@ macro_rules! def_subcontrol {
 
         #[doc = indoc::indoc!($docs)]
         pub struct $ty$(<$($lt),*>)? {
-            inner: $crate::Control,
+            inner: $crate::Control
             $(
-                $(
-                    $cb: Option<Box<dyn $lt + FnMut(&mut Self) $(-> $out)?>>
-                ),*
+                , $($cb: Option<Box<dyn $lt + FnMut(&mut Self) $(-> $out)?>>),*
+            )?
+            $(
+                , $($field_name: $field_ty),*
             )?
         }
 
@@ -265,24 +277,28 @@ macro_rules! bind_text_fn {
 macro_rules! bind_set_text_fn {
     (
         docs: $docs:literal,
-        self: {
-            fn: $self_fn:ident($self_arg:ident $(,)?) $(,)?
+        self $( ( $mut_spec:tt ) )? : {
+            fn: $self_fn:ident($self_arg:ident $(,)?) -> $self_fn_out:ty
+            $(, map_out: $self_map_out:expr)? $(,)?
         },
         libui: {
             fn: $libui_fn:ident() $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self, $self_arg: impl AsRef<str>) -> Result<(), $crate::Error> {
+        pub fn $self_fn(& $($mut_spec)? self, $self_arg: impl AsRef<str>) -> Result<$self_fn_out, $crate::Error> {
             // Normally, this is a bad idea: `$arg` is a `CString` that will be dropped at the end
             // of this scope, but its pointer is being passed to a C function that may, in theory,
             // refer to it indefinitiely long. However, as far as I know, *libui-ng* `strdup`s all
             // string arguments before using them, so this should be safe.
             let $self_arg = make_cstring!($self_arg.as_ref());
 
-            unsafe { $libui_fn(self.as_ptr(), $self_arg.as_ptr()) };
+            let result = unsafe { $libui_fn(self.as_ptr(), $self_arg.as_ptr()) };
+            $(
+                let result = $self_map_out(self, result);
+            )?
 
-            Ok(())
+            Ok(result)
         }
     };
 }
@@ -292,7 +308,7 @@ macro_rules! bind_bool_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty),* $(,)?) -> bool $(,)?
+            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)? ),* $(,)?) -> bool $(,)?
         },
         libui: {
             fn: $libui_fn:ident() $(,)?
@@ -300,6 +316,12 @@ macro_rules! bind_bool_fn {
     ) => {
         #[doc = indoc::indoc!($docs)]
         pub fn $self_fn(&self, $($self_arg: $self_ty),*) -> bool {
+            $(
+                $(
+                    let $self_arg = $self_arg_map($self_arg);
+                )?
+            )*
+
             let result = unsafe { $libui_fn(self.as_ptr(), $($self_arg.into()),*) };
 
             // A boolean should be 0 or 1; if not, something may be awry.
@@ -316,16 +338,28 @@ macro_rules! bind_bool_fn {
 macro_rules! bind_fn {
     (
         docs: $docs:literal,
-        self: {
-            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty),* $(,)?) $(-> $self_fn_out:ty)? $(,)?
+        self $( ( $mut_spec:tt ) )?  : {
+            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)? ),* $(,)?) $(-> $self_fn_out:ty)?
+            $(, map_out: $self_map_out:expr)? $(,)?
         },
         libui: {
-            fn: $libui_fn:ident() $(,)?
+            fn: $libui_fn:ident($($libui_arg:expr),* $(,)?) $(,)?
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self, $($self_arg: $self_ty),*) $(-> $self_fn_out)? {
-            unsafe { $libui_fn(self.as_ptr(), $($self_arg.into()),*) $(as $self_fn_out)? }
+        pub fn $self_fn(& $($mut_spec)? self, $($self_arg: $self_ty),*) $(-> $self_fn_out)? {
+            $(
+                $(
+                    let $self_arg = $self_arg_map($self_arg);
+                )?
+            )*
+
+            let result = unsafe { $libui_fn(self.as_ptr(), $($self_arg.into()),* $($libui_arg),*) };
+            $(
+                let result = $self_map_out(self, result);
+            )?
+
+            result
         }
     };
 }

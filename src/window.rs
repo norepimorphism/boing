@@ -103,7 +103,7 @@ impl<'a, 'b> Window<'a, 'b> {
             // TODO
             ```
         ",
-        self: { fn: set_title(title) },
+        self: { fn: set_title(title) -> () },
         libui: { fn: uiWindowSetTitle() },
     );
 
@@ -307,7 +307,7 @@ impl<'a, 'b> Window<'a, 'b> {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn content_size(&self) -> (i32, i32) {
+    pub fn content_size(&self) -> (u16, u16) {
         let (mut width, mut height) = (0, 0);
         unsafe {
             uiWindowContentSize(
@@ -317,7 +317,10 @@ impl<'a, 'b> Window<'a, 'b> {
             );
         }
 
-        (width, height)
+        assert_uint!(width);
+        assert_uint!(height);
+
+        (width as u16, height as u16)
     }
 }
 

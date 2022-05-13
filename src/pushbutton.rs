@@ -57,7 +57,7 @@ def_subcontrol!(
 impl<'ui> Pushbutton<'ui> {
     bind_text_fn!(
         docs: "
-            The text displayed within this button.
+            The text displayed within this pushbutton.
 
             # Examples
 
@@ -75,7 +75,7 @@ impl<'ui> Pushbutton<'ui> {
 
     bind_set_text_fn!(
         docs: "
-            Sets the text displayed within this button.
+            Sets the text displayed within this pushbutton.
 
             # Examples
 
@@ -83,13 +83,13 @@ impl<'ui> Pushbutton<'ui> {
             // TODO
             ```
         ",
-        self: { fn: set_text(text) },
+        self: { fn: set_text(text) -> () },
         libui: { fn: uiButtonSetText() },
     );
 
     bind_callback_fn!(
         docs: "
-            Sets a callback for when this button is clicked.
+            Sets a callback for when this pushbutton is clicked.
 
             # Examples
 

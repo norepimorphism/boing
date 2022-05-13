@@ -53,11 +53,11 @@ macro_rules! impl_append_item_fn {
     };
 }
 
-impl_append_item_fn_with_name!(append_item, uiMenuAppendItem);
-impl_append_item_fn_with_name!(append_check_item, uiMenuAppendCheckItem);
-impl_append_item_fn!(append_quit_item, uiMenuAppendQuitItem);
-impl_append_item_fn!(append_preferences_item, uiMenuAppendPreferencesItem);
-impl_append_item_fn!(append_about_item, uiMenuAppendAboutItem);
+impl_append_item_fn_with_name!(append_new_item, uiMenuAppendItem);
+impl_append_item_fn_with_name!(append_new_check_item, uiMenuAppendCheckItem);
+impl_append_item_fn!(append_new_quit_item, uiMenuAppendQuitItem);
+impl_append_item_fn!(append_new_preferences_item, uiMenuAppendPreferencesItem);
+impl_append_item_fn!(append_new_about_item, uiMenuAppendAboutItem);
 
 impl Item<'_> {
     pub(super) fn new(ptr: *mut uiMenuItem) -> Self {

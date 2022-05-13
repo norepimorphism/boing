@@ -128,7 +128,13 @@ impl Control {
             // TODO
             ```
         ",
-        self: { fn: native_handle() -> *mut c_void },
+        self: {
+            fn: native_handle() -> *mut c_void,
+            map_out: |_, ptr| {
+                // TODO: Replace this with `<pointer>::from_bits` when it becomes stable.
+                ptr as *mut c_void
+            },
+        },
         libui: { fn: uiControlHandle() },
     );
 

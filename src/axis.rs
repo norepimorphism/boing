@@ -108,10 +108,23 @@ impl Axis {
             assert_eq!(5, x_axis.child_count());
             ```
         ",
-        self: { fn: child_count() -> i32 },
+        self: {
+            fn: child_count() -> u16,
+            map_out: |_, count| {
+                assert_uint!(count);
+
+                count as u16
+            },
+        },
         libui: { fn: uiBoxNumChildren() },
     );
+}
 
+pub struct Child {
+    index: u16,
+}
+
+impl Axis {
     bind_fn!(
         docs: r#"
             Removes the child control at the given index.
@@ -141,7 +154,7 @@ impl Axis {
             assert_eq!(0, axis.child_count());
             ```
         "#,
-        self: { fn: delete_child(index: u16) },
+        self: { fn: delete_child(item: Child => |child: Child| child.index) },
         libui: { fn: uiBoxDelete() },
     );
 
@@ -152,8 +165,12 @@ impl Axis {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append_child(&self, child: &mut impl DerefMut<Target = Control>, can_stretch: bool) {
+    pub fn append_new_child(&self, child: &mut impl DerefMut<Target = Control>, can_stretch: bool) -> Child {
+        let index = self.child_count();
+
         child.make_child();
         unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
+
+        Child { index }
     }
 }

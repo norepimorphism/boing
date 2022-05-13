@@ -2,15 +2,19 @@
 
 //! [`Table`].
 
+mod model;
+
 use crate::prelude::*;
 
+pub use model::Model;
+
 impl Ui {
-    pub fn create_table_model(&self) -> Model {
-        call_libui_new_fn!(
-            ui: self,
-            fn: uiNewTableModel() -> Model,
-        )
-    }
+    // pub fn create_table_model(&self) -> Model {
+    //     call_libui_new_fn!(
+    //         ui: self,
+    //         fn: uiNewTableModel() -> Model,
+    //     )
+    // }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -30,15 +34,15 @@ impl RowBackgroundColor {
 
 impl Ui {
     pub fn create_table(&self, model: Model, row_bg: RowBackgroundColor) -> Result<Table, crate::Error> {
-        let params = uiTableParams {
+        let mut params = uiTableParams {
             // TODO: `model` is dropped at the end of scope, so this will always be a use-after-free.
-            Model: std::ptr::addr_of_mut!(model),
+            Model: model.as_ptr(),
             RowBackgroundColorModelColumn: row_bg.into_param(),
         };
 
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewTable() -> Table,
+            fn: uiNewTable(std::ptr::addr_of_mut!(params)) -> Table,
         )
     }
 }
