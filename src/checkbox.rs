@@ -5,12 +5,14 @@
 use crate::prelude::*;
 
 impl Ui {
-    // pub fn create_checkbox(&self) -> Result<Checkbox, crate::Error> {
-    //     call_libui_new_fn!(
-    //         ui: self,
-    //         fn: uiNewCheckbox() -> Checkbox,
-    //     )
-    // }
+    pub fn create_checkbox(&self, text: impl AsRef<str>) -> Result<Checkbox, crate::Error> {
+        let text = make_cstring!(text.as_ref());
+
+        call_libui_new_fn!(
+            ui: self,
+            fn: uiNewCheckbox(text.as_ptr()) -> Checkbox,
+        )
+    }
 }
 
 def_subcontrol!(

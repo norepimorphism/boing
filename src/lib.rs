@@ -62,7 +62,15 @@
         all(),
         doc = embed_doc_image::embed_image!(
             "control-gallery.basic-controls",
-            "screenshots/control-gallery/basic-controls.png"
+            "screenshots/control-gallery/basic-controls@2x.png"
+        ),
+        doc = embed_doc_image::embed_image!(
+            "control-gallery.numbers-and-lists",
+            "screenshots/control-gallery/numbers-and-lists@2x.png"
+        ),
+        doc = embed_doc_image::embed_image!(
+            "control-gallery.data-choosers",
+            "screenshots/control-gallery/data-choosers@2x.png"
         ),
     ),
 )]
@@ -76,8 +84,18 @@
     "},
 )]
 //!
+//! ### Windows
+//!
 //! ![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
 //! focused on a tab labeled "Basic Controls".][control-gallery.basic-controls]
+//! ![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+//! focused on a tab labeled "Numbers and Lists".][control-gallery.numbers-and-lists]
+//! ![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+//! focused on a tab labeled "Data Choosers".][control-gallery.data-choosers]
+//!
+//! ### macOS
+//!
+//! ### Linux
 //!
 //! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
 //! [README]: https://github.com/norepimorphism/boing/tree/main/README.md

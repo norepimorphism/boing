@@ -14,6 +14,7 @@ fn main() {
         .create_window("libui Control Gallery", 640, 480, true, true)
         .unwrap();
     window.set_margined(true);
+    window.set_resizeable(false);
 
     let mut tab = tab::create(&ui);
     window.set_child(&mut tab);
@@ -71,12 +72,16 @@ mod menubar {
 mod tab {
     pub fn create(ui: &boing::Ui) -> boing::Tab {
         let tab = ui.create_tab().unwrap();
-        tab.append_new_page("Basic Controls", &mut basic_controls::create(ui))
+        let basic_controls = tab.append_new_page("Basic Controls", &mut basic_controls::create(ui))
             .unwrap();
-        tab.append_new_page("Numbers and Lists", &mut numbers_n_lists::create(ui))
+        let numbers_n_lists = tab.append_new_page("Numbers and Lists", &mut numbers_n_lists::create(ui))
             .unwrap();
-        tab.append_new_page("Data Choosers", &mut data_choosers::create(ui))
+        let data_choosers = tab.append_new_page("Data Choosers", &mut data_choosers::create(ui))
             .unwrap();
+
+        tab.set_page_margined(basic_controls, true);
+        tab.set_page_margined(numbers_n_lists, true);
+        tab.set_page_margined(data_choosers, true);
 
         tab
     }
@@ -87,17 +92,22 @@ mod tab {
         pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
             static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
 
-            let y_axis = ui.create_vertical_axis().unwrap();
-            y_axis.set_padded(true);
+            let axis = ui.create_vertical_axis().unwrap();
+            axis.set_padded(true);
+            axis.append_new_child(&mut create_x_axis(ui), false);
+            axis.append_new_child(&mut ui.create_label(LABEL_TEXT).unwrap(), false);
+            axis.append_new_child(&mut ui.create_horizontal_separator().unwrap(), false);
 
-            let mut button_axis = ui.create_horizontal_axis().unwrap();
-            button_axis.set_padded(true);
-            button_axis.append_new_child(&mut ui.create_pushbutton("Button").unwrap(), true);
+            axis
+        }
 
-            y_axis.append_new_child(&mut button_axis, false);
-            y_axis.append_new_child(&mut ui.create_label(LABEL_TEXT).unwrap(), false);
+        fn create_x_axis(ui: &boing::Ui) -> boing::Axis {
+            let axis = ui.create_horizontal_axis().unwrap();
+            axis.set_padded(true);
+            axis.append_new_child(&mut ui.create_pushbutton("Button").unwrap(), false);
+            axis.append_new_child(&mut ui.create_checkbox("Checkbox").unwrap(), false);
 
-            y_axis
+            axis
         }
     }
 
@@ -105,42 +115,61 @@ mod tab {
         use std::ops::DerefMut;
 
         pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
-            let x_axis = ui.create_horizontal_axis().unwrap();
-            x_axis.append_new_child(&mut create_numbers_group(ui), true);
-            x_axis.append_new_child(&mut create_lists_group(ui), true);
+            let axis = ui.create_horizontal_axis().unwrap();
+            axis.append_new_child(&mut create_numbers_group(ui), true);
+            axis.append_new_child(&mut create_lists_group(ui), true);
 
-            x_axis
+            axis
         }
 
         fn create_numbers_group(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
             let group = ui.create_group("Numbers").unwrap();
+            group.set_margined(true);
             group.set_child(&mut create_numbers_axis(ui));
 
             group
         }
 
         fn create_numbers_axis(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
-            let y_axis = ui.create_vertical_axis().unwrap();
-            y_axis.append_new_child(&mut ui.create_spinbox(0, 100).unwrap(), false);
-            y_axis.append_new_child(&mut ui.create_slider(0, 100).unwrap(), false);
-            y_axis.append_new_child(&mut ui.create_progress_bar().unwrap(), false);
+            let axis = ui.create_vertical_axis().unwrap();
+            axis.append_new_child(&mut ui.create_spinbox(0, 100).unwrap(), false);
+            axis.append_new_child(&mut ui.create_slider(0, 100).unwrap(), false);
+            axis.append_new_child(&mut ui.create_progress_bar().unwrap(), false);
+            axis.append_new_child(&mut create_loading_bar(ui), false);
 
-            let mut loading_bar = ui.create_progress_bar().unwrap();
+            axis
+        }
+
+        fn create_loading_bar(ui: &boing::Ui) -> boing::ProgressBar {
+            let loading_bar = ui.create_progress_bar().unwrap();
             loading_bar.set_indefinite();
-            y_axis.append_new_child(&mut loading_bar, false);
 
-            y_axis
+            loading_bar
         }
 
         fn create_lists_group(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
             let group = ui.create_group("Lists").unwrap();
+            group.set_margined(true);
             group.set_child(&mut create_lists_axis(ui));
 
             group
         }
 
         fn create_lists_axis(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
-            ui.create_vertical_axis().unwrap()
+            let axis = ui.create_vertical_axis().unwrap();
+            axis.append_new_child(&mut create_radio_buttons(ui), false);
+
+            axis
+        }
+
+        fn create_radio_buttons(ui: &boing::Ui) -> boing::RadioButtons {
+            let mut buttons = ui.create_radio_buttons().unwrap();
+            buttons.append_new_item("Radio Button 1").unwrap();
+            buttons.append_new_item("Radio Button 2").unwrap();
+            buttons.append_new_item("Radio Button 3").unwrap();
+            buttons.append_new_item("Radio Button 4").unwrap();
+
+            buttons
         }
     }
 
@@ -148,10 +177,21 @@ mod tab {
         use std::ops::DerefMut;
 
         pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
-            let _y_axis = ui.create_vertical_axis().unwrap();
-            let x_axis = ui.create_horizontal_axis().unwrap();
+            let axis = ui.create_horizontal_axis().unwrap();
+            axis.set_padded(true);
+            axis.append_new_child(&mut create_picker_axis(ui), false);
+            axis.append_new_child(&mut ui.create_vertical_separator().unwrap(), false);
 
-            x_axis
+            axis
+        }
+
+        fn create_picker_axis(ui: &boing::Ui) -> boing::Axis {
+            let axis = ui.create_vertical_axis().unwrap();
+            axis.set_padded(true);
+            axis.append_new_child(&mut ui.create_font_picker().unwrap(), false);
+            axis.append_new_child(&mut ui.create_color_picker().unwrap(), false);
+
+            axis
         }
     }
 }
