@@ -34,4 +34,28 @@ def_subcontrol!(
     handle: uiGrid,
 );
 
-impl Grid {}
+impl Grid {
+    bind_bool_fn!(
+        docs: "
+            # Examples
+        
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: is_padded() -> bool },
+        libui: { fn: uiGridPadded() },
+    );
+    
+    bind_set_bool_fn!(
+        docs: "
+            # Examples
+        
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: set_padded() },
+        libui: { fn: uiGridSetPadded() },
+    );
+}
