@@ -62,6 +62,7 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Area`        | ☐    | ☐    | `uiArea`
 | `Axis`        | ☐    | ☑    | `uiBox`
 | `Checkbox`    | ☐    | ☑    | `uiCheckbox`
+| `ColorPicker` | ☐    | ☐    | `uiColorButton`
 | `Combobox`    | ☐    | ☐    | `uiCombobox`
 | `FontPicker`  | ☐    | ☐    | `uiFontButton`
 | `Form`        | ☐    | ☐    | `uiForm`
@@ -76,9 +77,10 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `ProgressBar` | ☐    | ☑    | `uiProgressBar`
 | `Pushbutton`  | ☐    | ☑    | `uiButton`
 | `RadioButtons`| ☐    | ☐    | `uiRadioButtons`
-| `Separator`   | ☐    | ☐    | `uiSeparator`
+| `Separator`   | ☐    | ☑    | `uiSeparator`
 | `Slider`      | ☐    | ☑    | `uiSlider`
 | `Spinbox`     | ☐    | ☑    | `uiSpinbox`
 | `Tab`         | ☐    | ☑    | `uiTab`
 | `Table`       | ☐    | ☐    | `uiTable`
+| `TimePicker`  | ☐    | ☐    | `uiDateTimePicker`
 | `Window`      | ☐    | ☑    | `uiWindow`
