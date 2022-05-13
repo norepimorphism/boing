@@ -34,6 +34,4 @@ def_subcontrol!(
     handle: uiFontButton,
 );
 
-pub struct Font {
-
-}
+pub struct Font {}

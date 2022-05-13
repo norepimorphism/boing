@@ -38,7 +38,8 @@ mod menubar {
     fn setup_file_menu<'ui>(ui: &'ui boing::Ui) {
         let menu = ui.create_menu("File").unwrap();
         menu.append_new_item(ui, "Open").unwrap();
-        menu.append_new_item(ui, "Open Folder...").unwrap();
+        menu.append_new_item(ui, "Open Folder...")
+            .unwrap();
         menu.append_separator();
         menu.append_new_item(ui, "Save").unwrap();
         menu.append_new_item(ui, "Save As...").unwrap();

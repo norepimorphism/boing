@@ -165,7 +165,11 @@ impl Axis {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append_new_child(&self, child: &mut impl DerefMut<Target = Control>, can_stretch: bool) -> Child {
+    pub fn append_new_child(
+        &self,
+        child: &mut impl DerefMut<Target = Control>,
+        can_stretch: bool,
+    ) -> Child {
         let index = self.child_count();
 
         child.make_child();

@@ -2,6 +2,4 @@
 
 //!
 
-pub struct Color {
-
-}
+pub struct Color {}

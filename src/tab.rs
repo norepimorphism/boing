@@ -145,7 +145,14 @@ impl Tab {
 
         control.make_child();
         let name = make_cstring!(name.as_ref());
-        unsafe { uiTabInsertAt(self.as_ptr(), name.as_ptr(), before.index.into(), control.as_ptr()) }
+        unsafe {
+            uiTabInsertAt(
+                self.as_ptr(),
+                name.as_ptr(),
+                before.index.into(),
+                control.as_ptr(),
+            )
+        }
 
         Ok(Page { index })
     }

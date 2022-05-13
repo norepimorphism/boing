@@ -4,9 +4,9 @@
 
 mod model;
 
-use crate::prelude::*;
-
 pub use model::Model;
+
+use crate::prelude::*;
 
 impl Ui {
     // pub fn create_table_model(&self) -> Model {
@@ -33,9 +33,14 @@ impl RowBackgroundColor {
 }
 
 impl Ui {
-    pub fn create_table(&self, model: Model, row_bg: RowBackgroundColor) -> Result<Table, crate::Error> {
+    pub fn create_table(
+        &self,
+        model: Model,
+        row_bg: RowBackgroundColor,
+    ) -> Result<Table, crate::Error> {
         let mut params = uiTableParams {
-            // TODO: `model` is dropped at the end of scope, so this will always be a use-after-free.
+            // TODO: `model` is dropped at the end of scope, so this will always be a
+            // use-after-free.
             Model: model.as_ptr(),
             RowBackgroundColorModelColumn: row_bg.into_param(),
         };
