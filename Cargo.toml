@@ -12,12 +12,17 @@ repository = "https://github.com/norepimorphism/boing"
 license = "MPL-2.0"
 categories = ["api-bindings", "gui"]
 
+[features]
+default = ["doc-images"]
+doc-images = []
+
 [package.metadata.docs.rs]
+features = ["doc-images"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 bumpalo = "3.9"
-embed-doc-image = { version = "0.1", features = ["doc-images"] }
+embed-doc-image = "0.1"
 indoc = "1.0"
 libui-ng-sys = "0.4"
 tracing = "0.1"

@@ -5,12 +5,12 @@
 use crate::prelude::*;
 
 impl Ui {
-    pub fn create_table() -> Result<Table, crate::Error> {
-        call_libui_new_fn!(
-            ui: self,
-            fn: uiNewTable() -> Table,
-        )
-    }
+    // pub fn create_table(&self) -> Result<Table, crate::Error> {
+    //     call_libui_new_fn!(
+    //         ui: self,
+    //         fn: uiNewTable() -> Table,
+    //     )
+    // }
 }
 
 def_subcontrol!(
@@ -31,7 +31,7 @@ impl Table {
     bind_bool_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -39,23 +39,23 @@ impl Table {
         self: { fn: is_header_visible() -> bool },
         libui: { fn: uiTableHeaderVisible() },
     );
-    
-    bind_set_bool_fn!(
+
+    bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
         ",
-        self: { fn: set_header_visible() },
+        self: { fn: set_header_visible(value: bool) },
         libui: { fn: uiTableHeaderSetVisible() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -63,11 +63,11 @@ impl Table {
         self: { fn: width_of_column(index: u16) -> i32 },
         libui: { fn: uiTableColumnWidth() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```

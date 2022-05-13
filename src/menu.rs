@@ -2,7 +2,7 @@
 
 //! A drop-down menu within a menubar that may contain additional [menu items](`Item`).
 
-pub mod item;
+mod item;
 
 pub use item::Item;
 
@@ -25,7 +25,8 @@ impl Ui {
 // Why is it that all widgets are controls except for [`Menu`] and [`Item`], you ask? It's simply
 // because `uiMenu` is *not* backed by a `uiControl`. Whereas `uiWindow`, `uiButton`, and `uiLabel`
 // are `uiControls` with additional metadata, `uiMenu` and `uiMenuItem` do not begin with a
-// `uiControl`, and as such, it is unsound to cast them to `*mut uiControl` and use them so.
+// `uiControl` in memory, and as such, it is unsound to cast them to `*mut uiControl` and use them
+// so.
 
 /// A drop-down menu within a menubar that may contain additional [menu items](`Item`).
 pub struct Menu {

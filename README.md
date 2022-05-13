@@ -60,10 +60,10 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | Feature       | Docs? | Impl? | *libui-ng* Type |
 | ------------- | ----- | ----- | --------------- |
 | `Area`        | ☐    | ☐    | `uiArea`
-| `Button`      | ☐    | ☑    | `uiButton`
+| `Axis`        | ☐    | ☑    | `uiBox`
 | `Checkbox`    | ☐    | ☑    | `uiCheckbox`
 | `Combobox`    | ☐    | ☐    | `uiCombobox`
-| `FontButton`  | ☐    | ☐    | `uiFontButton`
+| `FontPicker`  | ☐    | ☐    | `uiFontButton`
 | `Form`        | ☐    | ☐    | `uiForm`
 | `FormEntry`   | ☐    | ☐    | `uiEntry`
 | `Grid`        | ☐    | ☐    | `uiGrid`
@@ -74,11 +74,11 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `MenuItem`    | ☐    | ☑    | `uiMenuItem`
 | `Path`        | ☐    | ☐    | `uiDrawPath`
 | `ProgressBar` | ☐    | ☑    | `uiProgressBar`
+| `Pushbutton`  | ☐    | ☑    | `uiButton`
 | `RadioButtons`| ☐    | ☐    | `uiRadioButtons`
 | `Separator`   | ☐    | ☐    | `uiSeparator`
 | `Slider`      | ☐    | ☑    | `uiSlider`
 | `Spinbox`     | ☐    | ☑    | `uiSpinbox`
 | `Tab`         | ☐    | ☑    | `uiTab`
 | `Table`       | ☐    | ☐    | `uiTable`
-| `UniBox`      | ☐    | ☑    | `uiBox`
 | `Window`      | ☐    | ☑    | `uiWindow`

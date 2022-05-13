@@ -1,35 +1,35 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`UniBox`].
+//! [`Axis`].
 
 use crate::prelude::*;
 
 impl Ui {
-    /// Creates a new horizontal [`UniBox`].
+    /// Creates a new horizontal [`Axis`].
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_horizontal_box(&self) -> Result<UniBox, crate::Error> {
+    pub fn create_horizontal_axis(&self) -> Result<Axis, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewHorizontalBox() -> UniBox,
+            fn: uiNewHorizontalBox() -> Axis,
         )
     }
 
-    /// Creates a new vertical [`UniBox`].
+    /// Creates a new vertical [`Axis`].
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_vertical_box(&self) -> Result<UniBox, crate::Error> {
+    pub fn create_vertical_axis(&self) -> Result<Axis, crate::Error> {
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewVerticalBox() -> UniBox,
+            fn: uiNewVerticalBox() -> Axis,
         )
     }
 }
@@ -44,27 +44,27 @@ def_subcontrol!(
         // TODO
         ```
     ",
-    ty: UniBox,
+    ty: Axis,
     handle: uiBox,
 );
 
-impl UniBox {
+impl Axis {
     bind_bool_fn!(
         docs: "
-            Determines if this box is padded.
+            Determines if this axis is padded.
 
             # Examples
 
             ```no_run
-            use boing::UniBox;
+            use boing::Axis;
 
-            let unibox: UniBox;
+            let axis: Axis;
             # let ui = boing::Ui::new().unwrap();
-            # unibox = ui.create_horizontal_box().unwrap();
-            assert!(!unibox.is_padded());
+            # axis = ui.create_horizontal_axis().unwrap();
+            assert!(!axis.is_padded());
 
-            unibox.set_padded(true);
-            assert!(unibox.is_padded());
+            axis.set_padded(true);
+            assert!(axis.is_padded());
             ```
         ",
         self: { fn: is_padded() -> bool },
@@ -73,7 +73,7 @@ impl UniBox {
 
     bind_fn!(
         docs: "
-            Sets whether or not this box is padded.
+            Sets whether or not this axis is padded.
 
             # Examples
 
@@ -87,25 +87,25 @@ impl UniBox {
 
     bind_fn!(
         docs: "
-            The number of child controls this box contains.
+            The number of child controls this axis contains.
 
             # Examples
 
             ```no_run
-            use boing::UniBox;
+            use boing::Axis;
 
-            let outer: UniBox;
+            let x_axis: Axis;
             # let ui = boing::Ui::new().unwrap();
-            # outer = ui.create_horizontal_box().unwrap();
+            # x_axis = ui.create_horizontal_axis().unwrap();
 
-            // Box-ception!
+            // Axis-ception!
             for _ in 0..5 {
-                let mut inner: UniBox;
-                # inner = ui.create_horizontal_box().unwrap();
-                outer.append_child(&mut inner, false);
+                let mut y_axis: Axis;
+                # y_axis = ui.create_vertical_axis().unwrap();
+                x_axis.append_child(&mut y_axis, false);
             }
 
-            assert_eq!(5, outer.child_count());
+            assert_eq!(5, x_axis.child_count());
             ```
         ",
         self: { fn: child_count() -> i32 },
@@ -119,26 +119,26 @@ impl UniBox {
             # Examples
 
             ```no_run
-            use boing::UniBox;
+            use boing::Axis;
 
-            let unibox: UniBox;
+            let axis: Axis;
             # let ui = boing::Ui::new().unwrap();
-            # unibox = ui.create_horizontal_box().unwrap();
+            # axis = ui.create_horizontal_axis().unwrap();
 
             let mut progress_bar: boing::ProgressBar;
             # progress_bar = ui.create_progress_bar().unwrap();
-            unibox.append_child(&mut progress_bar, false);
+            axis.append_child(&mut progress_bar, false);
 
-            let mut button: boing::Button;
-            # button = ui.create_button("").unwrap();
-            unibox.append_child(&mut button, false);
+            let mut button: boing::Pushbutton;
+            # button = ui.create_pushbutton("").unwrap();
+            axis.append_child(&mut button, false);
 
-            // Remove the button from the box.
-            unibox.delete_child(1);
-            // Remove the progress bar from the box.
-            unibox.delete_child(0);
+            // Remove the button from the axis.
+            axis.delete_child(1);
+            // Remove the progress bar from the axis.
+            axis.delete_child(0);
 
-            assert_eq!(0, unibox.child_count());
+            assert_eq!(0, axis.child_count());
             ```
         "#,
         self: { fn: delete_child(index: u16) },

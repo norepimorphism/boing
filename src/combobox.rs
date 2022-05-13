@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_combobox() -> Result<Combobox, crate::Error> {
+    pub fn create_combobox(&self) -> Result<Combobox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewCombobox() -> Combobox,
@@ -38,7 +38,7 @@ impl Combobox {
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -46,11 +46,11 @@ impl Combobox {
         self: { fn: delete_item(index: u16) },
         libui: { fn: uiComboboxDelete() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -58,11 +58,11 @@ impl Combobox {
         self: { fn: clear() },
         libui: { fn: uiComboboxClear() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -70,11 +70,11 @@ impl Combobox {
         self: { fn: item_count() -> i32 },
         libui: { fn: uiComboboxNumItems() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -82,11 +82,11 @@ impl Combobox {
         self: { fn: selected_item() -> i32 },
         libui: { fn: uiComboboxSelected() },
     );
-    
+
     bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```

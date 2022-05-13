@@ -5,19 +5,19 @@
 use crate::prelude::*;
 
 impl Ui {
-    /// Creates a new [`Button`].
+    /// Creates a new [`Pushbutton`].
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_button(&self, text: impl AsRef<str>) -> Result<Button, crate::Error> {
+    pub fn create_pushbutton(&self, text: impl AsRef<str>) -> Result<Pushbutton, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(
             ui: self,
-            fn: uiNewButton(text.as_ptr()) -> Button,
+            fn: uiNewButton(text.as_ptr()) -> Pushbutton,
         )
     }
 }
@@ -37,7 +37,7 @@ def_subcontrol!(
         let window: Window;
         # let window = ui.create_window("", 0, 0, false, false)?;
 
-        let mut button = ui.create_button("Click Me!")?;
+        let mut button = ui.create_pushbutton("Click Me!")?;
         window.set_child(&mut button);
 
         button.on_clicked(|button| {
@@ -49,12 +49,12 @@ def_subcontrol!(
         # }
         ```
     "#,
-    ty: Button,
+    ty: Pushbutton,
     handle: uiButton,
     cb_fns: [ on_clicked<'a>() ],
 );
 
-impl<'ui> Button<'ui> {
+impl<'ui> Pushbutton<'ui> {
     bind_text_fn!(
         docs: "
             The text displayed within this button.
@@ -98,7 +98,7 @@ impl<'ui> Button<'ui> {
             ```
         ",
         self: {
-            ty: Button<'ui>,
+            ty: Pushbutton<'ui>,
             handle: uiButton,
             fn: on_clicked(),
             cb: { sig: f -> () },

@@ -4,6 +4,15 @@
 
 use crate::prelude::*;
 
+impl Ui {
+    // pub fn create_checkbox(&self) -> Result<Checkbox, crate::Error> {
+    //     call_libui_new_fn!(
+    //         ui: self,
+    //         fn: uiNewCheckbox() -> Checkbox,
+    //     )
+    // }
+}
+
 def_subcontrol!(
     docs: "
         A toggleable button with adjacent customizable text.

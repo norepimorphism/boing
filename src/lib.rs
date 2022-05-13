@@ -40,7 +40,7 @@
 //! let window = ui.create_window("Hello World!", 200, 200, true, true)?;
 //! // Create a button labeled "Press Me!" and set it as the main child control of the
 //! // previously-created window.
-//! window.set_child(&mut ui.create_button("Press Me!")?);
+//! window.set_child(&mut ui.create_pushbutton("Press Me!")?);
 //! // Present the window to the user. Calling this method is necessary for the window to appear at
 //! // all.
 //! window.show();
@@ -56,22 +56,34 @@
 //!
 //! ## Screenshots
 //!
-//! ![A screenshot.][control-gallery]
+#![cfg_attr(
+    feature = "doc-images",
+    cfg_attr(
+        all(),
+        doc = embed_doc_image::embed_image!(
+            "control-gallery.basic-controls",
+            "screenshots/control-gallery/basic-controls.png"
+        ),
+    ),
+)]
+// This warning would be tiresome to include every time we embed an image, so it will only be used
+// in the crate-level documentation.
+#![cfg_attr(
+    not(feature = "doc-images"),
+    doc = indoc::indoc! {"
+        **Doc images are not enabled**. Compile *boing* with feature `doc-images` and Rust version
+        >= 1.54 to enable.
+    "},
+)]
+//!
+//! ![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+//! focused on a tab labeled "Basic Controls".][control-gallery.basic-controls]
 //!
 //! [libui-ng-sys]: https://crates.io/crates/libui-ng-sys
 //! [README]: https://github.com/norepimorphism/boing/tree/main/README.md
 //! [libui]: https://github.com/andlabs/libui
 //! [libui-ng]: https://github.com/libui-ng/libui-ng
 //! [examples]: https://github.com/norepimorphism/boing/tree/main/examples
-#![cfg_attr(feature = "doc-images",
-cfg_attr(all(),
-doc = ::embed_doc_image::embed_image!("myimagelabel", "images/foo.png"),
-doc = ::embed_doc_image::embed_image!("foobaring", "assets/foobaring.png")))]
-#![cfg_attr(
-not(feature = "doc-images"),
-doc = "**Doc images not enabled**. Compile with feature `doc-images` and Rust version >= 1.54 \
-           to enable."
-)]
 
 // All *libui-ng-sys* exports violate Rust's naming convention.
 #![allow(non_upper_case_globals)]
@@ -80,38 +92,40 @@ doc = "**Doc images not enabled**. Compile with feature `doc-images` and Rust ve
 mod macros;
 
 pub mod area;
-pub mod button;
-pub mod checkbox;
-pub mod combobox;
-pub mod control;
-pub mod font_selector_button;
+mod axis;
+mod checkbox;
+pub mod color;
+mod combobox;
+mod control;
+pub mod font;
 pub mod form;
-pub mod grid;
-pub mod group;
-pub mod image;
-pub mod label;
+mod grid;
+mod group;
+mod image;
+mod label;
 pub mod menu;
-pub mod path;
+mod path;
 mod prelude;
-pub mod progress_bar;
-pub mod radio_button_group;
-pub mod separator;
-pub mod slider;
-pub mod spinbox;
-pub mod tab;
-pub mod table;
-pub mod ui;
-pub mod unibox;
-pub mod window;
+mod progress_bar;
+mod pushbutton;
+mod radio_buttons;
+mod separator;
+mod slider;
+mod spinbox;
+mod tab;
+mod table;
+mod ui;
+mod window;
 
 use std::fmt;
 
 pub use area::Area;
-pub use button::Button;
+pub use axis::Axis;
 pub use checkbox::Checkbox;
+pub use color::Color;
 pub use combobox::Combobox;
 pub use control::Control;
-pub use font_selector_button::FontSelectorButton;
+pub use font::{Font, Picker as FontPicker};
 pub use form::Form;
 pub use grid::Grid;
 pub use group::Group;
@@ -119,16 +133,15 @@ pub use image::Image;
 pub use label::Label;
 pub use menu::{Item as MenuItem, Menu};
 pub use path::Path;
-use prelude::*;
 pub use progress_bar::ProgressBar;
-pub use radio_button_group::RadioButtonGroup;
+pub use pushbutton::Pushbutton;
+pub use radio_buttons::RadioButtons;
 pub use separator::Separator;
 pub use slider::Slider;
 pub use spinbox::Spinbox;
 pub use tab::Tab;
 pub use table::Table;
 pub use ui::Ui;
-pub use unibox::UniBox;
 pub use window::Window;
 
 /// The error type returned by fallible *boing* functions.

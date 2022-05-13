@@ -38,7 +38,7 @@ impl Grid {
     bind_bool_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
@@ -46,16 +46,16 @@ impl Grid {
         self: { fn: is_padded() -> bool },
         libui: { fn: uiGridPadded() },
     );
-    
-    bind_set_bool_fn!(
+
+    bind_fn!(
         docs: "
             # Examples
-        
+
             ```no_run
             // TODO
             ```
         ",
-        self: { fn: set_padded() },
+        self: { fn: set_padded(value: bool) },
         libui: { fn: uiGridSetPadded() },
     );
 }

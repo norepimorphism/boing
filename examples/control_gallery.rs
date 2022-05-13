@@ -70,75 +70,87 @@ mod menubar {
 mod tab {
     pub fn create(ui: &boing::Ui) -> boing::Tab {
         let tab = ui.create_tab().unwrap();
-        tab.append_page("Basic Controls", &mut create_basic_controls_page(ui))
+        tab.append_page("Basic Controls", &mut basic_controls::create(ui))
             .unwrap();
-        tab.append_page("Numbers and Lists", &mut create_numbers_n_lists_page(ui))
+        tab.append_page("Numbers and Lists", &mut numbers_n_lists::create(ui))
             .unwrap();
-        tab.append_page("Data Choosers", &mut create_data_choosers_page(ui))
+        tab.append_page("Data Choosers", &mut data_choosers::create(ui))
             .unwrap();
 
         tab
     }
 
-    fn create_basic_controls_page(ui: &boing::Ui) -> boing::UniBox {
-        static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
+    mod basic_controls {
+        use std::ops::DerefMut;
 
-        let mut hbox = ui.create_horizontal_box().unwrap();
-        hbox.set_padded(true);
-        hbox.append_child(&mut ui.create_button("Button").unwrap(), true);
+        pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
 
-        let vbox = ui.create_vertical_box().unwrap();
-        vbox.set_padded(true);
-        vbox.append_child(&mut hbox, false);
-        vbox.append_child(&mut ui.create_label(LABEL_TEXT).unwrap(), false);
+            let y_axis = ui.create_vertical_axis().unwrap();
+            y_axis.set_padded(true);
 
-        vbox
+            let mut button_axis = ui.create_horizontal_axis().unwrap();
+            button_axis.set_padded(true);
+            button_axis.append_child(&mut ui.create_pushbutton("Button").unwrap(), true);
+
+            y_axis.append_child(&mut button_axis, false);
+            y_axis.append_child(&mut ui.create_label(LABEL_TEXT).unwrap(), false);
+
+            y_axis
+        }
     }
 
-    fn create_numbers_n_lists_page(ui: &boing::Ui) -> boing::UniBox {
-        let hbox = ui.create_horizontal_box().unwrap();
-        hbox.append_child(&mut create_numbers_group(ui), true);
-        hbox.append_child(&mut create_lists_group(ui), true);
+    mod numbers_n_lists {
+        use std::ops::DerefMut;
 
-        hbox
+        pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            let x_axis = ui.create_horizontal_axis().unwrap();
+            x_axis.append_child(&mut create_numbers_group(ui), true);
+            x_axis.append_child(&mut create_lists_group(ui), true);
+
+            x_axis
+        }
+
+        fn create_numbers_group(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            let group = ui.create_group("Numbers").unwrap();
+            group.set_child(&mut create_numbers_axis(ui));
+
+            group
+        }
+
+        fn create_numbers_axis(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            let y_axis = ui.create_vertical_axis().unwrap();
+            y_axis.append_child(&mut ui.create_spinbox(0, 100).unwrap(), false);
+            y_axis.append_child(&mut ui.create_slider(0, 100).unwrap(), false);
+            y_axis.append_child(&mut ui.create_progress_bar().unwrap(), false);
+
+            let mut loading_bar = ui.create_progress_bar().unwrap();
+            loading_bar.set_value(-1);
+            y_axis.append_child(&mut loading_bar, false);
+
+            y_axis
+        }
+
+        fn create_lists_group(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            let group = ui.create_group("Lists").unwrap();
+            group.set_child(&mut create_lists_axis(ui));
+
+            group
+        }
+
+        fn create_lists_axis(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            ui.create_vertical_axis().unwrap()
+        }
     }
 
-    fn create_numbers_group(ui: &boing::Ui) -> boing::Group {
-        let group = ui.create_group("Numbers").unwrap();
-        group.set_child(&mut create_numbers_vbox(ui));
+    mod data_choosers {
+        use std::ops::DerefMut;
 
-        group
-    }
+        pub fn create(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
+            let _y_axis = ui.create_vertical_axis().unwrap();
+            let x_axis = ui.create_horizontal_axis().unwrap();
 
-    fn create_numbers_vbox(ui: &boing::Ui) -> boing::UniBox {
-        let vbox = ui.create_vertical_box().unwrap();
-        vbox.append_child(&mut ui.create_spinbox(0, 100).unwrap(), false);
-
-        vbox.append_child(&mut ui.create_slider(0, 100).unwrap(), false);
-        vbox.append_child(&mut ui.create_progress_bar().unwrap(), false);
-
-        let mut loading_bar = ui.create_progress_bar().unwrap();
-        loading_bar.set_value(-1);
-        vbox.append_child(&mut loading_bar, false);
-
-        vbox
-    }
-
-    fn create_lists_group(ui: &boing::Ui) -> boing::Group {
-        let group = ui.create_group("Lists").unwrap();
-        group.set_child(&mut create_lists_vbox(ui));
-
-        group
-    }
-
-    fn create_lists_vbox(ui: &boing::Ui) -> boing::UniBox {
-        ui.create_vertical_box().unwrap()
-    }
-
-    fn create_data_choosers_page(ui: &boing::Ui) -> boing::UniBox {
-        let _vbox = ui.create_vertical_box().unwrap();
-        let hbox = ui.create_horizontal_box().unwrap();
-
-        hbox
+            x_axis
+        }
     }
 }
