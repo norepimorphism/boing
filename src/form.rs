@@ -6,8 +6,6 @@ use crate::prelude::*;
 
 def_subcontrol!(
     docs: "
-
-
         # Examples
 
         ```no_run

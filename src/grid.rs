@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_grid(&self) -> Result<Grid, crate::Error> {
+    pub fn create_grid<'ui>(&'ui self) -> Result<&'ui mut Grid, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewGrid() -> Grid,
@@ -22,8 +22,6 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
-
         # Examples
 
         ```no_run
@@ -37,6 +35,10 @@ def_subcontrol!(
 impl Grid {
     bind_bool_fn!(
         docs: "
+            Determines if this grid is padded.
+
+            Grids are unpadded by default.
+
             # Examples
 
             ```no_run
@@ -49,6 +51,8 @@ impl Grid {
 
     bind_fn!(
         docs: "
+            Sets whether or not this grid is padded.
+
             # Examples
 
             ```no_run

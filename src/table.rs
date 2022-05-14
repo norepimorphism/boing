@@ -33,11 +33,11 @@ impl RowBackgroundColor {
 }
 
 impl Ui {
-    pub fn create_table(
-        &self,
+    pub fn create_table<'ui>(
+        &'ui self,
         model: Model,
         row_bg: RowBackgroundColor,
-    ) -> Result<Table, crate::Error> {
+    ) -> Result<&'ui mut Table, crate::Error> {
         let mut params = uiTableParams {
             // TODO: `model` is dropped at the end of scope, so this will always be a
             // use-after-free.

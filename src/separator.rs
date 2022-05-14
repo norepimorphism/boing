@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_horizontal_separator(&self) -> Result<Separator, crate::Error> {
+    pub fn create_horizontal_separator<'ui>(&'ui self) -> Result<&'ui mut Separator, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewHorizontalSeparator() -> Separator,
@@ -26,7 +26,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_vertical_separator(&self) -> Result<Separator, crate::Error> {
+    pub fn create_vertical_separator<'ui>(&'ui self) -> Result<&'ui mut Separator, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewVerticalSeparator() -> Separator,
@@ -36,7 +36,7 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
+        A visual linear separator.
 
         # Examples
 

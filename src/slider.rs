@@ -7,12 +7,16 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Slider`].
     ///
+    /// # Arguments
+    ///
+    /// `min` is the minimum value and `max` is the maximum value of the slider.
+    ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_slider(&self, min: u16, max: u16) -> Result<Slider, crate::Error> {
+    pub fn create_slider<'ui>(&'ui self, min: u16, max: u16) -> Result<&'ui mut Slider, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewSlider(min.into(), max.into()) -> Slider,
@@ -40,7 +44,7 @@ def_subcontrol!(
 impl<'a> Slider<'a> {
     bind_fn!(
         docs: "
-
+            The current value of this slider.
 
             # Examples
 
@@ -50,18 +54,14 @@ impl<'a> Slider<'a> {
         ",
         self: {
             fn: value() -> u16,
-            map_out: |_, value| {
-                assert_uint!(value);
-
-                value as u16
-            },
+            map_out: |_, value| to_u16!(value),
         },
         libui: { fn: uiSliderValue() },
     );
 
     bind_fn!(
         docs: "
-
+            Sets the value of this slider.
 
             # Examples
 
@@ -74,6 +74,7 @@ impl<'a> Slider<'a> {
     );
 
     bind_bool_fn!(
+        // TODO: Note default behavior. I think it's `true`.
         docs: "
             Determines if this slider has a tooltip.
 
@@ -105,6 +106,8 @@ impl<'a> Slider<'a> {
         docs: "
             Sets a callback for when this slider changes.
 
+            This callback is unset by default.
+
             # Examples
 
             ```no_run
@@ -129,7 +132,7 @@ impl<'a> Slider<'a> {
 
     bind_fn!(
         docs: "
-
+            Sets the minimum and maximum values of this slider.
 
             # Examples
 

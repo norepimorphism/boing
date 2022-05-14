@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_pushbutton(&self, text: impl AsRef<str>) -> Result<Pushbutton, crate::Error> {
+    pub fn create_pushbutton<'ui>(&'ui self, text: impl AsRef<str>) -> Result<&'ui mut Pushbutton, crate::Error> {
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(
@@ -38,7 +38,7 @@ def_subcontrol!(
         # let window = ui.create_window("", 0, 0, false, false)?;
 
         let mut button = ui.create_pushbutton("Click Me!")?;
-        window.set_child(&mut button);
+        window.set_child(button);
 
         button.on_clicked(|button| {
             button.disable();

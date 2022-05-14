@@ -21,7 +21,7 @@ impl Ui {
         height: u16,
         has_menubar: bool,
         should_quit_on_close: bool,
-    ) -> Result<Window, crate::Error> {
+    ) -> Result<&mut Window, crate::Error> {
         let title = make_cstring!(title.as_ref());
         let window = call_libui_new_fn!(
             ui: self,
@@ -65,7 +65,15 @@ impl Ui {
 }
 
 def_subcontrol!(
-    docs: "",
+    docs: "
+        An application window.
+
+        # Examples
+
+        ```no_run
+        // TODO
+        ```
+    ",
     ty: Window,
     handle: uiWindow,
     cb_fns: [
@@ -111,6 +119,8 @@ impl<'a, 'b> Window<'a, 'b> {
         docs: "
             Sets a callback for when the content size of this window changes.
 
+            This callback is unset by default.
+
             # Examples
 
             ```no_run
@@ -136,6 +146,9 @@ impl<'a, 'b> Window<'a, 'b> {
     bind_callback_fn!(
         docs: "
             Sets a callback for when this window is requested to close.
+
+            This callback is set to exit the application by default when the option
+            `should_quit_on_close = true` is passed to [`Ui::create_window`].
 
             # Examples
 
@@ -164,6 +177,8 @@ impl<'a, 'b> Window<'a, 'b> {
         docs: "
             Determines if this window is fullscreen.
 
+            Windows are not fullscreen by default.
+
             # Examples
 
             ```no_run
@@ -191,6 +206,8 @@ impl<'a, 'b> Window<'a, 'b> {
     bind_bool_fn!(
         docs: "
             Determines if this window is borderless.
+
+            Windows are bordered by default.
 
             # Examples
 
@@ -317,15 +334,15 @@ impl<'a, 'b> Window<'a, 'b> {
             );
         }
 
-        assert_uint!(width);
-        assert_uint!(height);
-
-        (width as u16, height as u16)
+        (to_u16!(width), to_u16!(height))
     }
 }
 
 macro_rules! impl_present_fn {
-    ($name:ident, $fn:ident $(,)?) => {
+    (
+        $name:ident,
+        $fn:ident $(,)?
+    ) => {
         impl Window<'_, '_> {
             pub fn $name(
                 &self,

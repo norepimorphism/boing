@@ -33,14 +33,14 @@
 //! let file_menu = ui.create_menu("File")?;
 //! // Append a menu item labeled "Quit" (in English) to the previously-created file menu. This
 //! // "Quit" item will exit the application when clicked.
-//! file_menu.append_quit_item(&ui)?;
+//! file_menu.push_new_quit_item()?;
 //!
 //! // Create a 200x200 pixel window titled "Hello World!" with a menubar that exits the application
 //! // when closed.
 //! let window = ui.create_window("Hello World!", 200, 200, true, true)?;
 //! // Create a button labeled "Press Me!" and set it as the main child control of the
 //! // previously-created window.
-//! window.set_child(&mut ui.create_pushbutton("Press Me!")?);
+//! window.set_child(ui.create_pushbutton("Press Me!")?);
 //! // Present the window to the user. Calling this method is necessary for the window to appear at
 //! // all.
 //! window.show();
@@ -153,7 +153,7 @@ pub use menu::{Item as MenuItem, Menu};
 pub use path::Path;
 pub use progress_bar::ProgressBar;
 pub use pushbutton::Pushbutton;
-pub use radio_buttons::{Item as RadioItem, RadioButtons};
+pub use radio_buttons::RadioButtons;
 pub use separator::Separator;
 pub use slider::Slider;
 pub use spinbox::Spinbox;

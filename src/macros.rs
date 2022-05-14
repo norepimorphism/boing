@@ -1,8 +1,21 @@
 // SPDX-License-Identifier: MPL-2.0
 
-macro_rules! assert_uint {
-    ($it:expr) => {
-        debug_assert!($it >= 0);
+/// Converts an `i32` to a `u16`, panicking and providing a helpful error message if the conversion
+/// fails.
+macro_rules! to_u16 {
+    ($i32:expr) => {
+        u16::try_from($i32).expect(indoc::indoc! {"
+            Failed to convert an `i32` to `u16`.
+
+            *libui-ng* uses the C type `int` for nearly all numeric values, including ones that are
+            semantically unsigned. For saneness, *boing* automatically attempts to convert integers
+            to an unsigned representation in such cases, exposing a `u16`-based interface to the end
+            user.
+
+            Unfortunately, it appears this conversion failed, and *libui-ng* returned a negative
+            integer where a positive integer was expected. Please file an issue to the *libui-ng*
+            GitHub repository. Thanks!
+        "})
     };
 }
 
@@ -115,7 +128,7 @@ macro_rules! call_libui_new_fn {
         fn: $fn:ident( $($arg:expr),* $(,)? ) -> $out_ty:ident,
     ) => {
         call_fallible_libui_fn!( $fn($($arg),*) )
-            .map(|ptr| $out_ty::new(ptr))
+            .map(|ptr| $ui.alloc_object($out_ty::new(ptr)))
     };
 }
 
@@ -204,7 +217,7 @@ macro_rules! bind_add_child_fn {
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(&self, $self_child: &mut impl std::ops::DerefMut<Target = Control>) {
+        pub fn $self_fn(&self, $self_child: &impl std::ops::DerefMut<Target = Control>) {
             // Inform the child control that it should not destroy itself as *libui-ng* will take
             // care of that for us.
             $self_child.make_child();

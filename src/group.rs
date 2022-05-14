@@ -12,7 +12,11 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_group(&self, title: impl AsRef<str>) -> Result<Group, crate::Error> {
+    pub fn create_group<'ui>(
+        &'ui self,
+        title: impl AsRef<str>,
+    ) -> Result<&'ui mut Group, crate::Error> {
+        // SAFETY: `uiNewGroup` `strdup`s `title`, so it's OK to drop at the end of scope.
         let title = make_cstring!(title.as_ref());
 
         call_libui_new_fn!(
@@ -24,7 +28,7 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
+        A titled wrapper around a child control.
 
         # Examples
 
@@ -79,13 +83,15 @@ impl Group {
             // TODO
             ```
         ",
-        self: { fn: set_child<'ui>(child) },
+        self: { fn: set_child<'a>(child) },
         libui: { fn: uiGroupSetChild() },
     );
 
     bind_bool_fn!(
         docs: "
             Determines if this group has margins.
+
+            Groups are unmargined by default.
 
             # Examples
 

@@ -5,7 +5,11 @@
 use crate::prelude::*;
 
 impl Ui {
-    pub fn create_checkbox(&self, text: impl AsRef<str>) -> Result<Checkbox, crate::Error> {
+    pub fn create_checkbox<'ui>(
+        &'ui self,
+        text: impl AsRef<str>,
+    ) -> Result<&'ui mut Checkbox, crate::Error> {
+        // SAFETY: `uiNewCheckbox` `strdup`s `text`, so it's OK to drop at the end of scope.
         let text = make_cstring!(text.as_ref());
 
         call_libui_new_fn!(
@@ -33,7 +37,7 @@ def_subcontrol!(
 impl<'a> Checkbox<'a> {
     bind_text_fn!(
         docs: "
-            The text displayed next to this checkbox.
+            The text displayed adjacent to this checkbox.
 
             # Examples
 
@@ -51,7 +55,7 @@ impl<'a> Checkbox<'a> {
 
     bind_set_text_fn!(
         docs: "
-            Sets the text displayed next to this checkbox.
+            Sets the text displayed adjacent to this checkbox.
 
             # Examples
 
@@ -66,6 +70,8 @@ impl<'a> Checkbox<'a> {
     bind_callback_fn!(
         docs: "
             Sets a callback for when this checkbox is toggled.
+
+            Checkboxes toggle when clicked, but otherwise, this callback is unset by default.
 
             # Examples
 
@@ -89,6 +95,7 @@ impl<'a> Checkbox<'a> {
         docs: "
             Determines if this checkbox is checked.
 
+            Checkboxes are unchecked by default.
 
             # Examples
 
@@ -103,7 +110,6 @@ impl<'a> Checkbox<'a> {
     bind_fn!(
         docs: "
             Sets whether or not this checkbox is checked.
-
 
             # Examples
 

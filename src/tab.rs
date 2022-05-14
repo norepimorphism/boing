@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_tab(&self) -> Result<Tab, crate::Error> {
+    pub fn create_tab<'ui>(&'ui self) -> Result<&'ui mut Tab, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewTab() -> Tab,
@@ -34,14 +34,10 @@ def_subcontrol!(
     handle: uiTab,
 );
 
-pub struct Page {
-    index: u16,
-}
-
 impl Tab {
     bind_fn!(
         docs: "
-            Deletes the page represented by the given index.
+            Deletes the page at the given index.
 
             # Examples
 
@@ -49,7 +45,7 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: delete_page(page: Page => |page: Page| page.index) },
+        self: { fn: remove_page(index: u16) },
         libui: { fn: uiTabDelete() },
     );
 
@@ -65,18 +61,14 @@ impl Tab {
         ",
         self: {
             fn: page_count() -> u16,
-            map_out: |_, count| {
-                assert_uint!(count);
-
-                count as u16
-            },
+            map_out: |_, count| to_u16!(count),
         },
         libui: { fn: uiTabNumPages() },
     );
 
     bind_bool_fn!(
         docs: "
-            Determines if the page represented by the given index is margined.
+            Determines if the page at the given index is margined.
 
             # Examples
 
@@ -84,13 +76,13 @@ impl Tab {
             // TODO
             ```
         ",
-        self: { fn: is_page_margined(page: Page => |page: Page| page.index) -> bool },
+        self: { fn: is_page_margined(index: u16) -> bool },
         libui: { fn: uiTabMargined() },
     );
 
     bind_fn!(
         docs: "
-            Sets whether or not the page represented by the given index should be margined.
+            Sets whether or not the page at the given index should be margined.
 
             # Examples
 
@@ -98,37 +90,40 @@ impl Tab {
             // TODO
             ```
         ",
-        self: {
-            fn: set_page_margined(
-                page: Page => |page: Page| page.index,
-                value: bool,
-            )
-        },
+        self: { fn: set_page_margined(page: u16, value: bool) },
         libui: { fn: uiTabSetMargined() },
     );
 
-    /// Appends a page.
+    /// Appends a new page with the given name, returning its index.
+    ///
+    /// Note that the returned index may be invalidated after deletion operations. *boing* provides
+    /// no mechanism to update the index in these cases, so it is the programmer's responsibility to
+    /// keep track of each child's current index.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append_new_page(
+    pub fn push_new_page(
         &self,
         name: impl AsRef<str>,
         control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<Page, crate::Error> {
+    ) -> Result<u16, crate::Error> {
         let index = self.page_count();
 
         control.make_child();
         let name = make_cstring!(name.as_ref());
         unsafe { uiTabAppend(self.as_ptr(), name.as_ptr(), control.as_ptr()) };
 
-        Ok(Page { index })
+        Ok(index)
     }
 
-    /// Inserts a page at the given index.
+    /// Inserts a new page before the item at the given index, returning the index of the new page.
+    ///
+    /// Note that the returned index may be invalidated after deletion operations. *boing* provides
+    /// no mechanism to update the index in these cases, so it is the programmer's responsibility to
+    /// keep track of each child's current index.
     ///
     /// # Examples
     ///
@@ -138,9 +133,9 @@ impl Tab {
     pub fn insert_new_page(
         &self,
         name: impl AsRef<str>,
-        before: Page,
+        before: u16,
         control: &mut impl DerefMut<Target = Control>,
-    ) -> Result<Page, crate::Error> {
+    ) -> Result<u16, crate::Error> {
         let index = self.page_count();
 
         control.make_child();
@@ -149,11 +144,11 @@ impl Tab {
             uiTabInsertAt(
                 self.as_ptr(),
                 name.as_ptr(),
-                before.index.into(),
+                before.into(),
                 control.as_ptr(),
             )
         }
 
-        Ok(Page { index })
+        Ok(index)
     }
 }

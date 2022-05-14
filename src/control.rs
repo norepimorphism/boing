@@ -13,6 +13,7 @@ impl Control {
     /// *libui-ng* permits controls to be accessed as long as they are not destroyed and *libui-ng*
     /// is initialized. Therefore, the following is perfectly valid:
     ///
+    /// (Unfortunately this example must be ignored because it uses a private method.)
     /// ```ignore
     /// # fn main() -> Result<(), boing::Error> {
     /// use boing::{Control, Ui};
@@ -34,6 +35,10 @@ impl Control {
     /// # Ok(())
     /// # }
     /// ```
+    ///
+    /// # Safety
+    ///
+    /// `ptr` must point to a valid `uiControl`.
     ///
     /// # Examples
     ///
@@ -79,6 +84,9 @@ impl Control {
         docs: "
             Determines if this control is visible.
 
+            Controls are visible by default *except* for [`crate::Window`]s, which are invisible by
+            default.
+
             # Examples
 
             ```no_run
@@ -92,6 +100,8 @@ impl Control {
     bind_bool_fn!(
         docs: "
             Determines if this control is interactable.
+
+            Controls are interactable by default.
 
             # Examples
 

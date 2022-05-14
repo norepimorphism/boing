@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`Axis`].
+//! A series of controls aligned to a common line.
 
 use crate::prelude::*;
 
@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_horizontal_axis(&self) -> Result<Axis, crate::Error> {
+    pub fn create_horizontal_axis<'ui>(&'ui self) -> Result<&'ui mut Axis, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewHorizontalBox() -> Axis,
@@ -26,7 +26,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_vertical_axis(&self) -> Result<Axis, crate::Error> {
+    pub fn create_vertical_axis<'ui>(&'ui self) -> Result<&'ui mut Axis, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewVerticalBox() -> Axis,
@@ -36,7 +36,7 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
+        A series of controls aligned to a common line.
 
         # Examples
 
@@ -53,12 +53,14 @@ impl Axis {
         docs: "
             Determines if this axis is padded.
 
+            Axes are unpadded by default.
+
             # Examples
 
             ```no_run
             use boing::Axis;
 
-            let axis: Axis;
+            let axis: &mut Axis;
             # let ui = boing::Ui::new().unwrap();
             # axis = ui.create_horizontal_axis().unwrap();
             assert!(!axis.is_padded());
@@ -94,15 +96,15 @@ impl Axis {
             ```no_run
             use boing::Axis;
 
-            let x_axis: Axis;
+            let x_axis: &mut Axis;
             # let ui = boing::Ui::new().unwrap();
             # x_axis = ui.create_horizontal_axis().unwrap();
 
             // Axis-ception!
             for _ in 0..5 {
-                let mut y_axis: Axis;
+                let y_axis: &mut Axis;
                 # y_axis = ui.create_vertical_axis().unwrap();
-                x_axis.append_child(&mut y_axis, false);
+                x_axis.push_new_child(y_axis, false);
             }
 
             assert_eq!(5, x_axis.child_count());
@@ -110,18 +112,10 @@ impl Axis {
         ",
         self: {
             fn: child_count() -> u16,
-            map_out: |_, count| {
-                assert_uint!(count);
-
-                count as u16
-            },
+            map_out: |_, count| to_u16!(count),
         },
         libui: { fn: uiBoxNumChildren() },
     );
-}
-
-pub struct Child {
-    index: u16,
 }
 
 impl Axis {
@@ -129,52 +123,63 @@ impl Axis {
         docs: r#"
             Removes the child control at the given index.
 
+            This action may invalidate the previous indices of other items.
+
             # Examples
 
             ```no_run
             use boing::Axis;
 
-            let axis: Axis;
+            let axis: &mut Axis;
             # let ui = boing::Ui::new().unwrap();
             # axis = ui.create_horizontal_axis().unwrap();
 
-            let mut progress_bar: boing::ProgressBar;
+            let mut progress_bar: &mut boing::ProgressBar;
             # progress_bar = ui.create_progress_bar().unwrap();
-            axis.append_child(&mut progress_bar, false);
+            let progress_bar_idx = axis.push_new_child(progress_bar, false);
 
-            let mut button: boing::Pushbutton;
+            let mut button: &mut boing::Pushbutton;
             # button = ui.create_pushbutton("").unwrap();
-            axis.append_child(&mut button, false);
+            let button_idx = axis.push_new_child(button, false);
 
             // Remove the button from the axis.
-            axis.delete_child(1);
+            axis.remove_child(button_idx);
             // Remove the progress bar from the axis.
-            axis.delete_child(0);
+            axis.remove_child(progress_bar_idx);
 
             assert_eq!(0, axis.child_count());
             ```
         "#,
-        self: { fn: delete_child(item: Child => |child: Child| child.index) },
+        self: { fn: remove_child(index: u16) },
         libui: { fn: uiBoxDelete() },
     );
 
-    /// Inserts a child control at the zero-based index `self.child_count() - 1`.
+    /// Appends a new child control, returning its index.
+    ///
+    /// Note that the returned index may be invalidated after deletion operations. *boing* provides
+    /// no mechanism to update the index in these cases, so it is the programmer's responsibility to
+    /// keep track of each child's current index.
+    ///
+    /// # Arguments
+    ///
+    /// When `can_stretch` is `true`, the child control will fill the axis' container. Otherwise,
+    /// controls retain their original size.
     ///
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append_new_child(
+    pub fn push_new_child(
         &self,
         child: &mut impl DerefMut<Target = Control>,
         can_stretch: bool,
-    ) -> Child {
+    ) -> u16 {
         let index = self.child_count();
 
         child.make_child();
         unsafe { uiBoxAppend(self.as_ptr(), child.as_ptr(), can_stretch.into()) };
 
-        Child { index }
+        index
     }
 }

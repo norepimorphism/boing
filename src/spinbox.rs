@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_spinbox(&self, min: u16, max: u16) -> Result<Spinbox, crate::Error> {
+    pub fn create_spinbox<'ui>(&'ui self, min: u16, max: u16) -> Result<&'ui mut Spinbox, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewSpinbox(min.into(), max.into()) -> Spinbox,
@@ -38,7 +38,7 @@ def_subcontrol!(
 impl<'a> Spinbox<'a> {
     bind_fn!(
         docs: "
-
+            The current value of this spinbox.
 
             # Examples
 
@@ -48,18 +48,14 @@ impl<'a> Spinbox<'a> {
         ",
         self: {
             fn: value() -> u16,
-            map_out: |_, value| {
-                assert_uint!(value);
-
-                value as u16
-            },
+            map_out: |_, value| to_u16!(value),
         },
         libui: { fn: uiSpinboxValue() },
     );
 
     bind_fn!(
         docs: "
-
+            Sets the value of this spinbox.
 
             # Examples
 
@@ -74,6 +70,8 @@ impl<'a> Spinbox<'a> {
     bind_callback_fn!(
         docs: "
             Sets a callback for when this spinbox changes.
+
+            This callback is unset by default.
 
             # Examples
 

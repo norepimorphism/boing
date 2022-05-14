@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 
-//! [`ProgressBar`].
+//! A horizontal bar that continuously fills as an action progresses.
 
 use crate::prelude::*;
 
@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_progress_bar(&self) -> Result<ProgressBar, crate::Error> {
+    pub fn create_progress_bar<'ui>(&'ui self) -> Result<&'ui mut ProgressBar, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewProgressBar() -> ProgressBar,
@@ -22,7 +22,7 @@ impl Ui {
 
 def_subcontrol!(
     docs: "
-
+        A horizontal bar that continuously fills as an action progresses.
 
         # Examples
 
@@ -37,7 +37,9 @@ def_subcontrol!(
 impl ProgressBar {
     bind_fn!(
         docs: "
+            The current value of this progress bar.
 
+            This is 0 by default.
 
             # Examples
 
@@ -47,18 +49,14 @@ impl ProgressBar {
         ",
         self: {
             fn: value() -> u16,
-            map_out: |_, value| {
-                assert_uint!(value);
-
-                value as u16
-            },
+            map_out: |_, value| to_u16!(value),
         },
         libui: { fn: uiProgressBarValue() },
     );
 
     bind_fn!(
         docs: "
-
+            Sets the value of this progress bar.
 
             # Examples
 
@@ -72,13 +70,19 @@ impl ProgressBar {
 
     bind_fn!(
         docs: "
+            Marks this progress bar as being indefinite.
+
+            For many GUI toolkits, this causes the progress bar to continuously rotate a colored
+            inner bar, indicating that an action is in progress but it is unknown when the action
+            will complete.
+
             # Examples
 
             ```no_run
             // TODO
             ```
         ",
-        self: { fn: set_indefinite() },
+        self: { fn: set_as_indefinite() },
         libui: { fn: uiProgressBarSetValue(-1) },
     );
 }
