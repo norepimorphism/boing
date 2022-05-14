@@ -239,7 +239,9 @@ macro_rules! bind_text_fn {
             string
         }
 
-        #[doc = concat!("The lossless yet fallible version of [`Self::", stringify!($self_fn), "`].")]
+        #[doc = concat!(
+            "The lossless yet fallible version of [`Self::", stringify!($self_fn), "`]."
+        )]
         #[doc = indoc::indoc!("
             # Examples
 
@@ -278,7 +280,10 @@ macro_rules! bind_set_text_fn {
     (
         docs: $docs:literal,
         self $( ( $mut_spec:tt ) )? : {
-            fn: $self_fn:ident($self_arg:ident $(,)?) -> $self_fn_out:ty
+            fn: $self_fn:ident(
+                $self_arg:ident
+                $(, $(^ $self_pre_arg:ident : $self_pre_ty:ty $(=> $self_pre_map:expr)?),*)? $(,)?
+            ) -> $self_fn_out:ty
             $(, map_out: $self_map_out:expr)? $(,)?
         },
         libui: {
@@ -286,14 +291,29 @@ macro_rules! bind_set_text_fn {
         } $(,)?
     ) => {
         #[doc = indoc::indoc!($docs)]
-        pub fn $self_fn(& $($mut_spec)? self, $self_arg: impl AsRef<str>) -> Result<$self_fn_out, $crate::Error> {
+        pub fn $self_fn(
+            & $($mut_spec)? self,
+            $($($self_pre_arg: $self_pre_ty,)*)?
+            $self_arg: impl AsRef<str>,
+        ) -> Result<$self_fn_out, $crate::Error> {
+            $(
+                $(
+                    $(
+                        let $self_pre_arg = $self_pre_map($self_pre_arg);
+                    )?
+                )*
+            )?
+
             // Normally, this is a bad idea: `$arg` is a `CString` that will be dropped at the end
             // of this scope, but its pointer is being passed to a C function that may, in theory,
             // refer to it indefinitiely long. However, as far as I know, *libui-ng* `strdup`s all
             // string arguments before using them, so this should be safe.
             let $self_arg = make_cstring!($self_arg.as_ref());
 
-            let result = unsafe { $libui_fn(self.as_ptr(), $self_arg.as_ptr()) };
+            let result = unsafe {
+                $libui_fn(self.as_ptr(), $($($self_pre_arg.into(),)*)? $self_arg.as_ptr())
+            };
+
             $(
                 let result = $self_map_out(self, result);
             )?
@@ -308,7 +328,9 @@ macro_rules! bind_bool_fn {
     (
         docs: $docs:literal,
         self: {
-            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)? ),* $(,)?) -> bool $(,)?
+            fn: $self_fn:ident(
+                $($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)? ),* $(,)?
+            ) -> bool $(,)?
         },
         libui: {
             fn: $libui_fn:ident() $(,)?
@@ -339,7 +361,9 @@ macro_rules! bind_fn {
     (
         docs: $docs:literal,
         self $( ( $mut_spec:tt ) )?  : {
-            fn: $self_fn:ident($($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)? ),* $(,)?) $(-> $self_fn_out:ty)?
+            fn: $self_fn:ident(
+                $($self_arg:ident : $self_ty:ty $(=> $self_arg_map:expr)?),* $(,)?
+            ) $(-> $self_fn_out:ty)?
             $(, map_out: $self_map_out:expr)? $(,)?
         },
         libui: {

@@ -157,9 +157,20 @@ mod tab {
 
         fn create_lists_axis(ui: &boing::Ui) -> impl DerefMut<Target = boing::Control> {
             let axis = ui.create_vertical_axis().unwrap();
+            axis.append_new_child(&mut create_combobox(ui), false);
             axis.append_new_child(&mut create_radio_buttons(ui), false);
 
             axis
+        }
+
+        fn create_combobox(ui: &boing::Ui) -> boing::Combobox {
+            let combobox = ui.create_combobox().unwrap();
+            combobox.append_new_item("Combobox Item 1").unwrap();
+            combobox.append_new_item("Combobox Item 2").unwrap();
+            combobox.append_new_item("Combobox Item 3").unwrap();
+            combobox.append_new_item("Combobox Item 4").unwrap();
+
+            combobox
         }
 
         fn create_radio_buttons(ui: &boing::Ui) -> boing::RadioButtons {

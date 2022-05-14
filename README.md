@@ -63,7 +63,7 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Axis`        | ☐    | ☑    | `uiBox`
 | `Checkbox`    | ☐    | ☑    | `uiCheckbox`
 | `ColorPicker` | ☐    | ☑    | `uiColorButton`
-| `Combobox`    | ☐    | ☐    | `uiCombobox`
+| `Combobox`    | ☐    | ☑    | `uiCombobox`
 | `FontPicker`  | ☐    | ☑    | `uiFontButton`
 | `Form`        | ☐    | ☐    | `uiForm`
 | `FormEntry`   | ☐    | ☐    | `uiEntry`

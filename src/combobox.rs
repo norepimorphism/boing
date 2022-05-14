@@ -32,9 +32,53 @@ def_subcontrol!(
     ",
     ty: Combobox,
     handle: uiCombobox,
+    cb_fns: [ on_item_selected<'a>() ],
 );
 
-impl Combobox {
+pub struct Item {
+    index: u16,
+}
+
+impl<'a> Combobox<'a> {
+    bind_set_text_fn!(
+        docs: "
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: {
+            fn: append_new_item(text) -> Item,
+            map_out: |this: &Self, _| {
+                let index = this.item_count();
+
+                Item { index }
+            },
+        },
+        libui: { fn: uiComboboxAppend() },
+    );
+
+    bind_set_text_fn!(
+        docs: "
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: {
+            fn: insert_new_item(
+                text,
+                ^before: Item => |item: Item| item.index,
+            ) -> Item,
+            map_out: |_: &Self, _: ()| {
+                Item { index: before }
+            },
+        },
+        libui: { fn: uiComboboxInsertAt() },
+    );
+
     bind_fn!(
         docs: "
             # Examples
@@ -43,7 +87,7 @@ impl Combobox {
             // TODO
             ```
         ",
-        self: { fn: delete_item(index: u16) },
+        self: { fn: delete_item(item: Item => |item: Item| item.index) },
         libui: { fn: uiComboboxDelete() },
     );
 
@@ -86,7 +130,14 @@ impl Combobox {
             // TODO
             ```
         ",
-        self: { fn: selected_item() -> i32 },
+        self: {
+            fn: selected_item() -> Item,
+            map_out: |_, index| {
+                assert_uint!(index);
+
+                Item { index: index as u16 }
+            },
+        },
         libui: { fn: uiComboboxSelected() },
     );
 
@@ -98,7 +149,33 @@ impl Combobox {
             // TODO
             ```
         ",
-        self: { fn: set_item_selected(index: u16) },
+        self: { fn: set_item_selected(item: Item => |item: Item| item.index) },
         libui: { fn: uiComboboxSetSelected() },
+    );
+
+    bind_callback_fn!(
+        docs: "
+            Sets a callback for an item is selected.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: {
+            ty: Combobox<'a>,
+            handle: uiCombobox,
+            fn: on_item_selected(),
+            cb: {
+                sig: f -> (),
+            },
+        },
+        libui: {
+            fn: uiComboboxOnSelected(),
+            cb: {
+                sig: () -> (),
+            },
+        },
     );
 }
