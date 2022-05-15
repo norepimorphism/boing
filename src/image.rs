@@ -34,22 +34,13 @@ def_subcontrol!(
     handle: uiImage,
 );
 
-#[repr(C)]
-pub struct Pixel {
-    pub r: u8,
-    pub b: u8,
-    pub g: u8,
-    pub a: u8,
-}
-
 impl Image<'_> {
     /// # Examples
     ///
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn append(&self, pixels: &mut [Pixel], width: u16, height: u16, byte_stride: u16) {
-        // SAFETY: [`Pixel`] has a C representation, so it should be castable in this way.
+    pub fn push(&self, pixels: &mut [u8], width: u16, height: u16, byte_stride: u16) {
         // SAFETY: `pixels` is dropped at the end of scope, but that's OK as *libui-ng* copies it.
         let pixels = pixels.as_mut_ptr().cast();
 

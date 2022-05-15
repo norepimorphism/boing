@@ -38,7 +38,7 @@ pub struct Menu<'ui> {
 impl Menu<'_> {
     bind_fn!(
         docs: "
-            Inserts a separator below the last [item](Item).
+            Appends a horizontal separator.
 
             # Examples
 
@@ -46,7 +46,7 @@ impl Menu<'_> {
             // TODO
             ```
         ",
-        self: { fn: append_separator() },
+        self: { fn: push_separator() },
         libui: { fn: uiMenuAppendSeparator() },
     );
 
