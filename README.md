@@ -57,33 +57,37 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 
 ## Project Progress
 
-| Feature       | Docs? | Impl? | *libui-ng* Type |
-| ------------- | ----- | ----- | --------------- |
-| `Area`        | ☐    | ☐    | `uiArea`
-| `Axis`        | ☐    | ☑    | `uiBox`
-| `Checkbox`    | ☐    | ☑    | `uiCheckbox`
-| `ColorPicker` | ☐    | ☑    | `uiColorButton`
-| `Combobox`    | ☐    | ☑    | `uiCombobox`
-| `FontPicker`  | ☐    | ☑    | `uiFontButton`
-| `Form`        | ☐    | ☐    | `uiForm`
-| `Grid`        | ☐    | ☐    | `uiGrid`
-| `Group`       | ☐    | ☑    | `uiGroup`
-| `Image`       | ☐    | ☑    | `uiImage`
-| `Label`       | ☐    | ☑    | `uiLabel`
-| `Menu`        | ☐    | ☑    | `uiMenu`
-| `MenuItem`    | ☐    | ☑    | `uiMenuItem`
-| `Path`        | ☐    | ☐    | `uiDrawPath`
-| `ProgressBar` | ☐    | ☑    | `uiProgressBar`
-| `Pushbutton`  | ☐    | ☑    | `uiButton`
-| `RadioButtons`| ☐    | ☑    | `uiRadioButtons`
-| `Separator`   | ☐    | ☑    | `uiSeparator`
-| `Slider`      | ☐    | ☑    | `uiSlider`
-| `Spinbox`     | ☐    | ☑    | `uiSpinbox`
-| `Tab`         | ☐    | ☑    | `uiTab`
-| `Table`       | ☐    | ☐    | `uiTable`
-| `TextEntry`   | ☐    | ☑    | `uiEntry`
-| `TimePicker`  | ☐    | ☐    | `uiDateTimePicker`
-| `Window`      | ☐    | ☑    | `uiWindow`
+Being in the 0.x.x version range, *boing* is unstable software. That being said, it nears closer to a 1.0.0 release every day. For a list of issues blocking the first major release, see issue #2.
+
+| Feature             | Docs? | Impl? | *libui-ng* Type |
+| ------------------- | ----- | ----- | --------------- |
+| `Area`              | ☐    | ☐    | `uiArea`
+| `Axis`              | ☐    | ☑    | `uiBox`
+| `Checkbox`          | ☐    | ☑    | `uiCheckbox`
+| `ColorPicker`       | ☐    | ☑    | `uiColorButton`
+| `Combobox`          | ☐    | ☑    | `uiCombobox`
+| `EditableCombobox`  | ☐    | ☐    | `uiEditableCombobox`
+| `FontPicker`        | ☐    | ☑    | `uiFontButton`
+| `Form`              | ☐    | ☐    | `uiForm`
+| `Grid`              | ☐    | ☐    | `uiGrid`
+| `Group`             | ☐    | ☑    | `uiGroup`
+| `Image`             | ☐    | ☑    | `uiImage`
+| `Label`             | ☐    | ☑    | `uiLabel`
+| `Menu`              | ☐    | ☑    | `uiMenu`
+| `MenuItem`          | ☐    | ☑    | `uiMenuItem`
+| `MultilineTextEntry`| ☐    | ☑    | `uiMultilineEntry`
+| `Path`              | ☐    | ☐    | `uiDrawPath`
+| `ProgressBar`       | ☐    | ☑    | `uiProgressBar`
+| `Pushbutton`        | ☐    | ☑    | `uiButton`
+| `RadioButtons`      | ☐    | ☑    | `uiRadioButtons`
+| `Separator`         | ☐    | ☑    | `uiSeparator`
+| `Slider`            | ☐    | ☑    | `uiSlider`
+| `Spinbox`           | ☐    | ☑    | `uiSpinbox`
+| `Tab`               | ☐    | ☑    | `uiTab`
+| `Table`             | ☐    | ☐    | `uiTable`
+| `TextEntry`         | ☐    | ☑    | `uiEntry`
+| `TimePicker`        | ☐    | ☐    | `uiDateTimePicker`
+| `Window`            | ☐    | ☑    | `uiWindow`
 
 ## Screenshots
 

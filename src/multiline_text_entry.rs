@@ -10,10 +10,10 @@ macro_rules! impl_text_entry {
     ) => {
         impl Ui {
             #[doc = indoc::indoc!($docs)]
-            pub fn $self_fn(&self) -> Result<&mut TextEntry, crate::Error> {
+            pub fn $self_fn(&self) -> Result<&mut MultilineTextEntry, crate::Error> {
                 call_libui_new_fn!(
                     ui: self,
-                    fn: $libui_fn() -> TextEntry,
+                    fn: $libui_fn() -> MultilineTextEntry,
                 )
             }
         }
@@ -28,8 +28,8 @@ impl_text_entry!(
         // TODO
         ```
     ",
-    self: { fn: create_text_entry() },
-    libui: { fn: uiNewEntry() },
+    self: { fn: create_wrapping_multiline_text_entry() },
+    libui: { fn: uiNewMultilineEntry() },
 );
 
 impl_text_entry!(
@@ -40,25 +40,13 @@ impl_text_entry!(
         // TODO
         ```
     ",
-    self: { fn: create_password_text_entry() },
-    libui: { fn: uiNewPasswordEntry() },
-);
-
-impl_text_entry!(
-    docs: "
-        # Examples
-
-        ```no_run
-        // TODO
-        ```
-    ",
-    self: { fn: create_search_text_entry() },
-    libui: { fn: uiNewSearchEntry() },
+    self: { fn: create_non_wrapping_multiline_text_entry() },
+    libui: { fn: uiNewNonWrappingMultilineEntry() },
 );
 
 def_subcontrol!(
     docs: "
-        A box in which a single line of text is displayed.
+        A box in which multiple lines of text are displayed.
 
         # Examples
 
@@ -66,12 +54,12 @@ def_subcontrol!(
         // TODO
         ```
     ",
-    ty: TextEntry,
-    handle: uiEntry,
+    ty: MultilineTextEntry,
+    handle: uiMultilineEntry,
     cb_fns: [ on_changed() ],
 );
 
-impl<'ui> TextEntry<'ui> {
+impl<'ui> MultilineTextEntry<'ui> {
     bind_text_fn!(
         docs: "
             The text displayed in this entry.
@@ -87,12 +75,12 @@ impl<'ui> TextEntry<'ui> {
             raw_fn: raw_text(),
             as_ptr_fn: text_ptr(),
         },
-        libui: { fn: uiEntryText() },
+        libui: { fn: uiMultilineEntryText() },
     );
 
     bind_set_text_fn!(
         docs: "
-            Sets the text displayed in this entry.
+            Replaces the text displayed in this entry.
 
             # Examples
 
@@ -101,14 +89,26 @@ impl<'ui> TextEntry<'ui> {
             ```
         ",
         self: { fn: set_text(text) -> () },
-        libui: { fn: uiEntrySetText() },
+        libui: { fn: uiMultilineEntrySetText() },
+    );
+
+    bind_set_text_fn!(
+        docs: "
+            Appends the given text to this entry.
+
+            # Examples
+
+            ```no_run
+            // TODO
+            ```
+        ",
+        self: { fn: push_text(text) -> () },
+        libui: { fn: uiMultilineEntryAppend() },
     );
 
     bind_callback_fn!(
         docs: "
             Sets a callback for when the text within this entry changes.
-
-            This callback is unset by default.
 
             # Examples
 
@@ -117,13 +117,13 @@ impl<'ui> TextEntry<'ui> {
             ```
         ",
         self: {
-            ty: TextEntry<'ui>,
-            handle: uiEntry,
+            ty: MultilineTextEntry<'ui>,
+            handle: uiMultilineEntry,
             fn: on_changed(),
             cb: { sig: f -> () },
         },
         libui: {
-            fn: uiEntryOnChanged(),
+            fn: uiMultilineEntryOnChanged(),
             cb: { sig: () -> () },
         },
     );
@@ -139,7 +139,7 @@ impl<'ui> TextEntry<'ui> {
             ```
         ",
         self: { fn: is_read_only() -> bool },
-        libui: { fn: uiEntryReadOnly() },
+        libui: { fn: uiMultilineEntryReadOnly() },
     );
 
     bind_fn!(
@@ -153,6 +153,6 @@ impl<'ui> TextEntry<'ui> {
             ```
         ",
         self: { fn: set_read_only(value: bool) },
-        libui: { fn: uiEntrySetReadOnly() },
+        libui: { fn: uiMultilineEntrySetReadOnly() },
     );
 }
