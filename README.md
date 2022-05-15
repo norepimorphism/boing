@@ -14,7 +14,7 @@ Currently, *boing* only links with *libui-ng*&mdash;not the original *libui*. Ho
 
 ## Terminology
 
-In the context that *boing* uses them, the terms "widget" and "control" are *not* interchangeable. A **widget** is an interactive visual element, while **controls** are a specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular, all widgets are controls except for `Menu` and `MenuItem`.
+In the context that *boing* uses them, the terms "widget" and "control" are *not* interchangeable. A **widget** is an interactive visual element, while **controls** are a specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular, all widgets are controls except for `Image`, `Menu`, and `MenuItem`.
 
 ## Design
 

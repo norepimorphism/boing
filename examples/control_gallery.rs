@@ -41,7 +41,7 @@ mod menubar {
         menu.push_new_item("Open").unwrap();
         menu.push_new_item("Open Folder...")
             .unwrap();
-        menu.append_separator();
+        menu.push_separator();
         menu.push_new_item("Save").unwrap();
         menu.push_new_item("Save As...").unwrap();
         menu.push_new_quit_item().unwrap();

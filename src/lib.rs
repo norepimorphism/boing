@@ -14,7 +14,7 @@
 //! In the context that *boing* uses them, the terms "widget" and "control" are *not*
 //! interchangeable. A **widget** is an interactive visual element, while **controls** are a
 //! specific subset of widgets that implement `DerefMut<Target = boing::Control>`. In particular,
-//! all widgets are controls except for [`Menu`] and [`MenuItem`].
+//! all widgets are controls except for [`Image`], [`Menu`], and [`MenuItem`].
 //!
 //! ## Usage
 //!

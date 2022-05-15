@@ -12,7 +12,7 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_image<'ui>(&'ui self, width: f64, height: f64) -> Result<&'ui mut Image, crate::Error> {
+    pub fn create_image(&self, width: f64, height: f64) -> Result<&mut Image, crate::Error> {
         call_libui_new_fn!(
             ui: self,
             fn: uiNewImage(width, height) -> Image,
@@ -20,21 +20,28 @@ impl Ui {
     }
 }
 
-def_subcontrol!(
-    docs: "
-        An RGBA bitmap.
+impl Image {
+    pub(crate) fn new(_: &Ui, ptr: *mut uiImage) -> Self {
+        Self { ptr }
+    }
+}
 
-        # Examples
+/// An RGBA bitmap.
+///
+/// # Examples
+///
+/// ```no_run
+/// // TODO
+/// ```
+pub struct Image {
+    ptr: *mut uiImage,
+}
 
-        ```no_run
-        // TODO
-        ```
-    ",
-    ty: Image,
-    handle: uiImage,
-);
+impl Image {
+    pub(crate) fn as_ptr(&self) -> *mut uiImage {
+        self.ptr
+    }
 
-impl Image<'_> {
     /// # Examples
     ///
     /// ```no_run

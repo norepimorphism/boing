@@ -16,9 +16,9 @@ impl Ui {
     /// ```no_run
     /// // TODO
     /// ```
-    pub fn create_menu(&self, name: impl AsRef<str>) -> Result<Menu, crate::Error> {
+    pub fn create_menu(&self, name: impl AsRef<str>) -> Result<&mut Menu, crate::Error> {
         let name = make_cstring!(name.as_ref());
-        call_fallible_libui_fn!(uiNewMenu(name.as_ptr())).map(|menu| Menu { ptr: menu, ui: self })
+        call_fallible_libui_fn!(uiNewMenu(name.as_ptr())).map(|menu| self.alloc_object(Menu { ptr: menu, ui: self }))
     }
 }
 
