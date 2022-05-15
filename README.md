@@ -66,7 +66,6 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Combobox`    | ☐    | ☑    | `uiCombobox`
 | `FontPicker`  | ☐    | ☑    | `uiFontButton`
 | `Form`        | ☐    | ☐    | `uiForm`
-| `FormEntry`   | ☐    | ☐    | `uiEntry`
 | `Grid`        | ☐    | ☐    | `uiGrid`
 | `Group`       | ☐    | ☑    | `uiGroup`
 | `Image`       | ☐    | ☑    | `uiImage`
@@ -82,6 +81,7 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Spinbox`     | ☐    | ☑    | `uiSpinbox`
 | `Tab`         | ☐    | ☑    | `uiTab`
 | `Table`       | ☐    | ☐    | `uiTable`
+| `TextEntry`   | ☐    | ☑    | `uiEntry`
 | `TimePicker`  | ☐    | ☐    | `uiDateTimePicker`
 | `Window`      | ☐    | ☑    | `uiWindow`
 

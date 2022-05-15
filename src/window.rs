@@ -9,6 +9,8 @@ use crate::prelude::*;
 impl Ui {
     /// Creates a new [`Window`].
     ///
+    /// # Arguments
+    ///
     /// # Examples
     ///
     /// ```no_run
@@ -58,6 +60,10 @@ impl Ui {
                 // destroyed, invalidating the window's inner pointer and allowing use-after-frees
                 // to occur. Instead, we will simply hide the window. This is kind of a silly
                 // solution, but it works.
+                //
+                // TODO: This appears visually equivalent to closing the window on Windows. We
+                // should test macOS and Linux as well to confirm that the window doesn't instantly
+                // disappear rather than display a closing animation on those platforms.
 
                 uiControlHide(window.cast());
 
@@ -128,8 +134,6 @@ impl<'ui> Window<'ui> {
         docs: "
             Sets a callback for when the content size of this window changes.
 
-            This callback is unset by default.
-
             # Examples
 
             ```no_run
@@ -151,9 +155,6 @@ impl<'ui> Window<'ui> {
     bind_callback_fn!(
         docs: "
             Sets a callback for when this window is requested to close.
-
-            This callback is set to exit the application by default when the option
-            `should_quit_on_close = true` is passed to [`Ui::create_window`].
 
             # Examples
 
@@ -184,8 +185,6 @@ impl<'ui> Window<'ui> {
         docs: "
             Determines if this window is fullscreen.
 
-            Windows are not fullscreen by default.
-
             # Examples
 
             ```no_run
@@ -211,10 +210,15 @@ impl<'ui> Window<'ui> {
     );
 
     bind_bool_fn!(
+        // DEFAULT(Windows):
+        //
+        // `true`. Windows are created with the style constant `WS_OVERLAPPEDWINDOW`, which,
+        // according to the [WinApi docs], implies `WS_BORDER`. [Source].
+        //
+        // [WinApi docs]: https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles
+        // [Source]: https://github.com/libui-ng/libui-ng/blob/5dd36861be919350fa29fc953ec15f30eb2afddb/windows/window.cpp#L485
         docs: "
             Determines if this window is borderless.
-
-            Windows are bordered by default.
 
             # Examples
 

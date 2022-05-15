@@ -132,6 +132,7 @@ mod slider;
 mod spinbox;
 mod tab;
 mod table;
+mod text_entry;
 mod ui;
 mod window;
 
@@ -159,6 +160,7 @@ pub use slider::Slider;
 pub use spinbox::Spinbox;
 pub use tab::Tab;
 pub use table::Table;
+pub use text_entry::TextEntry;
 pub use ui::Ui;
 pub use window::Window;
 
