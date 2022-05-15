@@ -147,15 +147,11 @@ impl<'ui> Picker<'ui> {
             ty: Picker<'ui>,
             handle: uiFontButton,
             fn: on_selected(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiFontButtonOnChanged(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 }

@@ -66,7 +66,12 @@ mod menubar {
     fn setup_help_menu<'ui>(ui: &'ui boing::Ui) {
         let menu = ui.create_menu("Help").unwrap();
         menu.push_new_item("Documentation").unwrap();
-        menu.push_new_about_item().unwrap();
+
+        let about = menu.push_new_about_item().unwrap();
+        about.on_clicked(|_| {
+            let window = ui.create_window("About libui Control Gallery", 256, 256, false, false).unwrap();
+            window.show();
+        })
     }
 }
 

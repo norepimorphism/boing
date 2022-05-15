@@ -186,15 +186,11 @@ impl<'ui> Combobox<'ui> {
             ty: Combobox<'ui>,
             handle: uiCombobox,
             fn: on_item_selected(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiComboboxOnSelected(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 }

@@ -256,15 +256,11 @@ impl<'ui> Item<'ui> {
             ty: Item<'ui>,
             handle: uiMenuItem,
             fn: on_clicked(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiMenuItemOnClicked(),
-            cb: {
-                sig: (*mut uiWindow) -> (),
-            },
+            cb: { sig: (*mut uiWindow) -> () },
         },
     );
 

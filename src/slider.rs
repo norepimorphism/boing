@@ -118,15 +118,11 @@ impl<'ui> Slider<'ui> {
             ty: Slider<'ui>,
             handle: uiSlider,
             fn: on_changed(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiSliderOnChanged(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 

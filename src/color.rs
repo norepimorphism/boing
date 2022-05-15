@@ -104,15 +104,11 @@ impl<'ui> Picker<'ui> {
             ty: Picker<'ui>,
             handle: uiColorButton,
             fn: on_selected(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiColorButtonOnChanged(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 }

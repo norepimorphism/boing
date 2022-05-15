@@ -38,6 +38,8 @@ impl Ui {
                 // When the window recieves an event to close, call `uiQuit`.
                 uiQuit();
 
+                // Returning `true` tells *libui-ng* to destroy the window, which isn't necessary in
+                // this case as `uiQuit` accomplishes that.
                 false.into()
             }
 
@@ -51,8 +53,15 @@ impl Ui {
                 uiOnShouldQuit(Some(on_should_quit), ptr::null_mut());
             }
         } else {
-            unsafe extern "C" fn on_closing(_: *mut uiWindow, _: *mut c_void) -> i32 {
-                true.into()
+            unsafe extern "C" fn on_closing(window: *mut uiWindow, _: *mut c_void) -> i32 {
+                // SAFETY: We can't return `true` here, as that would cause the window to be
+                // destroyed, invalidating the window's inner pointer and allowing use-after-frees
+                // to occur. Instead, we will simply hide the window. This is kind of a silly
+                // solution, but it works.
+
+                uiControlHide(window.cast());
+
+                false.into()
             }
 
             unsafe {
@@ -78,7 +87,7 @@ def_subcontrol!(
     handle: uiWindow,
     cb_fns: [
         on_content_size_changed(),
-        on_closing() -> bool,
+        on_closing(),
     ],
 );
 
@@ -131,15 +140,11 @@ impl<'ui> Window<'ui> {
             ty: Window<'ui>,
             handle: uiWindow,
             fn: on_content_size_changed(),
-            cb: {
-                sig: f -> (),
-            },
+            cb: { sig: f -> () },
         },
         libui: {
             fn: uiWindowOnContentSizeChanged(),
-            cb: {
-                sig: () -> (),
-            },
+            cb: { sig: () -> () },
         },
     );
 
@@ -161,15 +166,17 @@ impl<'ui> Window<'ui> {
             handle: uiWindow,
             fn: on_closing(),
             cb: {
-                sig: should_close -> bool,
-                map: |it: bool| { i32::from(it) },
+                sig: f -> (),
+                map: |_| {
+                    // SAFETY: Returning `true` here will unleash chaos. See [`Ui::create_window`]
+                    // for the reason why.
+                    i32::from(false)
+                },
             },
         },
         libui: {
             fn: uiWindowOnClosing(),
-            cb: {
-                sig: () -> i32,
-            },
+            cb: { sig: () -> i32 },
         },
     );
 
