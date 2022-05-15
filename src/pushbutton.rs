@@ -48,6 +48,14 @@ def_subcontrol!(
         # Ok(())
         # }
         ```
+
+        # Screenshots
+
+        ## Windows
+
+        ## macOS
+
+        ## Linux
     "#,
     ty: Pushbutton,
     handle: uiButton,

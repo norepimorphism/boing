@@ -62,15 +62,15 @@
         all(),
         doc = embed_doc_image::embed_image!(
             "control-gallery.basic-controls",
-            "screenshots/control-gallery/basic-controls@2x.png"
+            "screenshots/control-gallery/windows/basic-controls@2x.png"
         ),
         doc = embed_doc_image::embed_image!(
             "control-gallery.numbers-and-lists",
-            "screenshots/control-gallery/numbers-and-lists@2x.png"
+            "screenshots/control-gallery/windows/numbers-and-lists@2x.png"
         ),
         doc = embed_doc_image::embed_image!(
             "control-gallery.data-choosers",
-            "screenshots/control-gallery/data-choosers@2x.png"
+            "screenshots/control-gallery/windows/data-choosers@2x.png"
         ),
     ),
 )]
@@ -126,7 +126,7 @@ mod path;
 mod prelude;
 mod progress_bar;
 mod pushbutton;
-pub mod radio_buttons;
+mod radio_buttons;
 mod separator;
 mod slider;
 mod spinbox;

@@ -8,15 +8,6 @@ pub use model::Model;
 
 use crate::prelude::*;
 
-impl Ui {
-    // pub fn create_table_model(&self) -> Model {
-    //     call_libui_new_fn!(
-    //         ui: self,
-    //         fn: uiNewTableModel() -> Model,
-    //     )
-    // }
-}
-
 #[derive(Clone, Copy, Debug)]
 pub enum RowBackgroundColor {
     Default,
@@ -69,6 +60,8 @@ def_subcontrol!(
 impl Table {
     bind_bool_fn!(
         docs: "
+            Determines if the header of this table is visible.
+
             # Examples
 
             ```no_run
@@ -81,6 +74,8 @@ impl Table {
 
     bind_fn!(
         docs: "
+            Sets whether or not the header of this table should be visible.
+
             # Examples
 
             ```no_run
@@ -93,25 +88,29 @@ impl Table {
 
     bind_fn!(
         docs: "
+            The width of the column at the given index.
+
             # Examples
 
             ```no_run
             // TODO
             ```
         ",
-        self: { fn: width_of_column(index: u16) -> i32 },
+        self: { fn: column_width(index: u16) -> i32 },
         libui: { fn: uiTableColumnWidth() },
     );
 
     bind_fn!(
         docs: "
+            Sets the width of the column at the given index.
+
             # Examples
 
             ```no_run
             // TODO
             ```
         ",
-        self: { fn: set_width_of_column(index: u16, width: u16) },
+        self: { fn: set_column_width(index: u16, width: u16) },
         libui: { fn: uiTableColumnSetWidth() },
     );
 }

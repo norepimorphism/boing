@@ -29,6 +29,14 @@ def_subcontrol!(
         ```no_run
         // TODO
         ```
+
+        # Screenshots
+
+        ## Windows
+
+        ## macOS
+
+        ## Linux
     ",
     ty: Tab,
     handle: uiTab,

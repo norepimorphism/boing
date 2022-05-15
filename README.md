@@ -84,3 +84,18 @@ In this case, the closure passed to `Button::on_clicked` would need to be routed
 | `Table`       | ☐    | ☐    | `uiTable`
 | `TimePicker`  | ☐    | ☐    | `uiDateTimePicker`
 | `Window`      | ☐    | ☑    | `uiWindow`
+
+## Screenshots
+
+### Windows
+
+![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+focused on a tab labeled "Basic Controls".](screenshots/control-gallery/windows/basic-controls@2x.png)
+![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+focused on a tab labeled "Numbers and Lists".](screenshots/control-gallery/windows/numbers-and-lists@2x.png)
+![A screenshot of the example application "libui Control Gallery" with Windows 11 widgets,
+focused on a tab labeled "Data Choosers".](screenshots/control-gallery/windows/data-choosers@2x.png)
+
+### macOS
+
+### Linux
