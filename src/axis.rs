@@ -48,7 +48,7 @@ def_subcontrol!(
     handle: uiBox,
 );
 
-impl Axis {
+impl Axis<'_> {
     bind_bool_fn!(
         docs: "
             Determines if this axis is padded.
@@ -116,9 +116,7 @@ impl Axis {
         },
         libui: { fn: uiBoxNumChildren() },
     );
-}
 
-impl Axis {
     bind_fn!(
         docs: r#"
             Removes the child control at the given index.

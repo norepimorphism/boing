@@ -77,12 +77,12 @@ def_subcontrol!(
     ty: Window,
     handle: uiWindow,
     cb_fns: [
-        on_content_size_changed<'a>(),
-        on_closing<'b>() -> bool,
+        on_content_size_changed(),
+        on_closing() -> bool,
     ],
 );
 
-impl<'a, 'b> Window<'a, 'b> {
+impl<'ui> Window<'ui> {
     bind_text_fn!(
         docs: "
             The title of this window.
@@ -128,7 +128,7 @@ impl<'a, 'b> Window<'a, 'b> {
             ```
         ",
         self: {
-            ty: Window<'a>,
+            ty: Window<'ui>,
             handle: uiWindow,
             fn: on_content_size_changed(),
             cb: {
@@ -157,7 +157,7 @@ impl<'a, 'b> Window<'a, 'b> {
             ```
         ",
         self: {
-            ty: Window<'b>,
+            ty: Window<'ui>,
             handle: uiWindow,
             fn: on_closing(),
             cb: {
@@ -343,7 +343,7 @@ macro_rules! impl_present_fn {
         $name:ident,
         $fn:ident $(,)?
     ) => {
-        impl Window<'_, '_> {
+        impl Window<'_> {
             pub fn $name(
                 &self,
                 title: impl AsRef<str>,

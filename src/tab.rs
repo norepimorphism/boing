@@ -42,7 +42,7 @@ def_subcontrol!(
     handle: uiTab,
 );
 
-impl Tab {
+impl Tab<'_> {
     bind_fn!(
         docs: "
             Deletes the page at the given index.

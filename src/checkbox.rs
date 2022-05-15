@@ -39,10 +39,10 @@ def_subcontrol!(
     ",
     ty: Checkbox,
     handle: uiCheckbox,
-    cb_fns: [ on_toggled<'a>() ],
+    cb_fns: [ on_toggled() ],
 );
 
-impl<'a> Checkbox<'a> {
+impl<'ui> Checkbox<'ui> {
     bind_text_fn!(
         docs: "
             The text displayed adjacent to this checkbox.
@@ -88,7 +88,7 @@ impl<'a> Checkbox<'a> {
             ```
         ",
         self: {
-            ty: Checkbox<'a>,
+            ty: Checkbox<'ui>,
             handle: uiCheckbox,
             fn: on_toggled(),
             cb: { sig: f -> () },

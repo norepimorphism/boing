@@ -32,11 +32,11 @@ def_subcontrol!(
     ",
     ty: RadioButtons,
     handle: uiRadioButtons,
-    cb_fns: [ on_item_selected<'a>() ],
+    cb_fns: [ on_item_selected() ],
     fields: [ item_count: u16 = 0 ],
 );
 
-impl<'a> RadioButtons<'a> {
+impl<'ui> RadioButtons<'ui> {
     bind_set_text_fn!(
         docs: "
             Appends a new item with the given text, returning its index.
@@ -106,7 +106,7 @@ impl<'a> RadioButtons<'a> {
             ```
         ",
         self: {
-            ty: RadioButtons<'a>,
+            ty: RadioButtons<'ui>,
             handle: uiRadioButtons,
             fn: on_item_selected(),
             cb: { sig: f -> () },

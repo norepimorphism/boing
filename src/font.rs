@@ -34,7 +34,7 @@ def_subcontrol!(
     ",
     ty: Picker,
     handle: uiFontButton,
-    cb_fns: [ on_selected<'a>() ],
+    cb_fns: [ on_selected() ],
 );
 
 /// A font returned by [`Picker::selected_font`].
@@ -90,7 +90,7 @@ impl StretchKind {
     }
 }
 
-impl<'a> Picker<'a> {
+impl<'ui> Picker<'ui> {
     /// The font currently selected by this picker.
     ///
     /// # Examples
@@ -144,7 +144,7 @@ impl<'a> Picker<'a> {
             ```
         ",
         self: {
-            ty: Picker<'a>,
+            ty: Picker<'ui>,
             handle: uiFontButton,
             fn: on_selected(),
             cb: {

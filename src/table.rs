@@ -57,7 +57,7 @@ def_subcontrol!(
     handle: uiTable,
 );
 
-impl Table {
+impl Table<'_> {
     bind_bool_fn!(
         docs: "
             Determines if the header of this table is visible.

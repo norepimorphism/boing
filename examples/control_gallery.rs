@@ -88,9 +88,7 @@ mod tab {
     }
 
     mod basic_controls {
-        use std::ops::DerefMut;
-
-        pub fn create(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        pub fn create(ui: &boing::Ui) -> &mut boing::Axis {
             static LABEL_TEXT: &str = "This is a label. Right now, labels can only span one line.";
 
             let axis = ui.create_vertical_axis().unwrap();
@@ -113,9 +111,7 @@ mod tab {
     }
 
     mod numbers_n_lists {
-        use std::ops::DerefMut;
-
-        pub fn create(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        pub fn create(ui: &boing::Ui) -> &mut boing::Axis {
             let axis = ui.create_horizontal_axis().unwrap();
             axis.push_new_child(create_numbers_group(ui), true);
             axis.push_new_child(create_lists_group(ui), true);
@@ -123,7 +119,7 @@ mod tab {
             axis
         }
 
-        fn create_numbers_group(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        fn create_numbers_group(ui: &boing::Ui) -> &mut boing::Group {
             let group = ui.create_group("Numbers").unwrap();
             group.set_margined(true);
             group.set_child(create_numbers_axis(ui));
@@ -131,7 +127,7 @@ mod tab {
             group
         }
 
-        fn create_numbers_axis(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        fn create_numbers_axis(ui: &boing::Ui) -> &mut boing::Axis {
             let axis = ui.create_vertical_axis().unwrap();
             axis.push_new_child(ui.create_spinbox(0, 100).unwrap(), false);
 
@@ -155,7 +151,7 @@ mod tab {
             loading_bar
         }
 
-        fn create_lists_group(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        fn create_lists_group(ui: &boing::Ui) -> &mut boing::Group {
             let group = ui.create_group("Lists").unwrap();
             group.set_margined(true);
             group.set_child(create_lists_axis(ui));
@@ -163,7 +159,7 @@ mod tab {
             group
         }
 
-        fn create_lists_axis(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        fn create_lists_axis(ui: &boing::Ui) -> &mut boing::Axis {
             let axis = ui.create_vertical_axis().unwrap();
             axis.push_new_child(create_combobox(ui), false);
             axis.push_new_child(create_radio_buttons(ui), false);
@@ -193,9 +189,7 @@ mod tab {
     }
 
     mod data_choosers {
-        use std::ops::DerefMut;
-
-        pub fn create(ui: &boing::Ui) -> &mut impl DerefMut<Target = boing::Control> {
+        pub fn create(ui: &boing::Ui) -> &mut boing::Axis {
             let axis = ui.create_horizontal_axis().unwrap();
             axis.set_padded(true);
             axis.push_new_child(create_picker_axis(ui), false);

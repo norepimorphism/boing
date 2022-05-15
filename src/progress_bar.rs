@@ -34,7 +34,7 @@ def_subcontrol!(
     handle: uiProgressBar,
 );
 
-impl ProgressBar {
+impl ProgressBar<'_> {
     bind_fn!(
         docs: "
             The current value of this progress bar.

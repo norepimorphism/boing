@@ -32,7 +32,7 @@ def_subcontrol!(
     handle: uiGrid,
 );
 
-impl Grid {
+impl Grid<'_> {
     bind_bool_fn!(
         docs: "
             Determines if this grid is padded.

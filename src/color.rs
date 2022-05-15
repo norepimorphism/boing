@@ -32,7 +32,7 @@ def_subcontrol!(
     ",
     ty: Picker,
     handle: uiColorButton,
-    cb_fns: [ on_selected<'a>() ],
+    cb_fns: [ on_selected() ],
 );
 
 /// An RGBA color.
@@ -44,7 +44,7 @@ pub struct Color {
     pub alpha: f64,
 }
 
-impl<'a> Picker<'a> {
+impl<'ui> Picker<'ui> {
     /// The color currently selected by this picker.
     ///
     /// # Examples
@@ -101,7 +101,7 @@ impl<'a> Picker<'a> {
             ```
         ",
         self: {
-            ty: Picker<'a>,
+            ty: Picker<'ui>,
             handle: uiColorButton,
             fn: on_selected(),
             cb: {

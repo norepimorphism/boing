@@ -37,11 +37,11 @@ def_subcontrol!(
     ty: Slider,
     handle: uiSlider,
     cb_fns: [
-        on_changed<'a>(),
+        on_changed(),
     ],
 );
 
-impl<'a> Slider<'a> {
+impl<'ui> Slider<'ui> {
     bind_fn!(
         docs: "
             The current value of this slider.
@@ -115,7 +115,7 @@ impl<'a> Slider<'a> {
             ```
         ",
         self: {
-            ty: Slider<'a>,
+            ty: Slider<'ui>,
             handle: uiSlider,
             fn: on_changed(),
             cb: {

@@ -45,7 +45,7 @@ impl Control {
     /// ```no_run
     /// // TODO
     /// ```
-    pub(crate) fn new(ptr: *mut uiControl) -> Self {
+    pub(crate) unsafe fn new(ptr: *mut uiControl) -> Self {
         Self {
             ptr,
             is_child: Cell::new(false),

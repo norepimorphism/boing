@@ -44,7 +44,7 @@ def_subcontrol!(
     handle: uiLabel,
 );
 
-impl Label {
+impl Label<'_> {
     bind_text_fn!(
         docs: "
             The text displayed by this label.

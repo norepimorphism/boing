@@ -42,7 +42,7 @@ pub struct Pixel {
     pub a: u8,
 }
 
-impl Image {
+impl Image<'_> {
     /// # Examples
     ///
     /// ```no_run

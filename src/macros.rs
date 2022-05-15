@@ -43,7 +43,7 @@ macro_rules! def_subcontrol {
         handle: $ptr_ty:ident
         $(
             , cb_fns: [
-                $($cb:ident<$lt:lifetime>() $(-> $out:ty)?),* $(,)?
+                $($cb:ident() $(-> $out:ty)?),* $(,)?
             ]
         )?
         $(
@@ -52,16 +52,19 @@ macro_rules! def_subcontrol {
             ]
         )? $(,)?
     ) => {
-        impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
-            pub(crate) fn new(ptr: *mut $ptr_ty) -> Self {
+        impl<'ui> $ty<'ui> {
+            pub(crate) fn new(ui: &'ui Ui, ptr: *mut $ptr_ty) -> Self {
+                // SAFETY:
+                //
                 // Here, we cast `ptr` to `*mut uiControl`. This is safe because the memory layout
                 // of all subcontrols begins with a `uiControl` struct, so they are effectively
                 // subclasses of `uiControl`.
-                Self::from_control(Control::new(ptr.cast()))
+                Self::from_control(ui, unsafe { Control::new(ptr.cast()) })
             }
 
-            pub(crate) fn from_control(control: Control) -> Self {
+            pub(crate) fn from_control(ui: &'ui Ui, control: Control) -> Self {
                 Self {
+                    ui,
                     inner: control
                     $(
                         , $($cb: None),*
@@ -74,17 +77,18 @@ macro_rules! def_subcontrol {
         }
 
         #[doc = indoc::indoc!($docs)]
-        pub struct $ty$(<$($lt),*>)? {
+        pub struct $ty<'ui> {
+            ui: &'ui Ui,
             inner: $crate::Control
             $(
-                , $($cb: Option<Box<dyn $lt + FnMut(&mut Self) $(-> $out)?>>),*
+                , $($cb: Option<&'ui mut (dyn 'ui + FnMut(&mut Self) $(-> $out)?)>),*
             )?
             $(
                 , $($field_name: $field_ty),*
             )?
         }
 
-        impl$(<$($lt),*>)? $ty$(<$($lt),*>)? {
+        impl $ty<'_> {
             /// A handle to the underlying *libui-ng* object.
             ///
             /// # Examples
@@ -98,7 +102,7 @@ macro_rules! def_subcontrol {
             }
         }
 
-        impl$(<$($lt),*>)? std::ops::Deref for $ty$(<$($lt),*>)? {
+        impl std::ops::Deref for $ty<'_> {
             type Target = Control;
 
             fn deref(&self) -> &Self::Target {
@@ -106,7 +110,7 @@ macro_rules! def_subcontrol {
             }
         }
 
-        impl$(<$($lt),*>)? std::ops::DerefMut for $ty$(<$($lt),*>)? {
+        impl std::ops::DerefMut for $ty<'_> {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.inner
             }
@@ -128,7 +132,7 @@ macro_rules! call_libui_new_fn {
         fn: $fn:ident( $($arg:expr),* $(,)? ) -> $out_ty:ident,
     ) => {
         call_fallible_libui_fn!( $fn($($arg),*) )
-            .map(|ptr| $ui.alloc_object($out_ty::new(ptr)))
+            .map(|ptr| $ui.alloc_object($out_ty::new($ui, ptr)))
     };
 }
 
@@ -159,28 +163,23 @@ macro_rules! bind_callback_fn {
             F: $cb_lt + FnMut(&mut Self) -> $user_cb_out,
         {
             /// A trampoline function to the user-set callback.
-            unsafe extern "C" fn trampoline(
+            unsafe extern "C" fn trampoline<$cb_lt>(
                 handle: *mut libui_ng_sys::$self_handle_ty,
                 $(_: $cb_arg,)*
-                user_cb_ptr: *mut std::os::raw::c_void,
+                this: *mut std::os::raw::c_void,
             ) -> $libui_cb_out {
                 // Ensure nothing wonky has happened in the meantime.
                 debug_assert!(!handle.is_null());
-                debug_assert!(!user_cb_ptr.is_null());
+                debug_assert!(!this.is_null());
 
-                let user_cb: &mut Option<Box<dyn FnMut(&mut $self_ty) -> $user_cb_out>> = &mut *user_cb_ptr.cast();
+                let this: &mut $self_ty<$cb_lt> = &mut *this.cast();
+                debug_assert!(this.$fn.is_some());
 
-                // SAFETY:
-                //
-                // The [`Option` docs] state that `Some(T)` is equivalent in memory to `T`. In this
-                // case, the `Option` is definitely `Some` (unless something wonky happened!), so
-                // this should be safe.
-                //
-                // [`Option` docs]: https://doc.rust-lang.org/std/option/index.html#representation
-                debug_assert!(user_cb.is_some());
-                let user_cb: &mut Box<dyn FnMut(&mut $self_ty) -> $user_cb_out> = &mut *user_cb_ptr.cast();
+                let mut handle = std::mem::ManuallyDrop::new($self_ty::new(this.ui, this.as_ptr()));
 
-                let mut handle = std::mem::ManuallyDrop::new(<$self_ty>::new(handle));
+                // SAFETY: `this.$fn` should definitely be `Some`, so it's OK to unwrap without
+                // checks.
+                let user_cb: &mut &mut (dyn FnMut(&mut $self_ty<$cb_lt>) -> $user_cb_out) = this.$fn.as_mut().unwrap_unchecked();
 
                 let result = (user_cb)(&mut handle);
                 $(
@@ -190,7 +189,7 @@ macro_rules! bind_callback_fn {
                 result
             }
 
-            self.$fn = Some(Box::new($user_cb));
+            self.$fn = Some(self.ui.alloc_object($user_cb));
 
             unsafe {
                 $libui_fn(
@@ -199,7 +198,7 @@ macro_rules! bind_callback_fn {
                         $($libui_arg),*
                     )?
                     Some(trampoline),
-                    std::ptr::addr_of_mut!(self.$fn).cast(),
+                    std::ptr::addr_of_mut!(*self).cast(),
                 );
             }
         }

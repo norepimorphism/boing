@@ -59,7 +59,7 @@ def_subcontrol!(
     "#,
     ty: Pushbutton,
     handle: uiButton,
-    cb_fns: [ on_clicked<'a>() ],
+    cb_fns: [ on_clicked() ],
 );
 
 impl<'ui> Pushbutton<'ui> {

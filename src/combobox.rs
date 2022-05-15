@@ -32,10 +32,10 @@ def_subcontrol!(
     ",
     ty: Combobox,
     handle: uiCombobox,
-    cb_fns: [ on_item_selected<'a>() ],
+    cb_fns: [ on_item_selected() ],
 );
 
-impl<'a> Combobox<'a> {
+impl<'ui> Combobox<'ui> {
     bind_set_text_fn!(
         docs: "
             Appends a new item with the given text, returning its index.
@@ -183,7 +183,7 @@ impl<'a> Combobox<'a> {
             ```
         ",
         self: {
-            ty: Combobox<'a>,
+            ty: Combobox<'ui>,
             handle: uiCombobox,
             fn: on_item_selected(),
             cb: {

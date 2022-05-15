@@ -40,7 +40,7 @@ def_subcontrol!(
     handle: uiGroup,
 );
 
-impl Group {
+impl<'ui> Group<'ui> {
     bind_text_fn!(
         docs: "
             The title of this group.
@@ -83,7 +83,7 @@ impl Group {
             // TODO
             ```
         ",
-        self: { fn: set_child<'a>(child) },
+        self: { fn: set_child<'ui>(child) },
         libui: { fn: uiGroupSetChild() },
     );
 

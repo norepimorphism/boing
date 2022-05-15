@@ -32,10 +32,10 @@ def_subcontrol!(
     ",
     ty: Spinbox,
     handle: uiSpinbox,
-    cb_fns: [ on_changed<'a>() ],
+    cb_fns: [ on_changed() ],
 );
 
-impl<'a> Spinbox<'a> {
+impl<'ui> Spinbox<'ui> {
     bind_fn!(
         docs: "
             The current value of this spinbox.
@@ -80,7 +80,7 @@ impl<'a> Spinbox<'a> {
             ```
         ",
         self: {
-            ty: Spinbox<'a>,
+            ty: Spinbox<'ui>,
             handle: uiSpinbox,
             fn: on_changed(),
             cb: { sig: f -> () },

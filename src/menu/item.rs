@@ -36,7 +36,7 @@ macro_rules! impl_push_item_fn_with_name {
                     .map(|ptr| {
                         // SAFETY: `call_fallible_libui_fn` guarantees that the mapped pointer is
                         // non-null.
-                        let item = unsafe { Item::new(ptr) };
+                        let item = unsafe { Item::new(self.ui, ptr) };
 
                         // SAFETY: Items own callbacks, so they must live for the duration of
                         // `self.ui`.
@@ -60,7 +60,7 @@ macro_rules! impl_push_item_fn {
                     .map(|ptr| {
                         // SAFETY: `call_fallible_libui_fn` guarantees that the mapped pointer is
                         // non-null.
-                        let item = unsafe { Item::new(ptr) };
+                        let item = unsafe { Item::new(self.ui, ptr) };
 
                         // SAFETY: Items own callbacks, so they must live for the duration of
                         // `self.ui`.
@@ -157,14 +157,15 @@ impl_push_item_fn!(
     uiMenuAppendAboutItem,
 );
 
-impl Item<'_> {
+impl<'ui> Item<'ui> {
     /// Creates a new [`Item`].
     ///
     /// # Safety
     ///
     /// `ptr` must point to a valid `uiMenuItem`.
-    pub(super) unsafe fn new(ptr: *mut uiMenuItem) -> Self {
+    pub(super) unsafe fn new(ui: &'ui Ui, ptr: *mut uiMenuItem) -> Self {
         Self {
+            ui,
             ptr,
             on_clicked: None,
         }
@@ -201,8 +202,9 @@ impl Item<'_> {
 /// # }
 /// ```
 pub struct Item<'ui> {
+    ui: &'ui Ui,
     ptr: *mut uiMenuItem,
-    on_clicked: Option<Box<dyn 'ui + FnMut(&mut Self)>>,
+    on_clicked: Option<&'ui mut (dyn 'ui + FnMut(&mut Self))>,
 }
 
 impl<'ui> Item<'ui> {
