@@ -24,23 +24,23 @@ impl RowBackgroundColor {
 }
 
 impl Ui {
-    pub fn create_table<'ui>(
-        &'ui self,
-        model: Model,
-        row_bg: RowBackgroundColor,
-    ) -> Result<&'ui mut Table, crate::Error> {
-        let mut params = uiTableParams {
-            // TODO: `model` is dropped at the end of scope, so this will always be a
-            // use-after-free.
-            Model: model.as_ptr(),
-            RowBackgroundColorModelColumn: row_bg.into_param(),
-        };
+    // pub fn create_table<'ui>(
+    //     &'ui self,
+    //     model: Model,
+    //     row_bg: RowBackgroundColor,
+    // ) -> Result<&'ui mut Table, crate::Error> {
+    //     let mut params = uiTableParams {
+    //         // TODO: `model` is dropped at the end of scope, so this will always be a
+    //         // use-after-free.
+    //         Model: model.as_ptr(),
+    //         RowBackgroundColorModelColumn: row_bg.into_param(),
+    //     };
 
-        call_libui_new_fn!(
-            ui: self,
-            fn: uiNewTable(std::ptr::addr_of_mut!(params)) -> Table,
-        )
-    }
+    //     call_libui_new_fn!(
+    //         ui: self,
+    //         fn: uiNewTable(std::ptr::addr_of_mut!(params)) -> Table,
+    //     )
+    // }
 }
 
 def_subcontrol!(
