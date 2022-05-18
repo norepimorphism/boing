@@ -155,6 +155,14 @@ impl Ui {
         unsafe { uiMain() };
     }
 
+    ///
+    ///
+    /// This function returns whether or not the GUI was exited. In the case it was, it can be
+    /// recreated by calling this function or [`Ui::main`].
+    pub fn step(&self) -> bool {
+        unsafe { uiMainStep(0) == 1 }
+    }
+
     /// Allocates an object.
     ///
     /// Wrap a value in this method when you need it to live for as long as [`Ui`].
