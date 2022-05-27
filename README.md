@@ -103,3 +103,10 @@ focused on a tab labeled "Data Choosers".](screenshots/control-gallery/windows/d
 ### macOS
 
 ### Linux
+
+![A screenshot of the example application "libui Control Gallery" with Gtk3 widgets,
+focused on a tab labeled "Basic Controls".](screenshots/control-gallery/linux/basic-controls.png)
+![A screenshot of the example application "libui Control Gallery" with Gtk3 widgets,
+focused on a tab labeled "Numbers and Lists".](screenshots/control-gallery/linux/numbers-and-lists.png)
+![A screenshot of the example application "libui Control Gallery" with Gtk3 widgets,
+focused on a tab labeled "Data Choosers".](screenshots/control-gallery/linux/data-choosers.png)
