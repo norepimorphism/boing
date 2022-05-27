@@ -1,4 +1,4 @@
-# boing
+# !["boing" in monospace lime-green text.](boing@2x.png)
 
 [![crates.io](https://img.shields.io/crates/v/boing)](https://crates.io/crates/boing)
 [![docs](https://docs.rs/boing/badge.svg)](https://docs.rs/boing)

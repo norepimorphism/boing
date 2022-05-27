@@ -11,10 +11,10 @@ fn main() {
     menubar::setup(&ui);
 
     let window = ui
-        .create_window("libui Control Gallery", 640, 480, true, true)
+        .create_window("libui Control Gallery", 240, 240, true, true)
         .unwrap();
     window.set_margined(true);
-    window.set_resizeable(false);
+    window.set_resizeable(true);
 
     let tab = tab::create(&ui);
     window.set_child(tab);
