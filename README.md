@@ -25,14 +25,14 @@ See [DESIGN.md](./DESIGN.md) for an explanation of how *boing* was designed.
 *boing* currently boxes callbacks passed to methods such as `Window::on_closing` and `Button::on_clicked`. This incurs a small performance and memory cost. However, this is an intentional choice for the purpose of convenience. For example, if callbacks were instead borrowed rather than owned by a transfer of ownership, the following code would fail to compile:
 
 ```rust
-use boing::{Button, Error, Ui, Window};
+use boing::{Error, Pushbutton, Ui};
 
 fn main() -> Result<(), Error> {
     let ui: Ui;
-    let window: Window;
+    let window: &mut Window<'ui>;
 
-    let mut button = create_button(&ui, "Hello World!".into())?;
-    window.set_child(&mut button);
+    let button = create_pushbutton(&ui, "Hello World!")?;
+    window.set_child(button);
 
     window.show();
     ui.run();
@@ -40,20 +40,37 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn create_button<'cb>(ui: &Ui, text: &'cb String) -> Result<Button<'cb>, Error> {
-    let button = ui.create_button("Press Me!")?;
+fn create_pushbutton<'ui>(
+    ui: &'ui Ui,
+    text: &'static str,
+) -> Result<&'ui mut Pushbutton<'ui>, Error> {
+    let pushbutton = ui.create_pushbutton("Press Me!")?;
 
-    button.on_clicked(
+    pushbutton.on_clicked(
         // This closure is dropped at the end of scope, so its lifetime ends before that of
-        // `button`. It is not coerced to `fn()` because it captures `text`.
-        &|| println!("{}", text),
+        // `pushbutton`. It is not coerced to `fn()` because it captures `text`.
+        &move |pushbutton: &mut Pushbutton| {
+            let _ = pushbutton.set_text(text);
+        },
     );
 
-    button
+    Ok(pushbutton)
 }
 ```
 
-In this case, the closure passed to `Button::on_clicked` would need to be routed through `create_button` as an argument. Such a hindrance was deemed untenable, hence the current callback design.
+In this case, the closure passed to `Button::on_clicked` would need to be routed through `create_button` as an argument. Such a hindrance was deemed untenable, hence the current callback design. A working version of the previous example requires the following minor change:
+
+```diff
+    pushbutton.on_clicked(
+-       // This closure is dropped at the end of scope, so its lifetime ends before that of
+-       // `pushbutton`. It is not coerced to `fn()` because it captures `text`.
+-       &move |pushbutton: &mut Pushbutton| {
++       // This works because the closure is boxed in the body of [`PushButton::on_clicked`].
++       move |pushbutton: &mut Pushbutton| {
+            let _ = pushbutton.set_text(text);
+        },
+    );
+```
 
 ## Project Progress
 
